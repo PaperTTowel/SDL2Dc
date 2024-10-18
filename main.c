@@ -45,12 +45,12 @@ void handleInput(const Uint8* state, float deltaTime){
     const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
     float playerSpeed = baseSpeed * deltaTime;  // 델타 타임을 반영한 속도 계산
 
-    if(state[SDL_SCANCODE_LEFT]){ // 좌측 이동
+    if(state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]){ // 좌측 이동
         playerX -= playerSpeed;
         direction = -1;
         isMoving = 1;
     }
-    else if(state[SDL_SCANCODE_RIGHT]){ // 우측 이동
+    else if(state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]){ // 우측 이동
         playerX += playerSpeed;
         direction = 1;
         isMoving = 1;
@@ -66,7 +66,7 @@ void handleInput(const Uint8* state, float deltaTime){
 }
 
 void updatePhysics(){
-    velocityY += gravity;  // 중력 적용
+    velocityY += gravity; // 중력 적용
     playerY += velocityY; // 캐릭터 y 좌표 변경
 
     if(SDL_HasIntersection(&playerRect, &platform)){ // 캐릭터가 플랫폼과 충돌할 때
@@ -122,6 +122,22 @@ void render(SDL_Renderer* renderer){
     SDL_RenderPresent(renderer);
 }
 
+// FPS 확인용
+Uint32 fpsStartTime = 0;
+int frameCount = 0;
+float fps = 0.0f;
+void updateFPS(){
+    frameCount++;
+    Uint32 currentTime = SDL_GetTicks();
+    Uint32 elapsedTime = currentTime - fpsStartTime;
+
+    if(elapsedTime >= 1000){ // 1초마다 FPS 계산
+        fps = frameCount / (elapsedTime / 1000.0f); // 초당 프레임 수 계산
+        fpsStartTime = currentTime; // 시간을 초기화
+        frameCount = 0; // 프레임 카운트를 초기화
+    }
+}
+
 int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
@@ -143,6 +159,8 @@ int main(int argc, char* argv[]){
     SDL_bool running = SDL_TRUE;
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
+    fpsStartTime = SDL_GetTicks(); // FPS 확인용
+
     while(running){
         while (SDL_PollEvent(&event)){
             if (event.type == SDL_QUIT) running = SDL_FALSE;
@@ -158,7 +176,14 @@ int main(int argc, char* argv[]){
         updateFrame();
         updateCamera(deltaTime);
         render(renderer);
-        printf("player.x: %.3f   |   camera.x: %.3f\n", playerX, cameraX);
+        updateFPS();
+        printf("player.x: %.3f   |   camera.x: %.3f   |   FPS: %.2f\n", playerX, cameraX, fps);
+
+        // FPS 제한 (120)
+        Uint32 frameTicks = SDL_GetTicks() - currentTime;
+        if(frameTicks < 8){
+            SDL_Delay(8 - frameTicks);
+        }
     }
 
     SDL_DestroyTexture(spriteSheet);
@@ -174,4 +199,4 @@ int main(int argc, char* argv[]){
             printf("player.x: %.3f   |   camera.x: %.3f\n", playerX, cameraX);
             debugLastTime = currentTime;
         }
-        */
+*/
