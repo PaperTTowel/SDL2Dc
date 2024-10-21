@@ -1,6 +1,8 @@
+#include <cJSON.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // 마지막 시간 기록
 Uint32 lastTime = 0;
@@ -30,6 +32,15 @@ SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
 SDL_Texture* spriteSheet = NULL; // 스프라이트 시트 텍스처
 
 // static Uint32 debugLastTime = 0; // 디버깅 렉걸릴 경우 사용
+
+// JSON 데이터에서 추출한 맵 데이터 관련 정보
+int mapWidth, mapHeight;
+int tileWidth, tileHeight;
+int *tileData; // 타일 데이터 배열
+
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+SDL_Texture *tilesetTexture = NULL;
 
 void updateFrame(){
     int currentTime = SDL_GetTicks();
@@ -90,14 +101,206 @@ void updateCamera(float deltaTime){
 
     // 카메라가 화면의 경계를 넘지 않도록 제한
     if (cameraX < 0) cameraX = 0;
-    // if (cameraX > 800 - camera.w) cameraX = 800 - camera.w; // 카메라 화면고정
-
     camera.x = (int)cameraX; // 카메라 rect의 x 값은 int로 변환 (분리용)
+}
+
+unsigned char *base64_decode(const char *input, size_t len, size_t *out_len){
+    static const unsigned char base64_table[65] =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    
+    unsigned char dtable[256], *out, *pos, block[4], tmp;
+    size_t i, count, olen;
+    int pad = 0;
+    
+    memset(dtable, 0x80, 256);
+    for(i = 0; i < 64; i++)
+        dtable[base64_table[i]] = (unsigned char) i;
+    dtable['='] = 0;
+    
+    count = 0;
+    for(i = 0; i < len; i++){
+        if (dtable[(unsigned char)input[i]] != 0x80)
+            count++;
+    }
+    
+    if(count == 0 || count % 4)
+        return NULL;
+    
+    olen = count / 4 * 3;
+    pos = out = (unsigned char *)malloc(olen);
+    if (out == NULL)
+        return NULL;
+    
+    count = 0;
+    for(i = 0; i < len; i++){
+        tmp = dtable[(unsigned char)input[i]];
+        if (tmp == 0x80)
+            continue;
+        
+        block[count] = tmp;
+        count++;
+        
+        if(count == 4){
+            *pos++ = (block[0] << 2) | (block[1] >> 4);
+            *pos++ = (block[1] << 4) | (block[2] >> 2);
+            *pos++ = (block[2] << 6) | block[3];
+            count = 0;
+        }
+    }
+
+    
+    
+    if(count){
+        *pos++ = (block[0] << 2) | (block[1] >> 4);
+        if (count > 2)
+            *pos++ = (block[1] << 4) | (block[2] >> 2);
+        if (count > 3)
+            *pos++ = (block[2] << 6) | block[3];
+    }
+    
+    *out_len = pos - out;
+    return out;
+}
+
+void parseTileLayer(cJSON *layer){
+    cJSON *dataItem = cJSON_GetObjectItem(layer, "data");
+    const char *encodedData = dataItem->valuestring;  // base64로 인코딩된 문자열
+
+    // base64 디코딩
+    size_t decodedLength;
+    unsigned char *decodedData = base64_decode(encodedData, strlen(encodedData), &decodedLength);
+
+    if(decodedData == NULL){
+        printf("Error decoding base64 tile data\n");
+        return;
+    }
+
+    // 타일 데이터를 처리하는 코드
+    for(size_t i = 0; i < decodedLength / 4; i++){  // 타일 데이터는 4바이트씩 처리됩니다.
+        unsigned int tileID = ((unsigned int*)decodedData)[i];  // 타일 ID 가져오기
+        printf("Tile %zu: %u\n", i, tileID);
+    }
+
+    free(decodedData);  // 디코딩된 데이터를 메모리에서 해제
+}
+
+// JSON에서 맵 데이터를 파싱하는 함수
+// Tile data를 디코딩하고 배열로 반환하는 함수
+unsigned int *parseTileData(cJSON *map){
+    cJSON *layers = cJSON_GetObjectItem(map, "layers");
+    if(!cJSON_IsArray(layers)){
+        printf("Error: No layers in map\n");
+        return NULL;
+    }
+
+    cJSON *tileLayer = NULL;
+    // 타일 레이어를 찾아서 처리 (첫 번째 레이어가 타일 레이어라고 가정)
+    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
+        cJSON *layer = cJSON_GetArrayItem(layers, i);
+        cJSON *layerType = cJSON_GetObjectItem(layer, "type");
+        if (cJSON_IsString(layerType) && strcmp(layerType->valuestring, "tilelayer") == 0) {
+            tileLayer = layer;
+            break;
+        }
+    }
+
+    if(tileLayer == NULL){
+        printf("Error: No tile layer found\n");
+        return NULL;
+    }
+
+    // 타일 데이터 추출 (base64로 인코딩된 데이터)
+    cJSON *dataItem = cJSON_GetObjectItem(tileLayer, "data");
+    const char *encodedData = dataItem->valuestring;
+
+    // Base64 디코딩
+    size_t decodedLength;
+    unsigned char *decodedData = base64_decode(encodedData, strlen(encodedData), &decodedLength);
+    if(decodedData == NULL){
+        printf("Error decoding base64 tile data\n");
+        return NULL;
+    }
+
+    // 디코딩된 데이터를 타일 ID 배열로 변환
+    size_t numTiles = decodedLength / 4;  // 각 타일이 4바이트이므로
+    unsigned int *tileData = (unsigned int *)malloc(numTiles * sizeof(unsigned int));
+    if(tileData == NULL){
+        free(decodedData);
+        printf("Error allocating memory for tile data\n");
+        return NULL;
+    }
+
+    // 디코딩된 데이터를 타일 데이터로 복사
+    for(size_t i = 0; i < numTiles; i++){
+        tileData[i] = ((unsigned int*)decodedData)[i];  // 4바이트씩 읽어서 타일 ID로 변환
+    }
+
+    free(decodedData);  // 메모리 해제
+    return tileData;     // 타일 데이터 반환
+}
+
+// 타일을 렌더링하는 함수
+void renderTiles(SDL_Renderer* renderer){
+    int tileIndex = 0;
+
+    for(int y = 0; y < mapHeight; y++){
+        for(int x = 0; x < mapWidth; x++){
+            // 타일 번호
+            int tileID = tileData[tileIndex] - 1;  // Tiled에서 1부터 시작하는 인덱스
+
+            if(tileID >= 0){ // 0은 비어있는 타일
+                SDL_Rect srcRect = { (tileID % 8) * tileWidth, (tileID / 8) * tileHeight, tileWidth, tileHeight };
+                SDL_Rect destRect = { x * tileWidth - camera.x, y * tileHeight - camera.y, tileWidth, tileHeight };
+
+                SDL_RenderCopy(renderer, spriteSheet, &srcRect, &destRect);
+            }
+
+            tileIndex++;
+        }
+    }
+}
+
+SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
+    SDL_Surface* tempSurface = IMG_Load(path);  // BMP 형식으로 가정
+    if (tempSurface == NULL) {
+        printf("Failed to load image %s! SDL Error: %s\n", path, SDL_GetError());
+        return NULL;
+    }
+    
+    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+    SDL_FreeSurface(tempSurface);
+    
+    return newTexture;
+}
+
+void renderTileMap(SDL_Renderer* renderer) {
+    int tilesPerRow = 24 / tileWidth;
+    
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            int tileIndex = tileData[y * mapWidth + x] - 1;  // 타일 ID는 1부터 시작하므로 0 기반으로 조정
+            if (tileIndex < 0) continue;
+
+            // 타일셋에서 타일 위치 계산
+            int tileX = (tileIndex % tilesPerRow) * tileWidth;
+            int tileY = (tileIndex / tilesPerRow) * tileHeight;
+
+            // 타일셋에서 해당 타일을 클리핑
+            SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
+            SDL_Rect dstRect = { x * tileWidth, y * tileHeight, tileWidth, tileHeight };
+
+            // 타일을 렌더링
+            SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &dstRect);
+        }
+    }
 }
 
 void render(SDL_Renderer* renderer){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    // renderTiles(renderer);  // 타일 렌더링
+    renderTileMap(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, &platform);
@@ -122,10 +325,10 @@ void render(SDL_Renderer* renderer){
     SDL_RenderPresent(renderer);
 }
 
-// FPS 확인용
 Uint32 fpsStartTime = 0;
 int frameCount = 0;
 float fps = 0.0f;
+
 void updateFPS(){
     frameCount++;
     Uint32 currentTime = SDL_GetTicks();
@@ -138,11 +341,27 @@ void updateFPS(){
     }
 }
 
+char* readFile(const char* filename){
+    FILE *file = fopen(filename, "rb");
+    if(!file) return NULL;
+
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char *data = (char*)malloc(length + 1);
+    fread(data, 1, length, file);
+    data[length] = '\0';
+
+    fclose(file);
+    return data;
+}
+
 int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
 
-    SDL_Window* window = SDL_CreateWindow("SDL 2D Platform 그래픽 + 물리엔진 실험(연구)", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("SDL 2D Platform 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Surface* tempSurface = IMG_Load("walk and idle.png");
@@ -151,9 +370,56 @@ int main(int argc, char* argv[]){
         printf("load failed: %s\n", IMG_GetError());
         return 1;
     }
-
+    
     spriteSheet = SDL_CreateTextureFromSurface(renderer, tempSurface);
     SDL_FreeSurface(tempSurface);
+
+    tilesetTexture = loadTexture("Sample.png", renderer);  // tileset.bmp는 타일셋 이미지
+    if (tilesetTexture == NULL) {
+        printf("Failed to load tileset texture!\n");
+        return -1;
+    }
+
+    // JSON 파일 읽기
+    char *jsonData = readFile("SampleMap.json");
+    if(jsonData == NULL){
+        printf("Error reading JSON file\n");
+        return -1;
+    }
+
+    cJSON *map = cJSON_Parse(jsonData);
+    if(map == NULL){
+        printf("Error parsing JSON\n");
+        return -1;
+    }
+
+    // 맵의 크기와 타일 크기 추출
+    cJSON *width = cJSON_GetObjectItem(map, "width");
+    cJSON *height = cJSON_GetObjectItem(map, "height");
+    cJSON *tileWidthItem = cJSON_GetObjectItem(map, "tilewidth");
+    cJSON *tileHeightItem = cJSON_GetObjectItem(map, "tileheight");
+
+    if(!cJSON_IsNumber(width) || !cJSON_IsNumber(height) || !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)){
+        printf("Error in map dimensions\n");
+        return -1;
+    }
+
+    int mapWidth = width->valueint;
+    int mapHeight = height->valueint;
+    int tileWidth = tileWidthItem->valueint;
+    int tileHeight = tileHeightItem->valueint;
+
+    // 타일 데이터 파싱
+    unsigned int *tileData = parseTileData(map);
+    if(tileData == NULL){
+        printf("Error parsing tile data\n");
+        return -1;
+    }
+
+    // 타일 데이터를 출력 (디버깅용)
+    for(int i = 0; i < mapWidth * mapHeight; i++){
+        printf("Tile %d: %u\n", i, tileData[i]);
+    }
 
     SDL_Event event;
     SDL_bool running = SDL_TRUE;
@@ -189,14 +455,9 @@ int main(int argc, char* argv[]){
     SDL_DestroyTexture(spriteSheet);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    cJSON_Delete(map);
+    free(tileData);
     IMG_Quit();
     SDL_Quit();
     return 0;
 }
-
-/* 디버깅 렉걸릴경우 사용
-        if (currentTime - debugLastTime > 200) {
-            printf("player.x: %.3f   |   camera.x: %.3f\n", playerX, cameraX);
-            debugLastTime = currentTime;
-        }
-*/
