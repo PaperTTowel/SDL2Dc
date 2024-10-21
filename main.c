@@ -9,7 +9,7 @@ Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
 float playerX = 100.0f;
-float playerY = 400.0f;
+float playerY = 100.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
 
@@ -24,7 +24,7 @@ int idleFrameDelay = 500;  // 가만히 있을 때의 프레임 딜레이 (ms)
 int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 
-SDL_Rect platform = { 0, 450, 800, 25 }; // 플랫폼 정보(임시)
+SDL_Rect platform = { 0, 250, 800, 25 }; // 플랫폼 정보(임시)
 
 float cameraX = 0.0f; // 카메라 좌표 (분리용)
 SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
@@ -223,7 +223,7 @@ unsigned int *parseTileData(cJSON *map){
 
     // 디코딩된 데이터를 타일 ID 배열로 변환
     size_t numTiles = decodedLength / 4;  // 각 타일이 4바이트이므로
-    unsigned int *tileData = (unsigned int *)malloc(numTiles * sizeof(unsigned int));
+    tileData = (unsigned int *)malloc(numTiles * sizeof(unsigned int));
     if(tileData == NULL){
         free(decodedData);
         printf("Error allocating memory for tile data\n");
@@ -240,28 +240,37 @@ unsigned int *parseTileData(cJSON *map){
 }
 
 // 타일을 렌더링하는 함수
-void renderTiles(SDL_Renderer* renderer){
-    int tileIndex = 0;
+void renderTileMap(SDL_Renderer* renderer){
+    int tilesPerRow = 120 / tileWidth;
 
-    for(int y = 0; y < mapHeight; y++){
-        for(int x = 0; x < mapWidth; x++){
-            // 타일 번호
-            int tileID = tileData[tileIndex] - 1;  // Tiled에서 1부터 시작하는 인덱스
+    for (int y = 0; y < mapHeight; y++){
+        for (int x = 0; x < mapWidth; x++){
+            int tileIndex = tileData[y * mapWidth + x] - 1;  // 타일 ID는 1부터 시작하므로 0 기반으로 조정
+            if (tileIndex < 0) continue; // 비어있는 타일은 건너뛰기
 
-            if(tileID >= 0){ // 0은 비어있는 타일
-                SDL_Rect srcRect = { (tileID % 8) * tileWidth, (tileID / 8) * tileHeight, tileWidth, tileHeight };
-                SDL_Rect destRect = { x * tileWidth - camera.x, y * tileHeight - camera.y, tileWidth, tileHeight };
+            // 타일셋에서 타일 위치 계산
+            int tileX = (tileIndex % tilesPerRow) * tileWidth;
+            int tileY = (tileIndex / tilesPerRow) * tileHeight;
 
-                SDL_RenderCopy(renderer, spriteSheet, &srcRect, &destRect);
+            // 타일셋에서 해당 타일을 클리핑
+            SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
+            SDL_Rect destRect = { x * tileWidth, y * tileHeight, tileWidth, tileHeight }; // 타일을 그릴 위치
+
+            // 타일 그리기
+            SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &destRect);
+            /* 렌더링 디버깅 용도
+            if (SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &destRect) != 0) {
+                printf("Error rendering tile at (%d, %d): %s\n", x, y, SDL_GetError());
+            } else {
+                printf("Rendered tile at (%d, %d) from tileset (%d, %d)\n", x, y, tileX, tileY);
             }
-
-            tileIndex++;
+            */
         }
     }
 }
 
 SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
-    SDL_Surface* tempSurface = IMG_Load(path);  // BMP 형식으로 가정
+    SDL_Surface* tempSurface = IMG_Load(path);
     if (tempSurface == NULL) {
         printf("Failed to load image %s! SDL Error: %s\n", path, SDL_GetError());
         return NULL;
@@ -273,34 +282,11 @@ SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     return newTexture;
 }
 
-void renderTileMap(SDL_Renderer* renderer) {
-    int tilesPerRow = 24 / tileWidth;
-    
-    for (int y = 0; y < mapHeight; y++) {
-        for (int x = 0; x < mapWidth; x++) {
-            int tileIndex = tileData[y * mapWidth + x] - 1;  // 타일 ID는 1부터 시작하므로 0 기반으로 조정
-            if (tileIndex < 0) continue;
-
-            // 타일셋에서 타일 위치 계산
-            int tileX = (tileIndex % tilesPerRow) * tileWidth;
-            int tileY = (tileIndex / tilesPerRow) * tileHeight;
-
-            // 타일셋에서 해당 타일을 클리핑
-            SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
-            SDL_Rect dstRect = { x * tileWidth, y * tileHeight, tileWidth, tileHeight };
-
-            // 타일을 렌더링
-            SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &dstRect);
-        }
-    }
-}
-
-void render(SDL_Renderer* renderer){
+void render(SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // renderTiles(renderer);  // 타일 렌더링
-    renderTileMap(renderer);
+    renderTileMap(renderer);  // 타일 맵 렌더링 호출
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, &platform);
@@ -319,9 +305,8 @@ void render(SDL_Renderer* renderer){
     }
 
     // 렌더링할 캐릭터 크기
-    SDL_Rect renderPlayer = { (int)playerX - camera.x, (int)playerY - camera.y, playerRect.w, playerRect.h }; // (72x72로 렌더링)
+    SDL_Rect renderPlayer = { (int)playerX, (int)playerY, playerRect.w, playerRect.h }; // (72x72로 렌더링)
     SDL_RenderCopy(renderer, spriteSheet, &srcRect, &renderPlayer);
-
     SDL_RenderPresent(renderer);
 }
 
@@ -374,7 +359,8 @@ int main(int argc, char* argv[]){
     spriteSheet = SDL_CreateTextureFromSurface(renderer, tempSurface);
     SDL_FreeSurface(tempSurface);
 
-    tilesetTexture = loadTexture("Sample.png", renderer);  // tileset.bmp는 타일셋 이미지
+    
+    tilesetTexture = loadTexture("Sample.png", renderer);
     if (tilesetTexture == NULL) {
         printf("Failed to load tileset texture!\n");
         return -1;
@@ -404,10 +390,15 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    int mapWidth = width->valueint;
-    int mapHeight = height->valueint;
-    int tileWidth = tileWidthItem->valueint;
-    int tileHeight = tileHeightItem->valueint;
+    mapWidth = width->valueint;
+    mapHeight = height->valueint;
+    tileWidth = tileWidthItem->valueint;
+    tileHeight = tileHeightItem->valueint;
+
+    printf("Map Width: %d\n", mapWidth);
+    printf("Map Height: %d\n", mapHeight);
+    printf("Tile Width: %d\n", tileWidth);
+    printf("Tile Height: %d\n", tileHeight);
 
     // 타일 데이터 파싱
     unsigned int *tileData = parseTileData(map);
@@ -428,7 +419,7 @@ int main(int argc, char* argv[]){
     fpsStartTime = SDL_GetTicks(); // FPS 확인용
 
     while(running){
-        while (SDL_PollEvent(&event)){
+        while(SDL_PollEvent(&event)){
             if (event.type == SDL_QUIT) running = SDL_FALSE;
         }
 
@@ -456,6 +447,7 @@ int main(int argc, char* argv[]){
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     cJSON_Delete(map);
+    free(jsonData);
     free(tileData);
     IMG_Quit();
     SDL_Quit();
