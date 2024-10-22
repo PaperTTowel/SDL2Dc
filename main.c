@@ -9,7 +9,7 @@ Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
 float playerX = 100.0f;
-float playerY = 100.0f;
+float playerY = 400.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
 
@@ -24,14 +24,12 @@ int idleFrameDelay = 500;  // 가만히 있을 때의 프레임 딜레이 (ms)
 int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 
-SDL_Rect platform = { 0, 250, 800, 25 }; // 플랫폼 정보(임시)
+SDL_Rect platform = { 0, 580, 800, 25 }; // 플랫폼 정보(임시)
 
 float cameraX = 0.0f; // 카메라 좌표 (분리용)
 SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
 
 SDL_Texture* spriteSheet = NULL; // 스프라이트 시트 텍스처
-
-// static Uint32 debugLastTime = 0; // 디버깅 렉걸릴 경우 사용
 
 // JSON 데이터에서 추출한 맵 데이터 관련 정보
 int mapWidth, mapHeight;
@@ -93,14 +91,25 @@ void updatePhysics(){
     }
 }
 
-void updateCamera(float deltaTime){
+void updateCamera(float deltaTime) {
     const float cameraSpeed = 5.0f; // 부드러운 카메라 속도 (픽셀/초)
 
-    // 카메라의 x 좌표를 플레이어의 x 좌표를 기준으로 부드럽게 조정
+    // 카메라의 x, y 좌표를 플레이어의 x 좌표를 기준으로 부드럽게 조정
     cameraX += (playerX - cameraX - (camera.w / 2 - playerRect.w / 2)) * cameraSpeed * deltaTime;
+    //camera.y = (int)(playerY - (camera.h / 2 - playerRect.h / 2));
 
     // 카메라가 화면의 경계를 넘지 않도록 제한
     if (cameraX < 0) cameraX = 0;
+    /*
+    if (cameraX > (mapWidth * tileWidth * 3) - camera.w) {
+        cameraX = (mapWidth * tileWidth * 3) - camera.w;
+    }
+    if (camera.y < 0) camera.y = 0;
+    if (camera.y > (mapHeight * tileHeight * 3) - camera.h) {
+        camera.y = (mapHeight * tileHeight * 3) - camera.h;
+    }
+    */
+
     camera.x = (int)cameraX; // 카메라 rect의 x 값은 int로 변환 (분리용)
 }
 
@@ -254,7 +263,7 @@ void renderTileMap(SDL_Renderer* renderer){
 
             // 타일셋에서 해당 타일을 클리핑
             SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
-            SDL_Rect destRect = { x * tileWidth, y * tileHeight, tileWidth, tileHeight }; // 타일을 그릴 위치
+            SDL_Rect destRect = { x * tileWidth * 3 - camera.x, y * tileHeight * 3 - camera.y, tileWidth * 3, tileHeight * 3 }; // 타일을 그릴 위치
 
             // 타일 그리기
             SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &destRect);
@@ -305,7 +314,7 @@ void render(SDL_Renderer* renderer) {
     }
 
     // 렌더링할 캐릭터 크기
-    SDL_Rect renderPlayer = { (int)playerX, (int)playerY, playerRect.w, playerRect.h }; // (72x72로 렌더링)
+    SDL_Rect renderPlayer = { (int)playerX - camera.x, (int)playerY - camera.y, playerRect.w, playerRect.h };
     SDL_RenderCopy(renderer, spriteSheet, &srcRect, &renderPlayer);
     SDL_RenderPresent(renderer);
 }
@@ -345,11 +354,20 @@ char* readFile(const char* filename){
 int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
+    if(SDL_Init(SDL_INIT_VIDEO) != 0){
+        printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    if(IMG_Init(IMG_INIT_PNG) == 0){
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        return 1;
+    }
 
     SDL_Window* window = SDL_CreateWindow("SDL 2D Platform 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_Surface* tempSurface = IMG_Load("walk and idle.png");
+    SDL_Surface* tempSurface = IMG_Load("resource\\walk and idle.png");
     printf("sprite loaded!");
     if(!tempSurface){
         printf("load failed: %s\n", IMG_GetError());
@@ -360,7 +378,7 @@ int main(int argc, char* argv[]){
     SDL_FreeSurface(tempSurface);
 
     
-    tilesetTexture = loadTexture("Sample.png", renderer);
+    tilesetTexture = loadTexture("resource\\Sample.png", renderer);
     if (tilesetTexture == NULL) {
         printf("Failed to load tileset texture!\n");
         return -1;
@@ -418,6 +436,10 @@ int main(int argc, char* argv[]){
 
     fpsStartTime = SDL_GetTicks(); // FPS 확인용
 
+    // 디버깅용
+    Uint32 debugLastTime = 0;  // 처음에는 0으로 초기화
+    Uint32 currentTime = SDL_GetTicks();  // 현재 시간 가져오기
+
     while(running){
         while(SDL_PollEvent(&event)){
             if (event.type == SDL_QUIT) running = SDL_FALSE;
@@ -434,12 +456,18 @@ int main(int argc, char* argv[]){
         updateCamera(deltaTime);
         render(renderer);
         updateFPS();
-        printf("player.x: %.3f   |   camera.x: %.3f   |   FPS: %.2f\n", playerX, cameraX, fps);
 
         // FPS 제한 (120)
         Uint32 frameTicks = SDL_GetTicks() - currentTime;
         if(frameTicks < 8){
             SDL_Delay(8 - frameTicks);
+        }
+
+        // 디버깅용
+        currentTime = SDL_GetTicks();  // 현재 시간 업데이트
+        if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
+            printf("player.x: %.3f   |   camera.x: %.3f   |   FPS: %.2f\n", playerX, cameraX, fps);
+            debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
 
@@ -448,7 +476,9 @@ int main(int argc, char* argv[]){
     SDL_DestroyWindow(window);
     cJSON_Delete(map);
     free(jsonData);
-    free(tileData);
+    if(tileData != NULL){
+        free(tileData);
+    }
     IMG_Quit();
     SDL_Quit();
     return 0;
