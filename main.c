@@ -24,7 +24,11 @@ int idleFrameDelay = 500;  // 가만히 있을 때의 프레임 딜레이 (ms)
 int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 
-SDL_Rect platform = { 0, 580, 800, 25 }; // 플랫폼 정보(임시)
+typedef struct {
+    float x, y, width, height;
+} Platform;
+Platform platforms[100]; // 플랫폼 배열
+int platformCount = 0; // 현재 플랫폼 수
 
 float cameraX = 0.0f; // 카메라 좌표 (분리용)
 SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
@@ -74,22 +78,48 @@ void handleInput(const Uint8* state, float deltaTime){
     }
 }
 
-void updatePhysics(){
-    velocityY += gravity; // 중력 적용
-    playerY += velocityY; // 캐릭터 y 좌표 변경
-
-    if(SDL_HasIntersection(&playerRect, &platform)){ // 캐릭터가 플랫폼과 충돌할 때
-        playerY = platform.y - playerRect.h; // 플랫폼의 y 좌표에서 캐릭터 높이만큼 뺌
-        velocityY = 0; // 속도를 0으로
-        isJumping = 0; // 점프 상태 해제
-    }
-
-    if(playerY > platform.y - playerRect.h){ // 바닥에 고정하는 부분
-        playerY = platform.y - playerRect.h;
-        velocityY = 0;
-        isJumping = 0;
+void addPlatform(SDL_Rect platform) {
+    // 최대 플랫폼 수를 초과하지 않도록 체크
+    if (platformCount < 100) {
+        platforms[platformCount].x = platform.x * 3;
+        platforms[platformCount].y = platform.y * 3;
+        platforms[platformCount].width = platform.w * 3;  // 너비를 3배로 증가
+        platforms[platformCount].height = platform.h * 3; // 높이를 3배로 증가
+        platformCount++; // 플랫폼 수 증가
+        printf("Added platform: x=%d, y=%d, width=%d, height=%d\n", platform.x, platform.y, platform.w, platform.h);
+    } else {
+        printf("Maximum platform limit reached.\n");
     }
 }
+
+void updatePhysics() {
+    // 중력 적용
+    velocityY += gravity;
+    playerY += velocityY; // y좌표 변경
+
+    // 플레이어의 rect를 업데이트
+    playerRect.x = playerX - camera.x; 
+    playerRect.y = playerY - camera.y;
+
+    // 모든 플랫폼과 충돌 체크
+    for (int i = 0; i < platformCount; i++) {
+        SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
+
+        // y축 충돌 체크
+        if (SDL_HasIntersection(&playerRect, &platformRect)) {
+            playerY = platformRect.y - playerRect.h; // y좌표 조정
+            velocityY = 0; // 속도 0으로 초기화
+            isJumping = 0; // 점프 상태 해제
+            break; // 첫 번째 충돌을 찾으면 루프 종료
+        }
+    }
+    // 플레이어의 rect를 업데이트 (y좌표 조정 후)
+    playerRect.x = playerX - camera.x; 
+    playerRect.y = playerY - camera.y;
+
+    // x축 충돌 체크
+}
+
 
 void updateCamera(float deltaTime) {
     const float cameraSpeed = 5.0f; // 부드러운 카메라 속도 (픽셀/초)
@@ -248,6 +278,89 @@ unsigned int *parseTileData(cJSON *map){
     return tileData;     // 타일 데이터 반환
 }
 
+void parseObjectGroup(cJSON *map){
+    cJSON *layers = cJSON_GetObjectItem(map, "layers");
+    if(!cJSON_IsArray(layers)){
+        printf("Error: No layers in map\n");
+        return;
+    }
+
+    cJSON *objectGroup = NULL;
+
+    // 레이어를 순회하며 objectgroup을 찾음
+    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
+        cJSON *layer = cJSON_GetArrayItem(layers, i);
+        cJSON *layerType = cJSON_GetObjectItem(layer, "type");
+
+        if(cJSON_IsString(layerType)){
+            // 디버깅용
+            printf("Layer %d: type = %s\n", i, layerType->valuestring);
+
+            // "type"이 "objectgroup"인 레이어를 찾음
+            if(strcmp(layerType->valuestring, "objectgroup") == 0){
+                objectGroup = layer;
+                break;
+            }
+        }
+    }
+
+    if (objectGroup == NULL) {
+        printf("Error: No object group found\n");
+        return;
+    }
+
+    // objectgroup 데이터를 처리하는 코드
+    cJSON *objects = cJSON_GetObjectItem(objectGroup, "objects");
+    if (!cJSON_IsArray(objects)) {
+        printf("Error: No objects in object group\n");
+        return;
+    }
+
+    // 오브젝트 데이터를 순회하며 처리
+    for(int i = 0; i < cJSON_GetArraySize(objects); i++){
+        cJSON *object = cJSON_GetArrayItem(objects, i);
+        cJSON *x = cJSON_GetObjectItem(object, "x");
+        cJSON *y = cJSON_GetObjectItem(object, "y");
+        cJSON *width = cJSON_GetObjectItem(object, "width");
+        cJSON *height = cJSON_GetObjectItem(object, "height");
+        cJSON *name = cJSON_GetObjectItem(object, "name");
+
+        if(cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)){
+            printf("Object %s - x: %.3f, y: %.3f, width: %.3f, height: %.3f\n", name->valuestring, x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
+        }
+        if(name != NULL && strcmp(name->valuestring, "floor") == 0){
+            SDL_Rect platform = {
+                x->valuedouble,
+                y->valuedouble,
+                width->valuedouble,
+                height->valuedouble
+            };
+            // 충돌 처리할 플랫폼 리스트에 추가
+            addPlatform(platform);  // 이 함수는 플랫폼을 배열 등에 저장하는 역할을 합니다.
+        }
+    }
+}
+
+
+// JSON에서 objectgroup 파싱
+void parseObjectGroups(cJSON *map){
+    cJSON *layers = cJSON_GetObjectItem(map, "layers");
+    if(!cJSON_IsArray(layers)){
+        printf("Error: No layers in map\n");
+        return;
+    }
+
+    // objectgroup 레이어 찾기
+    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
+        cJSON *layer = cJSON_GetArrayItem(layers, i);
+        cJSON *layerType = cJSON_GetObjectItem(layer, "type");
+        if (cJSON_IsString(layerType) && strcmp(layerType->valuestring, "objectgroup") == 0) {
+            printf("Parsing objectgroup layer: %s\n", cJSON_GetObjectItem(layer, "name")->valuestring);
+            parseObjectGroup(layer);
+        }
+    }
+}
+
 // 타일을 렌더링하는 함수
 void renderTileMap(SDL_Renderer* renderer){
     int tilesPerRow = 120 / tileWidth;
@@ -297,8 +410,14 @@ void render(SDL_Renderer* renderer) {
 
     renderTileMap(renderer);  // 타일 맵 렌더링 호출
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(renderer, &platform);
+    //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // SDL_RenderFillRect(renderer, &platform);
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)
+    for (int i = 0; i < platformCount; i++) {
+        SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
+        SDL_RenderFillRect(renderer, &platformRect); // 플랫폼 사각형 그리기
+    }
 
     SDL_Rect srcRect;
     srcRect.w = 24;  // 원본 스프라이트 너비
@@ -418,6 +537,8 @@ int main(int argc, char* argv[]){
     printf("Tile Width: %d\n", tileWidth);
     printf("Tile Height: %d\n", tileHeight);
 
+    parseObjectGroup(map);
+
     // 타일 데이터 파싱
     unsigned int *tileData = parseTileData(map);
     if(tileData == NULL){
@@ -426,9 +547,9 @@ int main(int argc, char* argv[]){
     }
 
     // 타일 데이터를 출력 (디버깅용)
-    for(int i = 0; i < mapWidth * mapHeight; i++){
-        printf("Tile %d: %u\n", i, tileData[i]);
-    }
+    //for(int i = 0; i < mapWidth * mapHeight; i++){
+    //    printf("Tile %d: %u\n", i, tileData[i]);
+    //}
 
     SDL_Event event;
     SDL_bool running = SDL_TRUE;
@@ -466,7 +587,8 @@ int main(int argc, char* argv[]){
         // 디버깅용
         currentTime = SDL_GetTicks();  // 현재 시간 업데이트
         if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
-            printf("player.x: %.3f   |   camera.x: %.3f   |   FPS: %.2f\n", playerX, cameraX, fps);
+            printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
+            printf("playerRect.x / y: %.3f / %.3f  |  platformCount: %d\n", playerRect.x, playerRect.y, platformCount);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
