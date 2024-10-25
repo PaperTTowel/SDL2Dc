@@ -30,6 +30,13 @@ typedef struct {
 Platform platforms[100]; // 플랫폼 배열
 int platformCount = 0; // 현재 플랫폼 수
 
+typedef struct {
+    float x, y, width, height;
+} Interaction;
+
+Interaction interactions[100]; // 상호작용 배열
+int interactionCount = 0;      // 현재 상호작용 수
+
 float cameraX = 0.0f; // 카메라 좌표 (분리용)
 SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
 
@@ -92,7 +99,21 @@ void addPlatform(SDL_Rect platform) {
     }
 }
 
-void updatePhysics() {
+void addInteraction(SDL_Rect interactionZone){
+    // 최대 상호작용 수를 초과하지 않도록 체크
+    if (interactionCount < 100) {
+        interactions[interactionCount].x = interactionZone.x * 3;
+        interactions[interactionCount].y = interactionZone.y * 3;
+        interactions[interactionCount].width = interactionZone.w * 3;  // 너비를 3배로 증가
+        interactions[interactionCount].height = interactionZone.h * 3; // 높이를 3배로 증가
+        interactionCount++; // 상호작용 수 증가
+        printf("Added interaction: x=%d, y=%d, width=%d, height=%d\n", interactionZone.x, interactionZone.y, interactionZone.w, interactionZone.h);
+    } else {
+        printf("Maximum interaction limit reached.\n");
+    }
+}
+
+void updatePhysics(){
     // 중력 적용
     velocityY += gravity;
     playerY += velocityY; // y좌표 변경
@@ -102,11 +123,10 @@ void updatePhysics() {
     playerRect.y = playerY - camera.y;
 
     // 모든 플랫폼과 충돌 체크
-    for (int i = 0; i < platformCount; i++) {
+    for(int i = 0; i < platformCount; i++){
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
-
         // y축 충돌 체크
-        if (SDL_HasIntersection(&playerRect, &platformRect)) {
+        if(SDL_HasIntersection(&playerRect, &platformRect)){
             playerY = platformRect.y - playerRect.h; // y좌표 조정
             velocityY = 0; // 속도 0으로 초기화
             isJumping = 0; // 점프 상태 해제
@@ -117,9 +137,22 @@ void updatePhysics() {
     playerRect.x = playerX - camera.x; 
     playerRect.y = playerY - camera.y;
 
-    // x축 충돌 체크
-}
+    // x축 충돌
+    for(int i = 0; i < platformCount; i++){
+        SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
+        //printf("%d  %d  %d\n", platformRect.x, platformRect.y, platformRect.w);
 
+        if(SDL_HasIntersection(&playerRect, &platformRect)){
+            if(playerRect.x < platformRect.x){ // 플레이어가 플랫폼의 왼쪽에 있을 때
+                playerX = platformRect.x - playerRect.w + camera.x; // 카메라 좌표 반영
+            }
+            else{ // 플레이어가 플랫폼의 오른쪽에 있을 때
+                playerX = platformRect.x + platformRect.w + camera.x; // 카메라 좌표 반영
+            }
+            break; // 첫 번째 충돌을 찾으면 루프 종료
+        }
+    }
+}
 
 void updateCamera(float deltaTime) {
     const float cameraSpeed = 5.0f; // 부드러운 카메라 속도 (픽셀/초)
@@ -304,43 +337,71 @@ void parseObjectGroup(cJSON *map){
         }
     }
 
-    if (objectGroup == NULL) {
+    if(objectGroup == NULL){
         printf("Error: No object group found\n");
         return;
     }
 
     // objectgroup 데이터를 처리하는 코드
     cJSON *objects = cJSON_GetObjectItem(objectGroup, "objects");
-    if (!cJSON_IsArray(objects)) {
+    if(!cJSON_IsArray(objects)){
         printf("Error: No objects in object group\n");
         return;
     }
 
     // 오브젝트 데이터를 순회하며 처리
-    for(int i = 0; i < cJSON_GetArraySize(objects); i++){
-        cJSON *object = cJSON_GetArrayItem(objects, i);
-        cJSON *x = cJSON_GetObjectItem(object, "x");
-        cJSON *y = cJSON_GetObjectItem(object, "y");
-        cJSON *width = cJSON_GetObjectItem(object, "width");
-        cJSON *height = cJSON_GetObjectItem(object, "height");
-        cJSON *name = cJSON_GetObjectItem(object, "name");
+    // 오브젝트 그룹을 순회하며 각 그룹의 오브젝트를 처리
+    for (int i = 0; i < cJSON_GetArraySize(layers); i++) {
+        cJSON *layer = cJSON_GetArrayItem(layers, i);
+        cJSON *objects = cJSON_GetObjectItem(layer, "objects");
 
-        if(cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)){
-            printf("Object %s - x: %.3f, y: %.3f, width: %.3f, height: %.3f\n", name->valuestring, x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
-        }
-        if(name != NULL && strcmp(name->valuestring, "floor") == 0){
-            SDL_Rect platform = {
-                x->valuedouble,
-                y->valuedouble,
-                width->valuedouble,
-                height->valuedouble
-            };
-            // 충돌 처리할 플랫폼 리스트에 추가
-            addPlatform(platform);  // 이 함수는 플랫폼을 배열 등에 저장하는 역할을 합니다.
+        // 오브젝트가 있는 경우에만 처리
+        if (cJSON_IsArray(objects)) {
+            for (int j = 0; j < cJSON_GetArraySize(objects); j++) {
+                cJSON *object = cJSON_GetArrayItem(objects, j);
+                cJSON *x = cJSON_GetObjectItem(object, "x");
+                cJSON *y = cJSON_GetObjectItem(object, "y");
+                cJSON *width = cJSON_GetObjectItem(object, "width");
+                cJSON *height = cJSON_GetObjectItem(object, "height");
+                cJSON *name = cJSON_GetObjectItem(object, "name");
+
+                if (cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
+                    printf("Object %s - x: %.3f, y: %.3f, width: %.3f, height: %.3f\n", name->valuestring, x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
+                }
+
+                if (name != NULL && strcmp(name->valuestring, "floor") == 0) {
+                    SDL_Rect platform = {
+                        x->valuedouble,
+                        y->valuedouble,
+                        width->valuedouble,
+                        height->valuedouble
+                    };
+                    addPlatform(platform);
+                }
+
+                if (name != NULL && strcmp(name->valuestring, "wall") == 0) {
+                    SDL_Rect platform = {
+                        x->valuedouble,
+                        y->valuedouble,
+                        width->valuedouble,
+                        height->valuedouble
+                    };
+                    addPlatform(platform);
+                }
+
+                if (name != NULL && strcmp(name->valuestring, "smallDoor") == 0) {
+                    SDL_Rect newInteraction = {
+                        x->valuedouble,
+                        y->valuedouble,
+                        width->valuedouble,
+                        height->valuedouble
+                    };
+                    addInteraction(newInteraction);
+                }
+            }
         }
     }
 }
-
 
 // JSON에서 objectgroup 파싱
 void parseObjectGroups(cJSON *map){
@@ -404,7 +465,7 @@ SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     return newTexture;
 }
 
-void render(SDL_Renderer* renderer) {
+void render(SDL_Renderer* renderer){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -487,7 +548,7 @@ int main(int argc, char* argv[]){
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Surface* tempSurface = IMG_Load("resource\\walk and idle.png");
-    printf("sprite loaded!");
+    printf("sprite loaded!\n");
     if(!tempSurface){
         printf("load failed: %s\n", IMG_GetError());
         return 1;
@@ -588,7 +649,7 @@ int main(int argc, char* argv[]){
         currentTime = SDL_GetTicks();  // 현재 시간 업데이트
         if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
-            printf("playerRect.x / y: %.3f / %.3f  |  platformCount: %d\n", playerRect.x, playerRect.y, platformCount);
+            printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
