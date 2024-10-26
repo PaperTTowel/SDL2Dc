@@ -23,6 +23,7 @@ int frame = 0;
 int idleFrameDelay = 500;  // 가만히 있을 때의 프레임 딜레이 (ms)
 int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
+static int eKeyPressed = 0;
 
 typedef struct {
     float x, y, width, height;
@@ -32,6 +33,7 @@ int platformCount = 0; // 현재 플랫폼 수
 
 typedef struct {
     float x, y, width, height;
+    char name[32];
 } Interaction;
 
 Interaction interactions[100]; // 상호작용 배열
@@ -50,6 +52,8 @@ int *tileData; // 타일 데이터 배열
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
+
+void checkInteractions(SDL_Rect *playerRect);
 
 void updateFrame(){
     int currentTime = SDL_GetTicks();
@@ -83,6 +87,14 @@ void handleInput(const Uint8* state, float deltaTime){
         velocityY = -15;
         isJumping = 1;
     }
+    if (state[SDL_SCANCODE_E]) {
+        if (!eKeyPressed) { // E 키가 처음 눌린 경우
+            checkInteractions(&playerRect);
+            eKeyPressed = 1; // E 키가 눌린 상태로 설정
+        }
+    } else {
+        eKeyPressed = 0; // E 키가 떼어졌을 경우 상태 초기화
+    }
 }
 
 void addPlatform(SDL_Rect platform) {
@@ -93,25 +105,63 @@ void addPlatform(SDL_Rect platform) {
         platforms[platformCount].width = platform.w * 3;  // 너비를 3배로 증가
         platforms[platformCount].height = platform.h * 3; // 높이를 3배로 증가
         platformCount++; // 플랫폼 수 증가
-        printf("Added platform: x=%d, y=%d, width=%d, height=%d\n", platform.x, platform.y, platform.w, platform.h);
+        printf("Added platform: x=%.2f, y=%.2f, width=%.2f, height=%.2f\n", 
+            platforms[platformCount - 1].x, platforms[platformCount - 1].y, 
+            platforms[platformCount - 1].width, platforms[platformCount - 1].height);
     } else {
         printf("Maximum platform limit reached.\n");
     }
 }
 
-void addInteraction(SDL_Rect interactionZone){
+void addInteraction(SDL_Rect interactionZone, const char* name){
     // 최대 상호작용 수를 초과하지 않도록 체크
     if (interactionCount < 100) {
         interactions[interactionCount].x = interactionZone.x * 3;
         interactions[interactionCount].y = interactionZone.y * 3;
         interactions[interactionCount].width = interactionZone.w * 3;  // 너비를 3배로 증가
         interactions[interactionCount].height = interactionZone.h * 3; // 높이를 3배로 증가
+        
+        strncpy(interactions[interactionCount].name, name, sizeof(interactions[interactionCount].name) - 1);
+        interactions[interactionCount].name[sizeof(interactions[interactionCount].name) - 1] = '\0'; // 안전하게 문자열 종료// 안전하게 문자열 종료
         interactionCount++; // 상호작용 수 증가
-        printf("Added interaction: x=%d, y=%d, width=%d, height=%d\n", interactionZone.x, interactionZone.y, interactionZone.w, interactionZone.h);
+        printf("Added interaction: x=%.2f, y=%.2f, width=%.2f, height=%.2f\n", 
+           interactions[interactionCount - 1].x, interactions[interactionCount - 1].y, 
+           interactions[interactionCount - 1].width, interactions[interactionCount - 1].height);
     } else {
         printf("Maximum interaction limit reached.\n");
     }
 }
+
+void handleInteraction(SDL_Rect *playerRect, Interaction *interactionZone) {
+    // 상호작용 이벤트 처리 (예: 문 열기, 대화 시작 등)
+    printf("event! (name: %s, x: %.2f, y: %.2f)\n",interactionZone->name, interactionZone->x, interactionZone->y);
+    // 추가적으로 상호작용 오브젝트에 따라 다른 동작을 처리할 수 있습니다.
+}
+
+void checkInteractions(SDL_Rect *playerRect) {
+    // 플레이어의 카메라 좌표 포함
+    float playerXWithCamera = playerRect->x + camera.x;
+    float playerYWithCamera = playerRect->y + camera.y;
+
+    for (int i = 0; i < interactionCount; i++) {
+        Interaction interactionZone = interactions[i];
+
+        printf("Checking interaction with: %s (x=%.2f, y=%.2f)\n", 
+               interactionZone.name, interactionZone.x, interactionZone.y);
+
+        // 카메라 오프셋을 포함한 충돌 체크
+        if ((playerXWithCamera < (interactionZone.x + interactionZone.width)) &&
+            ((playerXWithCamera + playerRect->w) > interactionZone.x) &&
+            (playerYWithCamera < (interactionZone.y + interactionZone.height)) &&
+            ((playerYWithCamera + playerRect->h) > interactionZone.y)) {
+
+            printf("Interaction triggered with: %s (x=%.2f, y=%.2f)\n", 
+                   interactionZone.name, interactionZone.x, interactionZone.y);
+            handleInteraction(playerRect, &interactionZone);
+        }
+    }
+}
+
 
 void updatePhysics(){
     // 중력 적용
@@ -134,7 +184,7 @@ void updatePhysics(){
         }
     }
     // 플레이어의 rect를 업데이트 (y좌표 조정 후)
-    playerRect.x = playerX - camera.x; 
+    playerRect.x = playerX - camera.x;
     playerRect.y = playerY - camera.y;
 
     // x축 충돌
@@ -396,7 +446,17 @@ void parseObjectGroup(cJSON *map){
                         width->valuedouble,
                         height->valuedouble
                     };
-                    addInteraction(newInteraction);
+                    addInteraction(newInteraction, name->valuestring);
+                }
+
+                if (name != NULL && strcmp(name->valuestring, "normalDoor") == 0) {
+                    SDL_Rect newInteraction = {
+                        x->valuedouble,
+                        y->valuedouble,
+                        width->valuedouble,
+                        height->valuedouble
+                    };
+                    addInteraction(newInteraction, name->valuestring);
                 }
             }
         }
@@ -478,6 +538,11 @@ void render(SDL_Renderer* renderer){
     for (int i = 0; i < platformCount; i++) {
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
         SDL_RenderFillRect(renderer, &platformRect); // 플랫폼 사각형 그리기
+    }
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    for (int i = 0; i < platformCount; i++) {
+        SDL_Rect interaction = {interactions[i].x - camera.x, interactions[i].y - camera.y, interactions[i].width, interactions[i].height};
+        SDL_RenderFillRect(renderer, &interaction); // 플랫폼 사각형 그리기
     }
 
     SDL_Rect srcRect;
@@ -650,6 +715,10 @@ int main(int argc, char* argv[]){
         if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
+            printf("interaction1.x / y: x=%.2f, y=%.2f\n", 
+            interactions[interactionCount - 2].x - camera.x, interactions[interactionCount - 2].y - camera.y);
+            printf("interaction2.x / y: x=%.2f, y=%.2f\n\n", 
+            interactions[interactionCount - 1].x - camera.x, interactions[interactionCount - 1].y - camera.y);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
