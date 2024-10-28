@@ -486,31 +486,53 @@ void parseObjectGroups(cJSON *map){
 void renderTileMap(SDL_Renderer* renderer){
     int tilesPerRow = 120 / tileWidth;
 
-    for (int y = 0; y < mapHeight; y++){
-        for (int x = 0; x < mapWidth; x++){
-            int tileIndex = tileData[y * mapWidth + x] - 1;  // 타일 ID는 1부터 시작하므로 0 기반으로 조정
-            if (tileIndex < 0) continue; // 비어있는 타일은 건너뛰기
-
+    for(int y = 0; y < mapHeight; y++){
+        for(int x = 0; x < mapWidth; x++){
+            // 원본 타일 ID 추출 및 플래그 분리
+            unsigned int tileDataValue = tileData[y * mapWidth + x];
+            int tileIndex = (tileDataValue & 0x1FFFFFFF) - 1;  // 회전/반전 제거하고 0 기반 조정
+            if (tileIndex < 0) continue;  // 비어있는 타일은 건너뛰기
+            
+            // 회전 및 반전 플래그 추출
+            int flipHorizontal = (tileDataValue & 0x80000000) != 0;
+            int flipVertical = (tileDataValue & 0x40000000) != 0;
+            int flipDiagonal = (tileDataValue & 0x20000000) != 0;
+            
             // 타일셋에서 타일 위치 계산
             int tileX = (tileIndex % tilesPerRow) * tileWidth;
             int tileY = (tileIndex / tilesPerRow) * tileHeight;
 
             // 타일셋에서 해당 타일을 클리핑
             SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
-            SDL_Rect destRect = { x * tileWidth * 3 - camera.x, y * tileHeight * 3 - camera.y, tileWidth * 3, tileHeight * 3 }; // 타일을 그릴 위치
+            SDL_Rect destRect = { x * tileWidth * 3 - camera.x, y * tileHeight * 3 - camera.y, tileWidth * 3, tileHeight * 3 };
+
+            // 회전 및 반전을 SDL_RenderCopyEx에 적용할 각도와 플립
+            SDL_RendererFlip flip = SDL_FLIP_NONE;
+            double angle = 0.0;
+
+            if(flipHorizontal){
+                flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
+            }
+            if(flipVertical){
+                flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
+            }
+            if (flipDiagonal){
+                // 필요에 따라 추가적인 각도 조정
+                angle = 90.0f; // 왼쪽으로 90도 회전
+            }
+            else if(flipVertical){
+                angle = 90.0f; // 세로로 뒤집기
+            }
+            else if(flipHorizontal){
+                angle = 0.0f; // 기본 각도
+            }
 
             // 타일 그리기
-            SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &destRect);
-            /* 렌더링 디버깅 용도
-            if (SDL_RenderCopy(renderer, tilesetTexture, &srcRect, &destRect) != 0) {
-                printf("Error rendering tile at (%d, %d): %s\n", x, y, SDL_GetError());
-            } else {
-                printf("Rendered tile at (%d, %d) from tileset (%d, %d)\n", x, y, tileX, tileY);
-            }
-            */
+            SDL_RenderCopyEx(renderer, tilesetTexture, &srcRect, &destRect, angle, NULL, flip);
         }
     }
 }
+
 
 SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     SDL_Surface* tempSurface = IMG_Load(path);
@@ -609,7 +631,7 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("SDL 2D Platform 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("SDL을 이용한 2D Platform C언어 공부연습용 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Surface* tempSurface = IMG_Load("resource\\walk and idle.png");
@@ -673,9 +695,9 @@ int main(int argc, char* argv[]){
     }
 
     // 타일 데이터를 출력 (디버깅용)
-    //for(int i = 0; i < mapWidth * mapHeight; i++){
-    //    printf("Tile %d: %u\n", i, tileData[i]);
-    //}
+    for(int i = 0; i < mapWidth * mapHeight; i++){
+        printf("Tile %d: %u\n", i, tileData[i]);
+    }
 
     SDL_Event event;
     SDL_bool running = SDL_TRUE;
