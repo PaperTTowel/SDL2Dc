@@ -8,8 +8,8 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 100.0f;
-float playerY = 400.0f;
+float playerX = 165.0f;
+float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
 
@@ -97,7 +97,7 @@ void handleInput(const Uint8* state, float deltaTime){
     }
 }
 
-void addPlatform(SDL_Rect platform) {
+void addPlatform(SDL_Rect platform){
     // 최대 플랫폼 수를 초과하지 않도록 체크
     if (platformCount < 100) {
         platforms[platformCount].x = platform.x * 3;
@@ -132,13 +132,13 @@ void addInteraction(SDL_Rect interactionZone, const char* name){
     }
 }
 
-void handleInteraction(SDL_Rect *playerRect, Interaction *interactionZone) {
+void handleInteraction(SDL_Rect *playerRect, Interaction *interactionZone){
     // 상호작용 이벤트 처리 (예: 문 열기, 대화 시작 등)
     printf("event! (name: %s, x: %.2f, y: %.2f)\n",interactionZone->name, interactionZone->x, interactionZone->y);
     // 추가적으로 상호작용 오브젝트에 따라 다른 동작을 처리할 수 있습니다.
 }
 
-void checkInteractions(SDL_Rect *playerRect) {
+void checkInteractions(SDL_Rect *playerRect){
     // 플레이어의 카메라 좌표 포함
     float playerXWithCamera = playerRect->x + camera.x;
     float playerYWithCamera = playerRect->y + camera.y;
@@ -204,7 +204,7 @@ void updatePhysics(){
     }
 }
 
-void updateCamera(float deltaTime) {
+void updateCamera(float deltaTime){
     const float cameraSpeed = 5.0f; // 부드러운 카메라 속도 (픽셀/초)
 
     // 카메라의 x, y 좌표를 플레이어의 x 좌표를 기준으로 부드럽게 조정
@@ -213,7 +213,7 @@ void updateCamera(float deltaTime) {
 
     // 카메라가 화면의 경계를 넘지 않도록 제한
     if (cameraX < 0) cameraX = 0;
-    /*
+    /* Tile에 맞춤
     if (cameraX > (mapWidth * tileWidth * 3) - camera.w) {
         cameraX = (mapWidth * tileWidth * 3) - camera.w;
     }
@@ -439,7 +439,7 @@ void parseObjectGroup(cJSON *map){
                     addPlatform(platform);
                 }
 
-                if (name != NULL && strcmp(name->valuestring, "smallDoor") == 0) {
+                if (name != NULL && strcmp(name->valuestring, "roofExit") == 0) {
                     SDL_Rect newInteraction = {
                         x->valuedouble,
                         y->valuedouble,
@@ -510,21 +510,28 @@ void renderTileMap(SDL_Renderer* renderer){
             SDL_RendererFlip flip = SDL_FLIP_NONE;
             double angle = 0.0;
 
-            if(flipHorizontal){
-                flip = (SDL_RendererFlip)(flip | SDL_FLIP_HORIZONTAL);
+            if
+            (flipDiagonal && flipHorizontal && !flipVertical){ // 1번
+                angle = 90.0f;
+                flip = SDL_FLIP_NONE;
             }
-            if(flipVertical){
-                flip = (SDL_RendererFlip)(flip | SDL_FLIP_VERTICAL);
+            else if(flipDiagonal && flipVertical && !flipHorizontal){ // 4번
+                angle = 360.0f;
+                flip = SDL_FLIP_VERTICAL;
             }
-            if (flipDiagonal){
-                // 필요에 따라 추가적인 각도 조정
-                angle = 90.0f; // 왼쪽으로 90도 회전
+            else if(flipHorizontal && flipVertical){ // 좌우반전
+                angle = 180.0f;
+                flip = SDL_FLIP_NONE;
             }
-            else if(flipVertical){
-                angle = 90.0f; // 세로로 뒤집기
+            else if (flipDiagonal){
+                angle = -90.0f;
+                flip = SDL_FLIP_NONE;
             }
-            else if(flipHorizontal){
-                angle = 0.0f; // 기본 각도
+            else if (flipHorizontal){
+                flip = SDL_FLIP_HORIZONTAL;
+            }
+            else if (flipVertical){
+                flip = SDL_FLIP_VERTICAL;
             }
 
             // 타일 그리기
@@ -553,9 +560,7 @@ void render(SDL_Renderer* renderer){
 
     renderTileMap(renderer);  // 타일 맵 렌더링 호출
 
-    //SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_RenderFillRect(renderer, &platform);
-
+    /* 디버그 용도 (충돌&상호작용 시각화)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)
     for (int i = 0; i < platformCount; i++) {
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
@@ -566,6 +571,7 @@ void render(SDL_Renderer* renderer){
         SDL_Rect interaction = {interactions[i].x - camera.x, interactions[i].y - camera.y, interactions[i].width, interactions[i].height};
         SDL_RenderFillRect(renderer, &interaction); // 플랫폼 사각형 그리기
     }
+    */
 
     SDL_Rect srcRect;
     srcRect.w = 24;  // 원본 스프라이트 너비
@@ -645,14 +651,14 @@ int main(int argc, char* argv[]){
     SDL_FreeSurface(tempSurface);
 
     
-    tilesetTexture = loadTexture("resource\\Sample.png", renderer);
+    tilesetTexture = loadTexture("resource\\Tileset00.png", renderer);
     if (tilesetTexture == NULL) {
         printf("Failed to load tileset texture!\n");
         return -1;
     }
 
     // JSON 파일 읽기
-    char *jsonData = readFile("SampleMap.json");
+    char *jsonData = readFile("tile\\roofTop.json");
     if(jsonData == NULL){
         printf("Error reading JSON file\n");
         return -1;
