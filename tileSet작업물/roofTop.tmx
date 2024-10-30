@@ -15,6 +15,6 @@
   <object id="8" name="wall" x="432" y="120" width="24" height="96"/>
  </objectgroup>
  <objectgroup id="3" name="Interaction">
-  <object id="10" name="roofExit" x="53" y="168" width="13.9744" height="24"/>
+  <object id="10" name="roof" x="53" y="168" width="13.9744" height="24"/>
  </objectgroup>
 </map>

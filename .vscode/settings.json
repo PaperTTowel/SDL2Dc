@@ -1,5 +1,10 @@
 {
     "files.associations": {
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "cjson.h": "c",
+        "sdl.h": "c",
+        "stdio.h": "c",
+        "sdl_image.h": "c",
+        "global.h": "c"
     }
 }

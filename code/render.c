@@ -1,0 +1,112 @@
+#include "global.h"
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdio.h>
+
+SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
+    SDL_Surface* tempSurface = IMG_Load(path);
+    if (tempSurface == NULL) {
+        printf("Failed to load image %s! SDL Error: %s\n", path, SDL_GetError());
+        return NULL;
+    }
+    
+    SDL_Texture* newTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+    SDL_FreeSurface(tempSurface);
+    
+    return newTexture;
+}
+// 타일을 렌더링하는 함수
+void renderTileMap(SDL_Renderer* renderer){
+    int tilesPerRow = 120 / tileWidth;
+
+    for(int y = 0; y < mapHeight; y++){
+        for(int x = 0; x < mapWidth; x++){
+            // 원본 타일 ID 추출 및 플래그 분리
+            unsigned int tileDataValue = tileData[y * mapWidth + x];
+            int tileIndex = (tileDataValue & 0x1FFFFFFF) - 1;  // 회전/반전 제거하고 0 기반 조정
+            if (tileIndex < 0) continue;  // 비어있는 타일은 건너뛰기
+            
+            // 회전 및 반전 플래그 추출
+            int flipHorizontal = (tileDataValue & 0x80000000) != 0;
+            int flipVertical = (tileDataValue & 0x40000000) != 0;
+            int flipDiagonal = (tileDataValue & 0x20000000) != 0;
+            
+            // 타일셋에서 타일 위치 계산
+            int tileX = (tileIndex % tilesPerRow) * tileWidth;
+            int tileY = (tileIndex / tilesPerRow) * tileHeight;
+
+            // 타일셋에서 해당 타일을 클리핑
+            SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
+            SDL_Rect destRect = { x * tileWidth * 3 - camera.x, y * tileHeight * 3 - camera.y, tileWidth * 3, tileHeight * 3 };
+
+            // 회전 및 반전을 SDL_RenderCopyEx에 적용할 각도와 플립
+            SDL_RendererFlip flip = SDL_FLIP_NONE;
+            double angle = 0.0;
+
+            if
+            (flipDiagonal && flipHorizontal && !flipVertical){ // 1번
+                angle = 90.0f;
+                flip = SDL_FLIP_NONE;
+            }
+            else if(flipDiagonal && flipVertical && !flipHorizontal){ // 4번
+                angle = 360.0f;
+                flip = SDL_FLIP_VERTICAL;
+            }
+            else if(flipHorizontal && flipVertical){ // 좌우반전
+                angle = 180.0f;
+                flip = SDL_FLIP_NONE;
+            }
+            else if (flipDiagonal){
+                angle = -90.0f;
+                flip = SDL_FLIP_NONE;
+            }
+            else if (flipHorizontal){
+                flip = SDL_FLIP_HORIZONTAL;
+            }
+            else if (flipVertical){
+                flip = SDL_FLIP_VERTICAL;
+            }
+
+            // 타일 그리기
+            SDL_RenderCopyEx(renderer, tilesetTexture, &srcRect, &destRect, angle, NULL, flip);
+        }
+    }
+}
+
+void render(SDL_Renderer* renderer){
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    renderTileMap(renderer);  // 타일 맵 렌더링 호출
+
+    /* 디버그 용도 (충돌&상호작용 시각화)
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)
+    for (int i = 0; i < platformCount; i++) {
+        SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
+        SDL_RenderFillRect(renderer, &platformRect); // 플랫폼 사각형 그리기
+    }
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    for (int i = 0; i < platformCount; i++) {
+        SDL_Rect interaction = {interactions[i].x - camera.x, interactions[i].y - camera.y, interactions[i].width, interactions[i].height};
+        SDL_RenderFillRect(renderer, &interaction); // 플랫폼 사각형 그리기
+    }
+    */
+
+    SDL_Rect srcRect;
+    srcRect.w = 24;  // 원본 스프라이트 너비
+    srcRect.h = 24;  // 원본 스프라이트 높이
+
+    if(isMoving){
+        srcRect.y = direction == -1 ? 24 : 48; // 움직일 때
+        srcRect.x = frame * 24;
+    }
+    else{
+        srcRect.y = 0;  // 가만히 있을 때
+        srcRect.x = (direction == -1 ? 0 : 48) + (frame % 2) * 24;
+    }
+
+    // 렌더링할 캐릭터 크기
+    SDL_Rect renderPlayer = { (int)playerX - camera.x, (int)playerY - camera.y, playerRect.w, playerRect.h };
+    SDL_RenderCopy(renderer, spriteSheet, &srcRect, &renderPlayer);
+    SDL_RenderPresent(renderer);
+}
