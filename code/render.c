@@ -16,13 +16,13 @@ SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     return newTexture;
 }
 // 타일을 렌더링하는 함수
-void renderTileMap(SDL_Renderer* renderer){
-    int tilesPerRow = 120 / tileWidth;
+void renderTileMap(SDL_Renderer* renderer, Map *map){
+    int tilesPerRow = 120 / map->tileWidth;
 
-    for(int y = 0; y < mapHeight; y++){
-        for(int x = 0; x < mapWidth; x++){
+    for(int y = 0; y < map->mapHeight; y++){
+        for(int x = 0; x < map->mapWidth; x++){
             // 원본 타일 ID 추출 및 플래그 분리
-            unsigned int tileDataValue = tileData[y * mapWidth + x];
+            unsigned int tileDataValue = map->tileData[y * map->mapWidth + x];
             int tileIndex = (tileDataValue & 0x1FFFFFFF) - 1;  // 회전/반전 제거하고 0 기반 조정
             if (tileIndex < 0) continue;  // 비어있는 타일은 건너뛰기
             
@@ -32,12 +32,12 @@ void renderTileMap(SDL_Renderer* renderer){
             int flipDiagonal = (tileDataValue & 0x20000000) != 0;
             
             // 타일셋에서 타일 위치 계산
-            int tileX = (tileIndex % tilesPerRow) * tileWidth;
-            int tileY = (tileIndex / tilesPerRow) * tileHeight;
+            int tileX = (tileIndex % tilesPerRow) * map->tileWidth;
+            int tileY = (tileIndex / tilesPerRow) * map->tileHeight;
 
             // 타일셋에서 해당 타일을 클리핑
-            SDL_Rect srcRect = { tileX, tileY, tileWidth, tileHeight };
-            SDL_Rect destRect = { x * tileWidth * 3 - camera.x, y * tileHeight * 3 - camera.y, tileWidth * 3, tileHeight * 3 };
+            SDL_Rect srcRect = { tileX, tileY, map->tileWidth, map->tileHeight };
+            SDL_Rect destRect = { x * map->tileWidth * 3 - camera.x, y * map->tileHeight * 3 - camera.y, map->tileWidth * 3, map->tileHeight * 3 };
 
             // 회전 및 반전을 SDL_RenderCopyEx에 적용할 각도와 플립
             SDL_RendererFlip flip = SDL_FLIP_NONE;
@@ -73,11 +73,11 @@ void renderTileMap(SDL_Renderer* renderer){
     }
 }
 
-void render(SDL_Renderer* renderer){
+void render(SDL_Renderer* renderer, Map *map){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    renderTileMap(renderer);  // 타일 맵 렌더링 호출
+    renderTileMap(renderer, map);  // 타일 맵 렌더링 호출
 
     /* 디버그 용도 (충돌&상호작용 시각화)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)

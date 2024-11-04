@@ -46,8 +46,6 @@ unsigned char *base64_decode(const char *input, size_t len, size_t *out_len){
         }
     }
 
-    
-    
     if(count){
         *pos++ = (block[0] << 2) | (block[1] >> 4);
         if (count > 2)
@@ -84,17 +82,17 @@ void parseTileLayer(cJSON *layer){
 
 // JSON에서 맵 데이터를 파싱하는 함수
 // Tile data를 디코딩하고 배열로 반환하는 함수
-unsigned int *parseTileData(cJSON *map){
-    cJSON *layers = cJSON_GetObjectItem(map, "layers");
-    if(!cJSON_IsArray(layers)){
+unsigned int *parseTileData(Map *map) {
+    map->layers = cJSON_GetObjectItem(map->mapJson, "layers");
+    if (!cJSON_IsArray(map->layers)) {
         printf("Error: No layers in map\n");
         return NULL;
     }
 
     cJSON *tileLayer = NULL;
-    // 타일 레이어를 찾아서 처리 (첫 번째 레이어가 타일 레이어라고 가정)
-    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
-        cJSON *layer = cJSON_GetArrayItem(layers, i);
+    // 첫 번째 타일 레이어 검색
+    for (int i = 0; i < cJSON_GetArraySize(map->layers); i++) {
+        cJSON *layer = cJSON_GetArrayItem(map->layers, i);
         cJSON *layerType = cJSON_GetObjectItem(layer, "type");
         if (cJSON_IsString(layerType) && strcmp(layerType->valuestring, "tilelayer") == 0) {
             tileLayer = layer;
@@ -102,130 +100,77 @@ unsigned int *parseTileData(cJSON *map){
         }
     }
 
-    if(tileLayer == NULL){
+    if (tileLayer == NULL) {
         printf("Error: No tile layer found\n");
         return NULL;
     }
 
-    // 타일 데이터 추출 (base64로 인코딩된 데이터)
+    // Base64 인코딩된 타일 데이터 추출
     cJSON *dataItem = cJSON_GetObjectItem(tileLayer, "data");
-    const char *encodedData = dataItem->valuestring;
+    if (!cJSON_IsString(dataItem)) {
+        printf("Error: Tile layer data is not a string\n");
+        return NULL;
+    }
 
-    // Base64 디코딩
+    const char *encodedData = dataItem->valuestring;
     size_t decodedLength;
     unsigned char *decodedData = base64_decode(encodedData, strlen(encodedData), &decodedLength);
-    if(decodedData == NULL){
+    if (decodedData == NULL) {
         printf("Error decoding base64 tile data\n");
         return NULL;
     }
 
-    // 디코딩된 데이터를 타일 ID 배열로 변환
-    size_t numTiles = decodedLength / 4;  // 각 타일이 4바이트이므로
-    tileData = (unsigned int *)malloc(numTiles * sizeof(unsigned int));
-    if(tileData == NULL){
+    // 타일 ID로 변환
+    size_t numTiles = decodedLength / 4;  // 각 타일이 4바이트
+    map->tileData = (unsigned int *)malloc(numTiles * sizeof(unsigned int));
+    if (map->tileData == NULL) {
         free(decodedData);
         printf("Error allocating memory for tile data\n");
         return NULL;
     }
 
-    // 디코딩된 데이터를 타일 데이터로 복사
-    for(size_t i = 0; i < numTiles; i++){
-        tileData[i] = ((unsigned int*)decodedData)[i];  // 4바이트씩 읽어서 타일 ID로 변환
+    // 타일 데이터 복사
+    for (size_t i = 0; i < numTiles; i++) {
+        map->tileData[i] = ((unsigned int *)decodedData)[i];
     }
 
-    free(decodedData);  // 메모리 해제
-    return tileData;     // 타일 데이터 반환
+    free(decodedData);  // 디코딩 데이터 메모리 해제
+    return map->tileData;  // map->tileData 반환
 }
 
-void parseObjectGroup(cJSON *map){
-    cJSON *layers = cJSON_GetObjectItem(map, "layers");
-    if(!cJSON_IsArray(layers)){
-        printf("Error: No layers in map\n");
-        return;
-    }
-
-    cJSON *objectGroup = NULL;
-
-    // 레이어를 순회하며 objectgroup을 찾음
-    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
-        cJSON *layer = cJSON_GetArrayItem(layers, i);
-        cJSON *layerType = cJSON_GetObjectItem(layer, "type");
-
-        if(cJSON_IsString(layerType)){
-            // 디버깅용
-            printf("Layer %d: type = %s\n", i, layerType->valuestring);
-
-            // "type"이 "objectgroup"인 레이어를 찾음
-            if(strcmp(layerType->valuestring, "objectgroup") == 0){
-                objectGroup = layer;
-                break;
-            }
-        }
-    }
-
-    if(objectGroup == NULL){
-        printf("Error: No object group found\n");
-        return;
-    }
-
-    // objectgroup 데이터를 처리하는 코드
+void parseObjectGroup(Map *map, cJSON *objectGroup) {
     cJSON *objects = cJSON_GetObjectItem(objectGroup, "objects");
-    if(!cJSON_IsArray(objects)){
+    if (!cJSON_IsArray(objects)) {
         printf("Error: No objects in object group\n");
         return;
     }
 
     // 오브젝트 데이터를 순회하며 처리
-    // 오브젝트 그룹을 순회하며 각 그룹의 오브젝트를 처리
-    for (int i = 0; i < cJSON_GetArraySize(layers); i++) {
-        cJSON *layer = cJSON_GetArrayItem(layers, i);
-        cJSON *objects = cJSON_GetObjectItem(layer, "objects");
+    for (int j = 0; j < cJSON_GetArraySize(objects); j++) {
+        cJSON *object = cJSON_GetArrayItem(objects, j);
+        cJSON *x = cJSON_GetObjectItem(object, "x");
+        cJSON *y = cJSON_GetObjectItem(object, "y");
+        cJSON *width = cJSON_GetObjectItem(object, "width");
+        cJSON *height = cJSON_GetObjectItem(object, "height");
+        cJSON *name = cJSON_GetObjectItem(object, "name");
 
-        // 오브젝트가 있는 경우에만 처리
-        if (cJSON_IsArray(objects)) {
-            for (int j = 0; j < cJSON_GetArraySize(objects); j++) {
-                cJSON *object = cJSON_GetArrayItem(objects, j);
-                cJSON *x = cJSON_GetObjectItem(object, "x");
-                cJSON *y = cJSON_GetObjectItem(object, "y");
-                cJSON *width = cJSON_GetObjectItem(object, "width");
-                cJSON *height = cJSON_GetObjectItem(object, "height");
-                cJSON *name = cJSON_GetObjectItem(object, "name");
+        if (cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
+            printf("Object %s - x: %.3f, y: %.3f, width: %.3f, height: %.3f\n",
+                   name ? name->valuestring : "Unnamed",
+                   x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
 
-                if (cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)) {
-                    printf("Object %s - x: %.3f, y: %.3f, width: %.3f, height: %.3f\n", name->valuestring, x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
-                }
-
-                if (name != NULL && strcmp(name->valuestring, "floor") == 0) {
+            if (name != NULL) {
+                SDL_Rect newInteraction = { x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble };
+                
+                if (strcmp(name->valuestring, "floor") == 0 || strcmp(name->valuestring, "wall") == 0) {
                     SDL_Rect platform = {
                         x->valuedouble,
                         y->valuedouble,
                         width->valuedouble,
                         height->valuedouble
                     };
-                    addPlatform(platform);
-                }
-
-                if (name != NULL && strcmp(name->valuestring, "wall") == 0) {
-                    SDL_Rect platform = {
-                        x->valuedouble,
-                        y->valuedouble,
-                        width->valuedouble,
-                        height->valuedouble
-                    };
-                    addPlatform(platform);
-                }
-
-                if (name != NULL && strcmp(name->valuestring, "roofExit") == 0) {
-                    SDL_Rect newInteraction = {
-                        x->valuedouble,
-                        y->valuedouble,
-                        width->valuedouble,
-                        height->valuedouble
-                    };
-                    addInteraction(newInteraction, name->valuestring);
-                }
-
-                if (name != NULL && strcmp(name->valuestring, "normalDoor") == 0) {
+                    addPlatform(newInteraction);
+                } else if (strcmp(name->valuestring, "roofExit") == 0 || strcmp(name->valuestring, "normalDoor") == 0) {
                     SDL_Rect newInteraction = {
                         x->valuedouble,
                         y->valuedouble,
@@ -240,23 +185,24 @@ void parseObjectGroup(cJSON *map){
 }
 
 // JSON에서 objectgroup 파싱
-void parseObjectGroups(cJSON *map){
-    cJSON *layers = cJSON_GetObjectItem(map, "layers");
-    if(!cJSON_IsArray(layers)){
+void parseObjectGroups(Map *map) {
+    cJSON *layers = cJSON_GetObjectItem(map->mapJson, "layers");
+    if (!cJSON_IsArray(layers)) {
         printf("Error: No layers in map\n");
         return;
     }
 
     // objectgroup 레이어 찾기
-    for(int i = 0; i < cJSON_GetArraySize(layers); i++){
+    for (int i = 0; i < cJSON_GetArraySize(layers); i++) {
         cJSON *layer = cJSON_GetArrayItem(layers, i);
         cJSON *layerType = cJSON_GetObjectItem(layer, "type");
         if (cJSON_IsString(layerType) && strcmp(layerType->valuestring, "objectgroup") == 0) {
             printf("Parsing objectgroup layer: %s\n", cJSON_GetObjectItem(layer, "name")->valuestring);
-            parseObjectGroup(layer);
+            parseObjectGroup(map, layer);
         }
     }
 }
+
 
 void addPlatform(SDL_Rect platform){
     // 최대 플랫폼 수를 초과하지 않도록 체크

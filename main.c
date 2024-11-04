@@ -29,6 +29,9 @@ int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 int eKeyPressed = 0;
 
+Map maps[100]; // MAX_MAPS는 최대 맵 수
+int currentMapCount = 0; // 현재 로드된 맵 수
+
 Platform platforms[100]; // 플랫폼 배열
 int platformCount = 0; // 현재 플랫폼 수
 
@@ -185,44 +188,45 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    cJSON *map = cJSON_Parse(jsonData);
-    if(map == NULL){
+    Map map;
+    map.mapJson = cJSON_Parse(jsonData);
+    if(map.mapJson == NULL){
         printf("Error parsing JSON\n");
         return -1;
     }
 
     // 맵의 크기와 타일 크기 추출
-    cJSON *width = cJSON_GetObjectItem(map, "width");
-    cJSON *height = cJSON_GetObjectItem(map, "height");
-    cJSON *tileWidthItem = cJSON_GetObjectItem(map, "tilewidth");
-    cJSON *tileHeightItem = cJSON_GetObjectItem(map, "tileheight");
+    cJSON *width = cJSON_GetObjectItem(map.mapJson, "width");
+    cJSON *height = cJSON_GetObjectItem(map.mapJson, "height");
+    cJSON *tileWidthItem = cJSON_GetObjectItem(map.mapJson, "tilewidth");
+    cJSON *tileHeightItem = cJSON_GetObjectItem(map.mapJson, "tileheight");
 
     if(!cJSON_IsNumber(width) || !cJSON_IsNumber(height) || !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)){
         printf("Error in map dimensions\n");
         return -1;
     }
 
-    mapWidth = width->valueint;
-    mapHeight = height->valueint;
-    tileWidth = tileWidthItem->valueint;
-    tileHeight = tileHeightItem->valueint;
+    map.mapWidth = width->valueint;
+    map.mapHeight = height->valueint;
+    map.tileWidth = tileWidthItem->valueint;
+    map.tileHeight = tileHeightItem->valueint;
 
-    printf("Map Width: %d\n", mapWidth);
-    printf("Map Height: %d\n", mapHeight);
-    printf("Tile Width: %d\n", tileWidth);
-    printf("Tile Height: %d\n", tileHeight);
+    printf("Map Width: %d\n", map.mapWidth);
+    printf("Map Height: %d\n", map.mapHeight);
+    printf("Tile Width: %d\n", map.tileWidth);
+    printf("Tile Height: %d\n", map.tileHeight);
 
-    parseObjectGroup(map);
+    parseObjectGroups(&map);
 
     // 타일 데이터 파싱
-    unsigned int *tileData = parseTileData(map);
+    unsigned int *tileData = parseTileData(&map);
     if(tileData == NULL){
         printf("Error parsing tile data\n");
         return -1;
     }
 
     // 타일 데이터를 출력 (디버깅용)
-    for(int i = 0; i < mapWidth * mapHeight; i++){
+    for(int i = 0; i < map.mapWidth * map.mapHeight; i++){
         printf("Tile %d: %u\n", i, tileData[i]);
     }
 
@@ -250,7 +254,7 @@ int main(int argc, char* argv[]){
         updatePhysics();
         updateFrame();
         updateCamera(deltaTime);
-        render(renderer);
+        render(renderer, &map);
         updateFPS();
 
         // FPS 제한 (120)
@@ -275,7 +279,7 @@ int main(int argc, char* argv[]){
     SDL_DestroyTexture(spriteSheet);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    cJSON_Delete(map);
+    cJSON_Delete(map.mapJson);
     free(jsonData);
     if(tileData != NULL){
         free(tileData);
