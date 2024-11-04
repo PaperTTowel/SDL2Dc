@@ -19,14 +19,25 @@ extern int movingFrameDelay;
 extern int lastFrameTime;
 extern int eKeyPressed;
 
-typedef struct {
+/*
+typedef struct { // tileData.c 와 연결될 예정
+    int mapWidth;
+    int mapHeight;
+    int tileWidth;
+    int tileHeight;
+    unsigned int *tileData;
+    cJSON *mapJson;
+} Map;
+*/
+
+typedef struct { // tileData.c 와 연결됨
     float x, y, width, height;
 } Platform;
 
 extern Platform platforms[100];
 extern int platformCount;
 
-typedef struct {
+typedef struct { // tileData.c 와 연결됨
     float x, y, width, height;
     char name[32];
 } Interaction;
