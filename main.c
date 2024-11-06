@@ -3,16 +3,19 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #include "code\tileData.c"
 #include "code\render.c"
 #include "code\update.c"
 
+#define MAX_MAPCOUNT 100
+
 // 마지막 시간 기록
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 165.0f;
+float playerX = 1110.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -29,7 +32,7 @@ int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 int eKeyPressed = 0;
 
-Map maps[100]; // MAX_MAPS는 최대 맵 수
+Map maps[MAX_MAPCOUNT];
 int currentMapCount = 0; // 현재 로드된 맵 수
 
 Platform platforms[100]; // 플랫폼 배열
@@ -148,6 +151,45 @@ char* readFile(const char* filename){
     return data;
 }
 
+int loadMapsFromDirectory(const char* directory, Map* maps, int maxMaps) {
+    DIR *dir;
+    struct dirent *entry;
+    int mapCount = 0;
+
+    // 디렉토리 열기
+    if ((dir = opendir(directory)) == NULL) {
+        perror("opendir() error");
+        return -1;
+    }
+
+    while ((entry = readdir(dir)) != NULL && mapCount < maxMaps) {
+        // .json 파일만 처리
+        if (strstr(entry->d_name, ".json") != NULL) {
+            char filePath[256];
+            snprintf(filePath, sizeof(filePath), "%s/%s", directory, entry->d_name);
+
+            // JSON 파일 읽기
+            char *jsonData = readFile(filePath);
+            if (jsonData == NULL) {
+                printf("Error reading JSON file: %s\n", filePath);
+                continue;
+            }
+
+            // JSON 데이터 파싱
+            maps[mapCount].mapJson = cJSON_Parse(jsonData);
+            free(jsonData); // jsonData 메모리 해제
+            if (maps[mapCount].mapJson == NULL) {
+                printf("Error parsing JSON file: %s\n", filePath);
+                continue;
+            }
+
+            mapCount++; // 성공적으로 맵이 로드되면 증가
+        }
+    }
+    closedir(dir);
+    return mapCount; // 불러온 맵의 개수 반환
+}
+
 int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
@@ -181,53 +223,54 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    // JSON 파일 읽기
-    char *jsonData = readFile("tile\\roofTop.json");
-    if(jsonData == NULL){
-        printf("Error reading JSON file\n");
+    // JSON 파일 불러오기
+    int mapCount = loadMapsFromDirectory("tile", maps, MAX_MAPCOUNT);
+    if (mapCount <= 0) {
+        printf("Error loading maps from directory\n");
         return -1;
     }
+    for (int i = 0; i < mapCount; i++) {
+        if (maps[i].mapJson == NULL) {
+            printf("Error parsing JSON for map %d\n", i);
+            continue;
+        }
 
-    Map map;
-    map.mapJson = cJSON_Parse(jsonData);
-    if(map.mapJson == NULL){
-        printf("Error parsing JSON\n");
-        return -1;
-    }
+        // 맵 크기와 타일 크기 추출
+        cJSON *width = cJSON_GetObjectItem(maps[i].mapJson, "width");
+        cJSON *height = cJSON_GetObjectItem(maps[i].mapJson, "height");
+        cJSON *tileWidthItem = cJSON_GetObjectItem(maps[i].mapJson, "tilewidth");
+        cJSON *tileHeightItem = cJSON_GetObjectItem(maps[i].mapJson, "tileheight");
 
-    // 맵의 크기와 타일 크기 추출
-    cJSON *width = cJSON_GetObjectItem(map.mapJson, "width");
-    cJSON *height = cJSON_GetObjectItem(map.mapJson, "height");
-    cJSON *tileWidthItem = cJSON_GetObjectItem(map.mapJson, "tilewidth");
-    cJSON *tileHeightItem = cJSON_GetObjectItem(map.mapJson, "tileheight");
+        if (!cJSON_IsNumber(width) || !cJSON_IsNumber(height) ||
+            !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)) {
+            printf("Error in map dimensions for map %d\n", i);
+            continue;
+        }
 
-    if(!cJSON_IsNumber(width) || !cJSON_IsNumber(height) || !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)){
-        printf("Error in map dimensions\n");
-        return -1;
-    }
+        maps[i].mapWidth = width->valueint;
+        maps[i].mapHeight = height->valueint;
+        maps[i].tileWidth = tileWidthItem->valueint;
+        maps[i].tileHeight = tileHeightItem->valueint;
 
-    map.mapWidth = width->valueint;
-    map.mapHeight = height->valueint;
-    map.tileWidth = tileWidthItem->valueint;
-    map.tileHeight = tileHeightItem->valueint;
+        printf("Map %d - Width: %d, Height: %d, Tile Width: %d, Tile Height: %d\n",
+               i, maps[i].mapWidth, maps[i].mapHeight, maps[i].tileWidth, maps[i].tileHeight);
 
-    printf("Map Width: %d\n", map.mapWidth);
-    printf("Map Height: %d\n", map.mapHeight);
-    printf("Tile Width: %d\n", map.tileWidth);
-    printf("Tile Height: %d\n", map.tileHeight);
+        int xOffset = i * 384; // 24x24 기준
+        int yOffset = 0;
+        parseObjectGroups(&maps[i], xOffset, yOffset); // 오브젝트 그룹 초기화
+        // 타일 데이터 파싱
+        unsigned int *tileData = parseTileData(&maps[i]);
+        if(tileData == NULL){
+            printf("Error parsing tile data\n");
+            return -1;
+        }
 
-    parseObjectGroups(&map);
-
-    // 타일 데이터 파싱
-    unsigned int *tileData = parseTileData(&map);
-    if(tileData == NULL){
-        printf("Error parsing tile data\n");
-        return -1;
-    }
-
-    // 타일 데이터를 출력 (디버깅용)
-    for(int i = 0; i < map.mapWidth * map.mapHeight; i++){
-        printf("Tile %d: %u\n", i, tileData[i]);
+        /*
+        // 타일 데이터를 출력 (디버깅용)
+        for(int i = 0; i < maps[i].mapWidth * maps[i].mapHeight; i++){
+            printf("Tile %d: %u\n", i, tileData[i]);
+        }
+        */
     }
 
     SDL_Event event;
@@ -254,7 +297,7 @@ int main(int argc, char* argv[]){
         updatePhysics();
         updateFrame();
         updateCamera(deltaTime);
-        render(renderer, &map);
+        render(renderer, maps, mapCount);
         updateFPS();
 
         // FPS 제한 (120)
@@ -279,8 +322,9 @@ int main(int argc, char* argv[]){
     SDL_DestroyTexture(spriteSheet);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-    cJSON_Delete(map.mapJson);
-    free(jsonData);
+    for(int i = 0; i < MAX_MAPCOUNT; i++){
+        cJSON_Delete(maps[i].mapJson);
+    }
     if(tileData != NULL){
         free(tileData);
     }

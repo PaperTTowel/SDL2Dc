@@ -16,82 +16,85 @@ SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     return newTexture;
 }
 // 타일을 렌더링하는 함수
-void renderTileMap(SDL_Renderer* renderer, Map *map){
+void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
     int tilesPerRow = 120 / map->tileWidth;
 
     for(int y = 0; y < map->mapHeight; y++){
         for(int x = 0; x < map->mapWidth; x++){
-            // 원본 타일 ID 추출 및 플래그 분리
             unsigned int tileDataValue = map->tileData[y * map->mapWidth + x];
-            int tileIndex = (tileDataValue & 0x1FFFFFFF) - 1;  // 회전/반전 제거하고 0 기반 조정
-            if (tileIndex < 0) continue;  // 비어있는 타일은 건너뛰기
-            
-            // 회전 및 반전 플래그 추출
+            int tileIndex = (tileDataValue & 0x1FFFFFFF) - 1;
+            if(tileIndex < 0) continue;
+
             int flipHorizontal = (tileDataValue & 0x80000000) != 0;
             int flipVertical = (tileDataValue & 0x40000000) != 0;
             int flipDiagonal = (tileDataValue & 0x20000000) != 0;
-            
-            // 타일셋에서 타일 위치 계산
+
             int tileX = (tileIndex % tilesPerRow) * map->tileWidth;
             int tileY = (tileIndex / tilesPerRow) * map->tileHeight;
 
-            // 타일셋에서 해당 타일을 클리핑
             SDL_Rect srcRect = { tileX, tileY, map->tileWidth, map->tileHeight };
-            SDL_Rect destRect = { x * map->tileWidth * 3 - camera.x, y * map->tileHeight * 3 - camera.y, map->tileWidth * 3, map->tileHeight * 3 };
+            SDL_Rect destRect = { 
+                x * map->tileWidth * 3 - camera.x + xOffset, 
+                y * map->tileHeight * 3 - camera.y + yOffset, 
+                map->tileWidth * 3, 
+                map->tileHeight * 3 
+            };
 
-            // 회전 및 반전을 SDL_RenderCopyEx에 적용할 각도와 플립
             SDL_RendererFlip flip = SDL_FLIP_NONE;
             double angle = 0.0;
 
-            if
-            (flipDiagonal && flipHorizontal && !flipVertical){ // 1번
+            if(flipDiagonal && flipHorizontal && !flipVertical){ 
                 angle = 90.0f;
                 flip = SDL_FLIP_NONE;
             }
-            else if(flipDiagonal && flipVertical && !flipHorizontal){ // 4번
-                angle = 360.0f;
-                flip = SDL_FLIP_VERTICAL;
-            }
-            else if(flipHorizontal && flipVertical){ // 좌우반전
-                angle = 180.0f;
-                flip = SDL_FLIP_NONE;
-            }
-            else if (flipDiagonal){
+            else if(flipDiagonal && flipVertical && !flipHorizontal){
                 angle = -90.0f;
                 flip = SDL_FLIP_NONE;
             }
-            else if (flipHorizontal){
+            else if(flipHorizontal && flipVertical){
+                angle = 180.0f;
+                flip = SDL_FLIP_NONE;
+            }
+            else if(flipDiagonal){
+                angle = 90.0f;
+                flip = SDL_FLIP_NONE;
+            }
+            else if(flipHorizontal){
                 flip = SDL_FLIP_HORIZONTAL;
             }
-            else if (flipVertical){
+            else if(flipVertical){
                 flip = SDL_FLIP_VERTICAL;
             }
 
-            // 타일 그리기
             SDL_RenderCopyEx(renderer, tilesetTexture, &srcRect, &destRect, angle, NULL, flip);
         }
     }
 }
 
-void render(SDL_Renderer* renderer, Map *map){
+void render(SDL_Renderer* renderer, Map maps[], int mapCount){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    renderTileMap(renderer, map);  // 타일 맵 렌더링 호출
+    for(int i = 0; i < mapCount; i++){
+        int xOffset = i * 1152; // 72x72 기준
+        int yOffset = 0;
+        renderTileMap(renderer, &maps[i], xOffset, yOffset);
+    }
 
-    /* 디버그 용도 (충돌&상호작용 시각화)
+    /*
+    //디버그 용도 (충돌&상호작용 시각화)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)
-    for (int i = 0; i < platformCount; i++) {
+    for(int i = 0; i < platformCount; i++){
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
         SDL_RenderFillRect(renderer, &platformRect); // 플랫폼 사각형 그리기
     }
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    for (int i = 0; i < platformCount; i++) {
+    for(int i = 0; i < platformCount; i++){
         SDL_Rect interaction = {interactions[i].x - camera.x, interactions[i].y - camera.y, interactions[i].width, interactions[i].height};
         SDL_RenderFillRect(renderer, &interaction); // 플랫폼 사각형 그리기
     }
     */
-
+    
     SDL_Rect srcRect;
     srcRect.w = 24;  // 원본 스프라이트 너비
     srcRect.h = 24;  // 원본 스프라이트 높이

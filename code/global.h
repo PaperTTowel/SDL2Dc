@@ -35,7 +35,6 @@ extern int currentMapCount;
 
 typedef struct { // tileData.c 와 연결됨
     float x, y, width, height;
-    float xOffset, yOffset;
 } Platform;
 
 extern Platform platforms[100];

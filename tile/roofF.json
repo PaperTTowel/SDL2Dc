@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"DAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAADAADAAwAAwAMAAMAFAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAABkAAAAMAAAADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAGQAAAAwAAAAMAAAADAAAABEAAIADAABgBQAAAAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMAZAAAADAAAAAwAAAAYAAAAAwAAAAMAAAAFAADAAwAAoAwAAAAMAAAADAAAAAwAAAAMAAAAGwAAABsAAIAMAAAADAAAABgAAAADAABgDAAAAAwAAAAMAAAAAwAAoAwAAAARAAAADAAAABEAAAAMAAAAHAAAABwAAIAdAAAAGAAAAAMAAAAZAACADAAAAAwAAAAMAAAABQAAYAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAGAAAgAwAAAAMAAAAGQAAgAMAAMAFAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAABQAAYBgAAIAMAAAADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAYAACADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAFAABgAwAAAAMAAAAFAADA",
+         "data":"DAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAABoAAGADAADAAwAAwAMAAMAFAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAGgAAYBkAAAAMAAAADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAaAABgGQAAAAwAAAAMAAAADAAAABEAAIADAABgBQAAAAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMAZAAAADAAAAAwAAAAYAAAAAwAAAAMAAAAFAADAAwAAoAwAAAAMAAAADAAAAAwAAAAMAAAAGwAAABsAAIAMAAAADAAAABgAAAADAABgDAAAAAwAAAAMAAAAAwAAoAwAAAARAAAADAAAABEAAAAMAAAAHAAAABwAAIAdAAAAGAAAAAUAAMAZAACAGgAAAAwAAAAMAAAABQAAYAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAGAAAgAwAAAAMAAAAGQAAgAMAAMAFAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAABQAAYBgAAIAMAAAADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAUAAGAYAACADAAAAAwAAAADAABgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAFAABgAwAAAAMAAAAFAADA",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -142,6 +142,17 @@
                  "width":24,
                  "x":336,
                  "y":144
+                }, 
+                {
+                 "height":48,
+                 "id":28,
+                 "name":"wall",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":24,
+                 "x":240,
+                 "y":120
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -161,7 +172,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":13.96875,
+                 "width":13.9688,
                  "x":101,
                  "y":120
                 }, 
@@ -174,18 +185,18 @@
                  "visible":true,
                  "width":33.875,
                  "x":151,
-                 "y":112.0625
+                 "y":112.063
                 }, 
                 {
                  "height":24,
                  "id":25,
-                 "name":"roof",
+                 "name":"roofDoor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":13.9688,
-                 "x":319.682266666667,
-                 "y":41
+                 "x":317,
+                 "y":48
                 }, 
                 {
                  "height":24,
@@ -205,7 +216,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":27,
+ "nextobjectid":29,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
