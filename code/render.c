@@ -81,7 +81,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount){
         renderTileMap(renderer, &maps[i], xOffset, yOffset);
     }
 
-    /*
+    
     //디버그 용도 (충돌&상호작용 시각화)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // 플랫폼 색상 설정 (빨간색)
     for(int i = 0; i < platformCount; i++){
@@ -93,7 +93,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount){
         SDL_Rect interaction = {interactions[i].x - camera.x, interactions[i].y - camera.y, interactions[i].width, interactions[i].height};
         SDL_RenderFillRect(renderer, &interaction); // 플랫폼 사각형 그리기
     }
-    */
+    
     
     SDL_Rect srcRect;
     srcRect.w = 24;  // 원본 스프라이트 너비

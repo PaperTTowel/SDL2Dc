@@ -35,6 +35,8 @@ extern int currentMapCount;
 
 typedef struct { // tileData.c 와 연결됨
     float x, y, width, height;
+    SDL_Point polygon[100];  // 다각형 플랫폼의 점들
+    int pointCount;
 } Platform;
 
 extern Platform platforms[100];
@@ -64,6 +66,8 @@ extern SDL_Renderer *renderer;
 extern SDL_Texture *tilesetTexture;
 
 void addPlatform(SDL_Rect platform);
+void addPolygonPlatform(SDL_Point* points, int pointCount, SDL_Rect baseRect);
 void addInteraction(SDL_Rect interactionZone, const char* name);
+void checkInteractions(SDL_Rect *playerRect);
 
 #endif // GLOBALS_H

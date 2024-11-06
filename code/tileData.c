@@ -166,7 +166,28 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                 if(strcmp(name->valuestring, "floor") == 0 || strcmp(name->valuestring, "wall") == 0){
                     addPlatform(newInteraction);
                 }
-                else if(strcmp(name->valuestring, "roofDoor") == 0){
+                else if(strcmp(name->valuestring, "upWayStair") == 0 || strcmp(name->valuestring, "downWayStair") == 0){
+                    cJSON *polygon = cJSON_GetObjectItem(object, "polygon");
+                    if (cJSON_IsArray(polygon)) {
+                        int pointCount = cJSON_GetArraySize(polygon);
+                        SDL_Point points[pointCount];
+
+                        for (int i = 0; i < pointCount; i++) {
+                            cJSON *point = cJSON_GetArrayItem(polygon, i);
+                            cJSON *px = cJSON_GetObjectItem(point, "x");
+                            cJSON *py = cJSON_GetObjectItem(point, "y");
+
+                            if (cJSON_IsNumber(px) && cJSON_IsNumber(py)) {
+                                points[i].x = px->valuedouble;
+                                points[i].y = py->valuedouble;
+                                printf("Parsed point %d: x=%d, y=%d\n", i, points[i].x, points[i].y);
+                            }
+                        }
+                        SDL_Rect baseRect = { x->valuedouble, y->valuedouble, 0, 0 };
+                        addPolygonPlatform(points, pointCount, baseRect);
+                    }
+                }
+                else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || strcmp(name->valuestring, "elevator") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
@@ -193,7 +214,6 @@ void parseObjectGroups(Map *map, int xOffset, int yOffset){
     }
 }
 
-
 void addPlatform(SDL_Rect platform){
     // 최대 플랫폼 수를 초과하지 않도록 체크
     if (platformCount < 100) {
@@ -206,6 +226,36 @@ void addPlatform(SDL_Rect platform){
             platforms[platformCount - 1].x, platforms[platformCount - 1].y, 
             platforms[platformCount - 1].width, platforms[platformCount - 1].height);
     } else {
+        printf("Maximum platform limit reached.\n");
+    }
+}
+
+void addPolygonPlatform(SDL_Point* points, int pointCount, SDL_Rect baseRect) {
+    if(platformCount < 100){
+        int minX = points[0].x, maxX = points[0].x;
+        int minY = points[0].y, maxY = points[0].y;
+
+        // 다각형의 최소/최대 x, y 계산
+        for(int i = 1; i < pointCount; i++){
+            if (points[i].x < minX) minX = points[i].x;
+            if (points[i].x > maxX) maxX = points[i].x;
+            if (points[i].y < minY) minY = points[i].y;
+            if (points[i].y > maxY) maxY = points[i].y;
+        }
+
+        // 기준 rect의 x, y 오프셋을 추가하여 실제 위치 계산
+        platforms[platformCount].x = (baseRect.x) * 3;  // 3배 확대
+        platforms[platformCount].y = (baseRect.y + minY) * 3;
+        platforms[platformCount].width = (maxX - minX) * 3;  // 폭 계산
+        platforms[platformCount].height = (maxY - minY) * 3;  // 높이 계산
+        platformCount++;
+
+        // 디버그 출력
+        printf("Added polygon platform: x=%.2f, y=%.2f, width=%.2f, height=%.2f\n",
+               platforms[platformCount - 1].x, platforms[platformCount - 1].y,
+               platforms[platformCount - 1].width, platforms[platformCount - 1].height);
+    }
+    else{
         printf("Maximum platform limit reached.\n");
     }
 }

@@ -15,7 +15,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 1110.0f;
+float playerX = 1200.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -54,8 +54,6 @@ int *tileData; // 타일 데이터 배열
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
-
-void checkInteractions(SDL_Rect *playerRect);
 
 void handleInput(const Uint8* state, float deltaTime){
     const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
