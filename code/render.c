@@ -51,6 +51,14 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
                 angle = -90.0f;
                 flip = SDL_FLIP_NONE;
             }
+            else if(flipDiagonal && !flipVertical){
+                angle = -90.0f;
+                flip = SDL_FLIP_HORIZONTAL;
+            }
+            else if(flipDiagonal && flipHorizontal){
+                angle = 90.0f;
+                flip = SDL_FLIP_HORIZONTAL;
+            }
             else if(flipHorizontal && flipVertical){
                 angle = 180.0f;
                 flip = SDL_FLIP_NONE;
@@ -76,7 +84,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount){
     SDL_RenderClear(renderer);
 
     for(int i = 0; i < mapCount; i++){
-        int xOffset = i * 1152; // 72x72 기준
+        int xOffset = i * 2232; // 72x72 기준
         int yOffset = 0;
         renderTileMap(renderer, &maps[i], xOffset, yOffset);
     }

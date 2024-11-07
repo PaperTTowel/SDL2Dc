@@ -15,7 +15,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 1200.0f;
+float playerX = 6000.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -55,6 +55,29 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
 
+void teleportToInteraction(const char *interactionName, SDL_Rect *playerRect, int currentMap) {
+    for (int i = 0; i < 100; i++) {
+        int targetMap = 1;
+
+        for (int j = 0; j < interactionCount; j++) {
+            Interaction target = interactions[i];
+
+            if (strcmp(target.name, interactionName) == 0 && targetMap != currentMap) {
+                // 맵 전환
+                currentMap = targetMap;
+
+                // 플레이어 위치를 타겟 Interaction으로 이동
+                playerX = target.x;
+                playerY = target.y;
+
+                printf("Teleported to map %d at (x=%.2f, y=%.2f)\n", 
+                       i, target.x, target.y);
+                return;
+            }
+        }
+    }
+}
+
 void handleInput(const Uint8* state, float deltaTime){
     const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
     float playerSpeed = baseSpeed * deltaTime;  // 델타 타임을 반영한 속도 계산
@@ -77,20 +100,27 @@ void handleInput(const Uint8* state, float deltaTime){
         velocityY = -15;
         isJumping = 1;
     }
-    if (state[SDL_SCANCODE_E]) {
-        if (!eKeyPressed) { // E 키가 처음 눌린 경우
+    if(state[SDL_SCANCODE_E]){
+        if(!eKeyPressed){ // E 키가 처음 눌린 경우
             checkInteractions(&playerRect);
             eKeyPressed = 1; // E 키가 눌린 상태로 설정
         }
-    } else {
+    }
+    else{
         eKeyPressed = 0; // E 키가 떼어졌을 경우 상태 초기화
     }
 }
 
-void handleInteraction(SDL_Rect *playerRect, Interaction *interactionZone){
-    // 상호작용 이벤트 처리 (예: 문 열기, 대화 시작 등)
-    printf("event! (name: %s, x: %.2f, y: %.2f)\n",interactionZone->name, interactionZone->x, interactionZone->y);
-    // 추가적으로 상호작용 오브젝트에 따라 다른 동작을 처리할 수 있습니다.
+void handleInteraction(SDL_Rect *playerRect, Interaction *interaction){
+    int currentMap = 0;
+    if(strcmp(interaction->name, "Exit") == 0){
+        // "Exit" Interaction이 다른 맵으로 이동을 유발
+        teleportToInteraction("Exit", playerRect, currentMap);
+    }
+    if(strcmp(interaction->name, "4F") == 0){
+        // "Exit" Interaction이 다른 맵으로 이동을 유발
+        teleportToInteraction("4F", playerRect, currentMap);
+    }
 }
 
 void checkInteractions(SDL_Rect *playerRect){
@@ -253,7 +283,7 @@ int main(int argc, char* argv[]){
         printf("Map %d - Width: %d, Height: %d, Tile Width: %d, Tile Height: %d\n",
                i, maps[i].mapWidth, maps[i].mapHeight, maps[i].tileWidth, maps[i].tileHeight);
 
-        int xOffset = i * 384; // 24x24 기준
+        int xOffset = i * 744; // 24x24 기준
         int yOffset = 0;
         parseObjectGroups(&maps[i], xOffset, yOffset); // 오브젝트 그룹 초기화
         // 타일 데이터 파싱

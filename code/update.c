@@ -60,15 +60,6 @@ void updateCamera(float deltaTime){
 
     // 카메라가 화면의 경계를 넘지 않도록 제한
     if (cameraX < 0) cameraX = 0;
-    /* Tile에 맞춤
-    if (cameraX > (mapWidth * tileWidth * 3) - camera.w) {
-        cameraX = (mapWidth * tileWidth * 3) - camera.w;
-    }
-    if (camera.y < 0) camera.y = 0;
-    if (camera.y > (mapHeight * tileHeight * 3) - camera.h) {
-        camera.y = (mapHeight * tileHeight * 3) - camera.h;
-    }
-    */
 
     camera.x = (int)cameraX; // 카메라 rect의 x 값은 int로 변환 (분리용)
 }
