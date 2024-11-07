@@ -19,7 +19,6 @@ extern int movingFrameDelay;
 extern int lastFrameTime;
 extern int eKeyPressed;
 
-
 typedef struct { // tileData.c 와 연결됨
     int mapWidth;
     int mapHeight;

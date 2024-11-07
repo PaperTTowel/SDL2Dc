@@ -166,6 +166,7 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                 if(strcmp(name->valuestring, "floor") == 0 || strcmp(name->valuestring, "wall") == 0){
                     addPlatform(newInteraction);
                 }
+                /* addPolygonPlatform함수와 함께 유기됨
                 else if(strcmp(name->valuestring, "upWayStair") == 0 || strcmp(name->valuestring, "downWayStair") == 0){
                     cJSON *polygon = cJSON_GetObjectItem(object, "polygon");
                     if (cJSON_IsArray(polygon)) {
@@ -187,7 +188,10 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         addPolygonPlatform(points, pointCount, baseRect);
                     }
                 }
-                else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || strcmp(name->valuestring, "elevator") == 0){
+                */
+                else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || 
+                        strcmp(name->valuestring, "elevator") == 0 || strcmp(name->valuestring, "4F") == 0 || 
+                        strcmp(name->valuestring, "1F") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
@@ -230,6 +234,7 @@ void addPlatform(SDL_Rect platform){
     }
 }
 
+/* 이 함수는 머리가 아픈 이슈로 유기
 void addPolygonPlatform(SDL_Point* points, int pointCount, SDL_Rect baseRect) {
     if(platformCount < 100){
         int minX = points[0].x, maxX = points[0].x;
@@ -259,6 +264,7 @@ void addPolygonPlatform(SDL_Point* points, int pointCount, SDL_Rect baseRect) {
         printf("Maximum platform limit reached.\n");
     }
 }
+*/
 
 void addInteraction(SDL_Rect interactionZone, const char* name){
     // 최대 상호작용 수를 초과하지 않도록 체크

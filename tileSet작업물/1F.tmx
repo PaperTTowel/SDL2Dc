@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="15" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="4" nextobjectid="10">
+ <editorsettings>
+  <export target="../tile/1F.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="Tileset00.tsj"/>
+ <layer id="1" name="Background" width="15" height="10">
+  <data encoding="base64">
+   DAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAFAAAAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgDAAAAAwAAAADAACgDAAAABsAAIAMAAAAGwAAABsAAIAMAAAAEwAAABMAAIAMAAAADAAAAAwAAAADAABgDAAAAAwAAAADAACgDAAAABwAAIAMAAAAHAAAABwAAIAdAAAAFwAAABcAAIAMAAAADAAAAAwAAAADAABgDAAAAAwAAAAFAABgAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAA
+  </data>
+ </layer>
+ <objectgroup id="2" name="NoPassing" visible="0">
+  <object id="1" name="floor" x="72" y="144" width="264" height="24"/>
+  <object id="2" name="wall" x="48" y="72" width="24" height="96"/>
+  <object id="3" name="wall" x="336" y="72" width="24" height="96"/>
+ </objectgroup>
+ <objectgroup id="3" name="Interaction" visible="0">
+  <object id="4" name="elevator" x="151" y="112.091" width="33.875" height="31.9375"/>
+  <object id="7" name="4F" x="222.909" y="112" width="34.2159" height="32.0909"/>
+  <object id="9" name="Exit" x="96" y="112.063" width="16.9688" height="31.9375"/>
+ </objectgroup>
+</map>
