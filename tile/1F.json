@@ -56,7 +56,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -79,7 +79,7 @@
                 {
                  "height":32.0909,
                  "id":7,
-                 "name":"4F",
+                 "name":"1F-4F",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -90,17 +90,17 @@
                 {
                  "height":31.9375,
                  "id":9,
-                 "name":"Exit",
+                 "name":"1F-outDoor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":16.9688,
                  "x":96,
-                 "y":112.0625
+                 "y":112.063
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }],

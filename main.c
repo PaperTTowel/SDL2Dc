@@ -55,25 +55,29 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
 
-void teleportToInteraction(const char *interactionName, SDL_Rect *playerRect, int currentMap) {
-    for (int i = 0; i < 100; i++) {
-        int targetMap = 1;
+int currentMap = 0;
+int targetMap = 1;
+int previousMap = -1;
 
-        for (int j = 0; j < interactionCount; j++) {
-            Interaction target = interactions[i];
+void teleportToInteraction(const char *interactionName, SDL_Rect *playerRect, int currentMap){
+    for (int i = 0; i < interactionCount; i++){
+        targetMap++;
+        Interaction target = interactions[targetMap];
 
-            if (strcmp(target.name, interactionName) == 0 && targetMap != currentMap) {
-                // 맵 전환
-                currentMap = targetMap;
-
-                // 플레이어 위치를 타겟 Interaction으로 이동
-                playerX = target.x;
-                playerY = target.y;
-
-                printf("Teleported to map %d at (x=%.2f, y=%.2f)\n", 
-                       i, target.x, target.y);
-                return;
+        if (strcmp(target.name, interactionName) == 0 && targetMap != currentMap){
+            previousMap = currentMap - 1; // 이전 맵을 기록
+            if(currentMap == targetMap){
+                currentMap = previousMap;
             }
+            currentMap = targetMap; // 맵 전환
+
+            // 플레이어 위치를 타겟 Interaction으로 이동
+            playerX = target.x;
+            playerY = target.y;
+
+            printf("Teleported to map %d at (x=%.2f, y=%.2f)\n",
+                   i, target.x, target.y);
+            return;
         }
     }
 }
@@ -112,14 +116,18 @@ void handleInput(const Uint8* state, float deltaTime){
 }
 
 void handleInteraction(SDL_Rect *playerRect, Interaction *interaction){
-    int currentMap = 0;
-    if(strcmp(interaction->name, "Exit") == 0){
-        // "Exit" Interaction이 다른 맵으로 이동을 유발
-        teleportToInteraction("Exit", playerRect, currentMap);
+    if(currentMap <= targetMap) currentMap++;
+    if(strcmp(interaction->name, "1F-outDoor") == 0){
+        teleportToInteraction("1F-outDoor", playerRect, currentMap);
     }
-    if(strcmp(interaction->name, "4F") == 0){
-        // "Exit" Interaction이 다른 맵으로 이동을 유발
-        teleportToInteraction("4F", playerRect, currentMap);
+    if(strcmp(interaction->name, "1F-4F") == 0){
+        teleportToInteraction("1F-4F", playerRect, currentMap);
+    }
+    if(strcmp(interaction->name, "4F-roofF") == 0){
+        teleportToInteraction("4F-roofF", playerRect, currentMap);
+    }
+    if(strcmp(interaction->name, "roofDoor") == 0){
+        teleportToInteraction("roofDoor", playerRect, currentMap);
     }
 }
 
@@ -339,10 +347,7 @@ int main(int argc, char* argv[]){
         if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
-            printf("interaction1.x / y: x=%.2f, y=%.2f\n", 
-            interactions[interactionCount - 2].x - camera.x, interactions[interactionCount - 2].y - camera.y);
-            printf("interaction2.x / y: x=%.2f, y=%.2f\n\n", 
-            interactions[interactionCount - 1].x - camera.x, interactions[interactionCount - 1].y - camera.y);
+            printf("previousMap: %d, currentMap: %d, targetMap %d\n", previousMap, currentMap, targetMap);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }

@@ -17,6 +17,6 @@
  <objectgroup id="3" name="Interaction">
   <object id="24" name="elevator" x="151" y="112.063" width="33.875" height="31.9375"/>
   <object id="25" name="roofDoor" x="53" y="120" width="13.9688" height="24"/>
-  <object id="33" name="4F" x="269.932" y="134" width="36.0682" height="10"/>
+  <object id="33" name="4F-roofF" x="269.932" y="134" width="36.0682" height="10"/>
  </objectgroup>
 </map>

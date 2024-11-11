@@ -190,8 +190,8 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                 }
                 */
                 else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || 
-                        strcmp(name->valuestring, "elevator") == 0 || strcmp(name->valuestring, "4F") == 0 || 
-                        strcmp(name->valuestring, "1F") == 0 || strcmp(name->valuestring, "Exit") == 0){
+                        strcmp(name->valuestring, "elevator") == 0 || strcmp(name->valuestring, "1F-4F") == 0 || 
+                        strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
