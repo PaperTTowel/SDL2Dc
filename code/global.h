@@ -49,6 +49,15 @@ typedef struct { // tileData.c 와 연결됨
 extern Interaction interactions[100];
 extern int interactionCount;
 
+// 각 상호작용별로 마지막 상호작용 위치를 저장
+typedef struct {
+    float x;
+    float y;
+    char name[100];
+} LastInteraction;
+
+LastInteraction lastInteractions[100] = {0};  // 최대 상호작용 개수만큼 배열 할당
+
 extern float cameraX;
 extern SDL_Rect camera;
 

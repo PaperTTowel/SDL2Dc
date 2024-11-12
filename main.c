@@ -55,33 +55,6 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
 
-int currentMap = 0;
-int targetMap = 1;
-int previousMap = -1;
-
-void teleportToInteraction(const char *interactionName, SDL_Rect *playerRect, int currentMap){
-    for (int i = 0; i < interactionCount; i++){
-        targetMap++;
-        Interaction target = interactions[targetMap];
-
-        if (strcmp(target.name, interactionName) == 0 && targetMap != currentMap){
-            previousMap = currentMap - 1; // 이전 맵을 기록
-            if(currentMap == targetMap){
-                currentMap = previousMap;
-            }
-            currentMap = targetMap; // 맵 전환
-
-            // 플레이어 위치를 타겟 Interaction으로 이동
-            playerX = target.x;
-            playerY = target.y;
-
-            printf("Teleported to map %d at (x=%.2f, y=%.2f)\n",
-                   i, target.x, target.y);
-            return;
-        }
-    }
-}
-
 void handleInput(const Uint8* state, float deltaTime){
     const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
     float playerSpeed = baseSpeed * deltaTime;  // 델타 타임을 반영한 속도 계산
@@ -116,41 +89,53 @@ void handleInput(const Uint8* state, float deltaTime){
 }
 
 void handleInteraction(SDL_Rect *playerRect, Interaction *interaction){
-    if(currentMap <= targetMap) currentMap++;
-    if(strcmp(interaction->name, "1F-outDoor") == 0){
-        teleportToInteraction("1F-outDoor", playerRect, currentMap);
-    }
-    if(strcmp(interaction->name, "1F-4F") == 0){
-        teleportToInteraction("1F-4F", playerRect, currentMap);
-    }
-    if(strcmp(interaction->name, "4F-roofF") == 0){
-        teleportToInteraction("4F-roofF", playerRect, currentMap);
-    }
-    if(strcmp(interaction->name, "roofDoor") == 0){
-        teleportToInteraction("roofDoor", playerRect, currentMap);
-    }
 }
 
 void checkInteractions(SDL_Rect *playerRect){
-    // 플레이어의 카메라 좌표 포함
-    float playerXWithCamera = playerRect->x + camera.x;
-    float playerYWithCamera = playerRect->y + camera.y;
+    float playerXWithCamera = playerX;
+    float playerYWithCamera = playerY;
 
-    for (int i = 0; i < interactionCount; i++) {
+    for(int i = 0; i < interactionCount; i++){
         Interaction interactionZone = interactions[i];
 
-        printf("Checking interaction with: %s (x=%.2f, y=%.2f)\n", 
-               interactionZone.name, interactionZone.x, interactionZone.y);
-
-        // 카메라 오프셋을 포함한 충돌 체크
-        if ((playerXWithCamera < (interactionZone.x + interactionZone.width)) &&
+        // 플레이어와 오브젝트 간의 충돌 체크
+        if((playerXWithCamera < (interactionZone.x + interactionZone.width)) &&
             ((playerXWithCamera + playerRect->w) > interactionZone.x) &&
             (playerYWithCamera < (interactionZone.y + interactionZone.height)) &&
-            ((playerYWithCamera + playerRect->h) > interactionZone.y)) {
+            ((playerYWithCamera + playerRect->h) > interactionZone.y)){
 
-            printf("Interaction triggered with: %s (x=%.2f, y=%.2f)\n", 
-                   interactionZone.name, interactionZone.x, interactionZone.y);
-            handleInteraction(playerRect, &interactionZone);
+            // '1F-outDoor' 오브젝트를 찾을 때만 처리
+            if(strcmp(interactionZone.name, "1F-outDoor") == 0 ||
+                strcmp(interactionZone.name, "1F-4F") == 0 ||
+                strcmp(interactionZone.name, "4F-roofF") == 0 ||
+                strcmp(interactionZone.name, "roofDoor") == 0){
+                int index = -1;
+
+                // 현재 오브젝트와 동일한 이름을 가진 다른 오브젝트 찾기
+                for(int j = 0; j < interactionCount; j++){
+                    if(j != i && strcmp(interactions[j].name, interactionZone.name) == 0){
+                        index = j;
+                        break;
+                    }
+                }
+
+                if(index != -1){
+                    // 다른 오브젝트로 텔레포트
+                    Interaction targetInteractionZone = interactions[index];
+
+                    // 텔레포트
+                    playerX = targetInteractionZone.x;
+                    playerY = targetInteractionZone.y;
+
+                    // 마지막 상호작용 위치 저장
+                    lastInteractions[i].x = playerRect->x;
+                    lastInteractions[i].y = playerRect->y;
+                    strcpy(lastInteractions[i].name, interactionZone.name);
+
+                    printf("Teleporting to %s at (%.2f, %.2f)\n", targetInteractionZone.name, targetInteractionZone.x, targetInteractionZone.y);
+                    return;  // 텔레포트 후 종료
+                }
+            }
         }
     }
 }
@@ -347,7 +332,6 @@ int main(int argc, char* argv[]){
         if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
-            printf("previousMap: %d, currentMap: %d, targetMap %d\n", previousMap, currentMap, targetMap);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
