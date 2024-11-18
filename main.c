@@ -108,7 +108,8 @@ void checkInteractions(SDL_Rect *playerRect){
             if(strcmp(interactionZone.name, "1F-outDoor") == 0 ||
                 strcmp(interactionZone.name, "1F-4F") == 0 ||
                 strcmp(interactionZone.name, "4F-roofF") == 0 ||
-                strcmp(interactionZone.name, "roofDoor") == 0){
+                strcmp(interactionZone.name, "roofDoor") == 0 ||
+                strcmp(interactionZone.name, "elevator") == 0){
                 int index = -1;
 
                 // 현재 오브젝트와 동일한 이름을 가진 다른 오브젝트 찾기

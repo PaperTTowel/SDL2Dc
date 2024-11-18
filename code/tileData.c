@@ -153,6 +153,7 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
         cJSON *width = cJSON_GetObjectItem(object, "width");
         cJSON *height = cJSON_GetObjectItem(object, "height");
         cJSON *name = cJSON_GetObjectItem(object, "name");
+        cJSON *properties = cJSON_GetObjectItem(object, "properties");
 
         if(cJSON_IsNumber(x) && cJSON_IsNumber(y) && cJSON_IsNumber(width) && cJSON_IsNumber(height)){
             float objectX = x->valuedouble + xOffset;
@@ -161,34 +162,26 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                    name ? name->valuestring : "Unnamed",
                    x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
 
+            char *propertyText = NULL;
+            if(cJSON_IsArray(properties)){
+                for(int k = 0; k < cJSON_GetArraySize(properties); k++){
+                    cJSON *property = cJSON_GetArrayItem(properties, k);
+                    cJSON *propName = cJSON_GetObjectItem(property, "name");
+                    cJSON *propValue = cJSON_GetObjectItem(property, "value");
+
+                    if(propName && propValue && cJSON_IsString(propName) && cJSON_IsString(propValue)){
+                        if(strcmp(propName->valuestring, "Text") == 0){
+                            propertyText = propValue->valuestring;
+                        }
+                    }
+                }
+            }
+
             if(name != NULL){
                 SDL_Rect newInteraction = { objectX, objectY, width->valuedouble, height->valuedouble };
                 if(strcmp(name->valuestring, "floor") == 0 || strcmp(name->valuestring, "wall") == 0){
                     addPlatform(newInteraction);
                 }
-                /* addPolygonPlatform함수와 함께 유기됨
-                else if(strcmp(name->valuestring, "upWayStair") == 0 || strcmp(name->valuestring, "downWayStair") == 0){
-                    cJSON *polygon = cJSON_GetObjectItem(object, "polygon");
-                    if (cJSON_IsArray(polygon)) {
-                        int pointCount = cJSON_GetArraySize(polygon);
-                        SDL_Point points[pointCount];
-
-                        for (int i = 0; i < pointCount; i++) {
-                            cJSON *point = cJSON_GetArrayItem(polygon, i);
-                            cJSON *px = cJSON_GetObjectItem(point, "x");
-                            cJSON *py = cJSON_GetObjectItem(point, "y");
-
-                            if (cJSON_IsNumber(px) && cJSON_IsNumber(py)) {
-                                points[i].x = px->valuedouble;
-                                points[i].y = py->valuedouble;
-                                printf("Parsed point %d: x=%d, y=%d\n", i, points[i].x, points[i].y);
-                            }
-                        }
-                        SDL_Rect baseRect = { x->valuedouble, y->valuedouble, 0, 0 };
-                        addPolygonPlatform(points, pointCount, baseRect);
-                    }
-                }
-                */
                 else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || 
                         strcmp(name->valuestring, "elevator") == 0 || strcmp(name->valuestring, "1F-4F") == 0 || 
                         strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0 ||
