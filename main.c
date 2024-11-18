@@ -15,7 +15,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 6000.0f;
+float playerX = 7000.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -276,7 +276,7 @@ int main(int argc, char* argv[]){
         printf("Map %d - Width: %d, Height: %d, Tile Width: %d, Tile Height: %d\n",
                i, maps[i].mapWidth, maps[i].mapHeight, maps[i].tileWidth, maps[i].tileHeight);
 
-        int xOffset = i * 744; // 24x24 기준
+        int xOffset = i * 984; // 24x24 기준
         int yOffset = 0;
         parseObjectGroups(&maps[i], xOffset, yOffset); // 오브젝트 그룹 초기화
         // 타일 데이터 파싱

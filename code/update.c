@@ -24,21 +24,29 @@ void updatePhysics(){
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
         // y축 충돌 체크
         if(SDL_HasIntersection(&playerRect, &platformRect)){
-            playerY = platformRect.y - playerRect.h; // y좌표 조정
-            velocityY = 0; // 속도 0으로 초기화
-            isJumping = 0; // 점프 상태 해제
-            break; // 첫 번째 충돌을 찾으면 루프 종료
+            if(velocityY > 0){
+                int dontMovePlayerY = 0;
+                if(playerRect.x < platformRect.x){
+                    playerX = platformRect.x - playerRect.w + camera.x;
+                }
+                if(playerRect.x + playerRect.w > platformRect.x + platformRect.w) {
+                    playerX = platformRect.x + platformRect.w + camera.x - 72;
+                }
+                playerY = platformRect.y - playerRect.h; // y좌표 조정
+                velocityY = 0; // 속도 0으로 초기화
+                isJumping = 0; // 점프 상태 해제
+            }
+            break; // 첫 번째 충돌만 처리
         }
     }
     // 플레이어의 rect를 업데이트 (y좌표 조정 후)
-    playerRect.x = playerX - camera.x;
     playerRect.y = playerY - camera.y;
+    playerRect.x = playerX - camera.x;
 
     // x축 충돌
     for(int i = 0; i < platformCount; i++){
         SDL_Rect platformRect = {platforms[i].x - camera.x, platforms[i].y - camera.y, platforms[i].width, platforms[i].height};
         //printf("%d  %d  %d\n", platformRect.x, platformRect.y, platformRect.w);
-
         if(SDL_HasIntersection(&playerRect, &platformRect)){
             if(playerRect.x < platformRect.x){ // 플레이어가 플랫폼의 왼쪽에 있을 때
                 playerX = platformRect.x - playerRect.w + camera.x; // 카메라 좌표 반영
@@ -49,6 +57,7 @@ void updatePhysics(){
             break; // 첫 번째 충돌을 찾으면 루프 종료
         }
     }
+    playerRect.x = playerX - camera.x;
 }
 
 void updateCamera(float deltaTime){

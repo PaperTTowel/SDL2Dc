@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"DAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAABQAAAAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgAwAAoAwAAAAMAAAADAAAAAwAAAAMAAAAGwAAABsAAIAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAADAABgAwAAoAwAAAARAAAADAAAAAwAAAAMAAAAHAAAABwAAIAdAAAADAAAAAwAAAAYAAAAGAAAgAwAAAADAABgBQAAYAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAA",
+         "data":"AAAAAAAAAAAAAAAAEAAAoAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAABAAAGAAAAAAAAAAAAAAAAAQAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAEAAAYAAAAAAAAAAAAAAAABAAAKAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAQAABgAAAAAAAAAAAAAAAAEAAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADABQAAoBAAAGAAAAAAAAAAAAAAAAAQAACgAwAAoAwAAAAMAAAADAAAAAwAAAAMAAAAGwAAABsAAIAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAADAABgEAAAYAAAAAAAAAAAAAAAABAAAKADAACgDAAAABEAAAAMAAAADAAAAAwAAAAcAAAAHAAAgB0AAAAMAAAADAAAABgAAAAYAACADAAAAAMAAGAQAABgAAAAAAAAAAAAAAAAEAAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAABQAAwBAAAGAAAAAAAAAAAAAAAAAQAACgDAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAEAAAYAAAAAAAAAAAAAAAABAAAKAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAQAABgAAAAAAAAAAAAAAAAEAAAoAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAABAAAGA=",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -12,7 +12,7 @@
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":15,
+         "width":20,
          "x":0,
          "y":0
         }, 
@@ -23,35 +23,35 @@
          "objects":[
                 {
                  "height":96,
-                 "id":7,
+                 "id":1,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":24,
-                 "x":336,
+                 "x":432,
                  "y":72
                 }, 
                 {
                  "height":24,
-                 "id":8,
+                 "id":2,
                  "name":"floor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":312,
-                 "x":24,
+                 "x":120,
                  "y":144
                 }, 
                 {
                  "height":96,
-                 "id":32,
+                 "id":3,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":24,
-                 "x":0,
+                 "x":96,
                  "y":72
                 }],
          "opacity":1,
@@ -67,36 +67,36 @@
          "objects":[
                 {
                  "height":31.9375,
-                 "id":24,
+                 "id":7,
                  "name":"elevator",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":33.875,
-                 "x":151,
-                 "y":112.063
+                 "x":247,
+                 "y":112
                 }, 
                 {
                  "height":24,
-                 "id":25,
+                 "id":8,
                  "name":"roofDoor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":13.9688,
-                 "x":53,
-                 "y":120
+                 "x":149,
+                 "y":119.937
                 }, 
                 {
                  "height":10,
-                 "id":33,
+                 "id":9,
                  "name":"4F-roofF",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":36.0682,
-                 "x":269.932,
-                 "y":134
+                 "x":365.932,
+                 "y":133.937
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -105,7 +105,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":34,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -118,5 +118,5 @@
  "tilewidth":24,
  "type":"map",
  "version":"1.10",
- "width":15
+ "width":20
 }

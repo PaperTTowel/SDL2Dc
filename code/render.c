@@ -84,7 +84,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount){
     SDL_RenderClear(renderer);
 
     for(int i = 0; i < mapCount; i++){
-        int xOffset = i * 2232; // 72x72 기준
+        int xOffset = i * 2952; // 72x72 기준
         int yOffset = 0;
         renderTileMap(renderer, &maps[i], xOffset, yOffset);
     }
