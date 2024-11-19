@@ -1,6 +1,7 @@
 #include "global.h"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h> // ucrt에 있어서 나중에 정리해야함
 #include <stdio.h>
 
 SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
@@ -79,7 +80,29 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
     }
 }
 
-void render(SDL_Renderer* renderer, Map maps[], int mapCount){
+void displayText(const char *text, SDL_Renderer *renderer, TTF_Font *font, int x, int y) {
+    SDL_Color color = {255, 255, 255, 255}; // 흰색 텍스트
+    SDL_Surface *surface = TTF_RenderUTF8_Blended(font, text, color);
+    if(surface == NULL){
+        printf("Failed to render text surface: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (texture == NULL) {
+        printf("Failed to create texture from surface: %s\n", SDL_GetError());
+        SDL_FreeSurface(surface);
+        return;
+    }
+
+    SDL_Rect destRect = {x, y, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &destRect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *activeText, TTF_Font *font){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -114,6 +137,11 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount){
     else{
         srcRect.y = 0;  // 가만히 있을 때
         srcRect.x = (direction == -1 ? 0 : 48) + (frame % 2) * 24;
+    }
+
+    // 텍스트 렌더링 (activeText가 NULL이 아닐 경우 출력)
+    if(activeText != NULL){
+        displayText(activeText, renderer, font, 100, 100);
     }
 
     // 렌더링할 캐릭터 크기

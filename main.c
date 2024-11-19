@@ -31,6 +31,8 @@ int idleFrameDelay = 500;  // 가만히 있을 때의 프레임 딜레이 (ms)
 int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 int eKeyPressed = 0;
+char *propertyText = NULL;
+const char *activeText = NULL;
 
 Map maps[MAX_MAPCOUNT];
 int currentMapCount = 0; // 현재 로드된 맵 수
@@ -55,7 +57,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
 
-void handleInput(const Uint8* state, float deltaTime){
+void handleInput(const Uint8* state, float deltaTime, TTF_Font *font){
     const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
     float playerSpeed = baseSpeed * deltaTime;  // 델타 타임을 반영한 속도 계산
 
@@ -88,7 +90,12 @@ void handleInput(const Uint8* state, float deltaTime){
     }
 }
 
-void handleInteraction(SDL_Rect *playerRect, Interaction *interaction){
+void handleTextInteraction(const Interaction *interaction){
+    printf("now hitting %s\n", interaction->name);
+    if(interaction->propertyText != NULL){  // propertyText가 존재할 경우 출력
+        activeText = interaction->propertyText;
+    }
+    printf("propertyText: %s\n", interaction->propertyText);  // 텍스트 확인
 }
 
 void checkInteractions(SDL_Rect *playerRect){
@@ -104,7 +111,7 @@ void checkInteractions(SDL_Rect *playerRect){
             (playerYWithCamera < (interactionZone.y + interactionZone.height)) &&
             ((playerYWithCamera + playerRect->h) > interactionZone.y)){
 
-            // '1F-outDoor' 오브젝트를 찾을 때만 처리
+            // 오브젝트를 찾을 때만 처리
             if(strcmp(interactionZone.name, "1F-outDoor") == 0 ||
                 strcmp(interactionZone.name, "1F-4F") == 0 ||
                 strcmp(interactionZone.name, "4F-roofF") == 0 ||
@@ -136,6 +143,10 @@ void checkInteractions(SDL_Rect *playerRect){
                     printf("Teleporting to %s at (%.2f, %.2f)\n", targetInteractionZone.name, targetInteractionZone.x, targetInteractionZone.y);
                     return;  // 텔레포트 후 종료
                 }
+            }
+            else if(strcmp(interactionZone.name, "otherWay") == 0 ||
+                strcmp(interactionZone.name, "wrongWay") == 0){
+                handleTextInteraction(&interactionZone);
             }
         }
     }
@@ -225,8 +236,14 @@ int main(int argc, char* argv[]){
         return 1;
     }
 
+    if(TTF_Init() == -1){
+        printf("TTF_Init: %s\n", TTF_GetError());
+        SDL_Quit();
+        return 1;
+    }
+
     SDL_Window* window = SDL_CreateWindow("SDL을 이용한 2D Platform C언어 공부연습용 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Surface* tempSurface = IMG_Load("resource\\walk and idle.png");
     printf("sprite loaded!\n");
@@ -238,6 +255,11 @@ int main(int argc, char* argv[]){
     spriteSheet = SDL_CreateTextureFromSurface(renderer, tempSurface);
     SDL_FreeSurface(tempSurface);
 
+    TTF_Font *font = TTF_OpenFont("resource\\NanumGothic.ttf", 24);
+    if(!font){
+        printf("Failed to load font: %s\n", TTF_GetError());
+        return 1;
+    }
     
     tilesetTexture = loadTexture("resource\\Tileset00.png", renderer);
     if (tilesetTexture == NULL) {
@@ -315,11 +337,11 @@ int main(int argc, char* argv[]){
         float deltaTime = (currentTime - lastTime) / 1000.0f; // 초 단위로 델타 타임 계산
         lastTime = currentTime;
 
-        handleInput(state, deltaTime);
+        handleInput(state, deltaTime, font);
         updatePhysics();
         updateFrame();
         updateCamera(deltaTime);
-        render(renderer, maps, mapCount);
+        render(renderer, maps, mapCount, activeText, font);
         updateFPS();
 
         // FPS 제한 (120)
@@ -336,7 +358,7 @@ int main(int argc, char* argv[]){
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
     }
-
+    // 메모리 해제
     SDL_DestroyTexture(spriteSheet);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

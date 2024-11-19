@@ -2,6 +2,7 @@
 #define GLOBALS_H
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 extern float playerX;
 extern float playerY;
@@ -18,6 +19,8 @@ extern int idleFrameDelay;
 extern int movingFrameDelay;
 extern int lastFrameTime;
 extern int eKeyPressed;
+extern char *propertyText;
+extern const char *activeText;
 
 typedef struct { // tileData.c 와 연결됨
     int mapWidth;
@@ -44,6 +47,7 @@ extern int platformCount;
 typedef struct { // tileData.c 와 연결됨
     float x, y, width, height;
     char name[32];
+    char *propertyText;
 } Interaction;
 
 extern Interaction interactions[100];
@@ -74,7 +78,6 @@ extern SDL_Renderer *renderer;
 extern SDL_Texture *tilesetTexture;
 
 void addPlatform(SDL_Rect platform);
-void addPolygonPlatform(SDL_Point* points, int pointCount, SDL_Rect baseRect);
 void addInteraction(SDL_Rect interactionZone, const char* name);
 void checkInteractions(SDL_Rect *playerRect);
 

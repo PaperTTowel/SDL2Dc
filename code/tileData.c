@@ -162,17 +162,23 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                    name ? name->valuestring : "Unnamed",
                    x->valuedouble, y->valuedouble, width->valuedouble, height->valuedouble);
 
-            char *propertyText = NULL;
             if(cJSON_IsArray(properties)){
                 for(int k = 0; k < cJSON_GetArraySize(properties); k++){
                     cJSON *property = cJSON_GetArrayItem(properties, k);
                     cJSON *propName = cJSON_GetObjectItem(property, "name");
                     cJSON *propValue = cJSON_GetObjectItem(property, "value");
 
-                    if(propName && propValue && cJSON_IsString(propName) && cJSON_IsString(propValue)){
-                        if(strcmp(propName->valuestring, "Text") == 0){
-                            propertyText = propValue->valuestring;
+                    if (strcmp(propName->valuestring, "Text") == 0) {
+                        // interaction 객체를 찾기 전에 해당 인덱스를 확인합니다.
+                        // interactions 배열에서 상호작용에 맞는 객체를 찾아서 텍스트 할당
+                        if (interactions[interactionCount].propertyText != NULL) {
+                            free(interactions[interactionCount].propertyText);  // 기존 메모리 해제
                         }
+
+                        // 특정 interaction 객체에 텍스트를 저장합니다.
+                        interactions[interactionCount].propertyText = strdup(propValue->valuestring);
+                        
+                        printf("Loaded text: %s\n", interactions[interactionCount].propertyText);
                     }
                 }
             }
@@ -185,7 +191,8 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                 else if(strcmp(name->valuestring, "roofDoor") == 0 || strcmp(name->valuestring, "blockedDoor") == 0 || 
                         strcmp(name->valuestring, "elevator") == 0 || strcmp(name->valuestring, "1F-4F") == 0 || 
                         strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0 ||
-                        strcmp(name->valuestring, "otherWay") == 0 || strcmp(name->valuestring, "NotElevator") == 0){
+                        strcmp(name->valuestring, "otherWay") == 0 || strcmp(name->valuestring, "NotElevator") == 0 ||
+                        strcmp(name->valuestring, "wrongWay") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
