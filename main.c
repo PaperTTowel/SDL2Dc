@@ -32,7 +32,6 @@ int movingFrameDelay = 70;  // 움직일 때의 프레임 딜레이 (ms)
 int lastFrameTime = 0;
 int eKeyPressed = 0;
 char *propertyText = NULL;
-const char *activeText = NULL;
 
 Map maps[MAX_MAPCOUNT];
 int currentMapCount = 0; // 현재 로드된 맵 수
@@ -91,11 +90,11 @@ void handleInput(const Uint8* state, float deltaTime, TTF_Font *font){
 }
 
 void handleTextInteraction(const Interaction *interaction){
-    printf("now hitting %s\n", interaction->name);
-    if(interaction->propertyText != NULL){  // propertyText가 존재할 경우 출력
-        activeText = interaction->propertyText;
+    if (interaction->propertyText != NULL) {
+        activeTextDisplay.text = interaction->propertyText;  // 텍스트 설정
+        activeTextDisplay.startTime = SDL_GetTicks();        // 표시 시작 시간 기록
+        activeTextDisplay.duration = 3000;                   // 3초 동안 표시
     }
-    printf("propertyText: %s\n", interaction->propertyText);  // 텍스트 확인
 }
 
 void checkInteractions(SDL_Rect *playerRect){
@@ -341,7 +340,7 @@ int main(int argc, char* argv[]){
         updatePhysics();
         updateFrame();
         updateCamera(deltaTime);
-        render(renderer, maps, mapCount, activeText, font);
+        render(renderer, maps, mapCount, activeTextDisplay.text, font);
         updateFPS();
 
         // FPS 제한 (120)

@@ -20,9 +20,8 @@ extern int movingFrameDelay;
 extern int lastFrameTime;
 extern int eKeyPressed;
 extern char *propertyText;
-extern const char *activeText;
 
-typedef struct { // tileData.c 와 연결됨
+typedef struct Map{ // tileData.c 와 연결됨
     int mapWidth;
     int mapHeight;
     int tileWidth;
@@ -35,7 +34,7 @@ typedef struct { // tileData.c 와 연결됨
 extern Map maps[100];
 extern int currentMapCount;
 
-typedef struct { // tileData.c 와 연결됨
+typedef struct Platform{ // tileData.c 와 연결됨
     float x, y, width, height;
     SDL_Point polygon[100];  // 다각형 플랫폼의 점들
     int pointCount;
@@ -44,7 +43,7 @@ typedef struct { // tileData.c 와 연결됨
 extern Platform platforms[100];
 extern int platformCount;
 
-typedef struct { // tileData.c 와 연결됨
+typedef struct Interaction{ // tileData.c 와 연결됨
     float x, y, width, height;
     char name[32];
     char *propertyText;
@@ -54,7 +53,7 @@ extern Interaction interactions[100];
 extern int interactionCount;
 
 // 각 상호작용별로 마지막 상호작용 위치를 저장
-typedef struct {
+typedef struct LastInteraction{
     float x;
     float y;
     char name[100];
@@ -62,16 +61,18 @@ typedef struct {
 
 LastInteraction lastInteractions[100] = {0};  // 최대 상호작용 개수만큼 배열 할당
 
+typedef struct TextDisplay{
+    const char *text;  // 출력할 텍스트
+    Uint32 startTime;  // 텍스트가 표시된 시작 시간
+    Uint32 duration;   // 텍스트 표시 지속 시간
+} TextDisplay;
+
+TextDisplay activeTextDisplay = {NULL, 0, 0};
+
 extern float cameraX;
 extern SDL_Rect camera;
 
 extern SDL_Texture* spriteSheet;
-
-extern int mapWidth;
-extern int mapHeight;
-extern int tileWidth;
-extern int tileHeight;
-extern int *tileData;
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;

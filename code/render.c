@@ -80,10 +80,19 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
     }
 }
 
-void displayText(const char *text, SDL_Renderer *renderer, TTF_Font *font, int x, int y) {
+void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
+    // 텍스트가 없으면 아무것도 표시하지 않음
+    if (activeTextDisplay.text == NULL) return;
+
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - activeTextDisplay.startTime >= activeTextDisplay.duration) {
+        activeTextDisplay.text = NULL;  // 시간이 지나면 텍스트 숨기기
+        return;
+    }
+
     SDL_Color color = {255, 255, 255, 255}; // 흰색 텍스트
-    SDL_Surface *surface = TTF_RenderUTF8_Blended(font, text, color);
-    if(surface == NULL){
+    SDL_Surface *surface = TTF_RenderUTF8_Blended(font, activeTextDisplay.text, color);
+    if (surface == NULL) {
         printf("Failed to render text surface: %s\n", TTF_GetError());
         return;
     }
@@ -141,7 +150,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
 
     // 텍스트 렌더링 (activeText가 NULL이 아닐 경우 출력)
     if(activeText != NULL){
-        displayText(activeText, renderer, font, 100, 100);
+        displayText(renderer, font, 100, 100);
     }
 
     // 렌더링할 캐릭터 크기
