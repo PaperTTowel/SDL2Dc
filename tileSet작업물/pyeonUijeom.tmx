@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="5" nextobjectid="10">
+ <editorsettings>
+  <export target="../tile/pyeonUijeom.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="Tileset00.tsj"/>
+ <layer id="1" name="Background" width="20" height="10">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWwAAoB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAAAAAAAAAAAAfAACgFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAAB8AAGAAAAAAAAAAAB8AAKAFAAAAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYAAAAAAAAAAAHwAAoAMAAKBUAACgVAAAoBkAAMBUAACgVAAAoBkAAMBUAACgVAAAoBkAAMBUAACgVAAAoBkAAMBUAACgVAAAoAMAAGAfAABgAAAAAAAAAAAfAACgAwAAoF4AAKA0AAAANAAAgBYAAAAiAAAAGAAAYBgAAGAYAABgGAAAYBgAAGAiAACAFgAAABYAAAAiAAAgAwAAYB8AAGAAAAAAAAAAAB8AAKADAACgVAAAADUAAAA1AACAFgAAAE4AAABPAAAATwAAAE8AAABPAAAATwAAAE4AAIAWAAAANAAAgBgAAIADAABgHwAAYAAAAAAAAAAAHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgAAAAAAAAAABbAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+  </data>
+ </layer>
+ <objectgroup id="2" name="NoPassing">
+  <object id="2" name="floor" x="72" y="168" width="336" height="24"/>
+  <object id="4" name="wall" x="48" y="72" width="24" height="120"/>
+  <object id="5" name="wall" x="408" y="72" width="24" height="120"/>
+  <object id="9" name="wall" x="360" y="160.02" width="16.8972" height="7.98024"/>
+ </objectgroup>
+ <objectgroup id="3" name="Interaction">
+  <object id="1" name="pyeonUijeom" x="103" y="136" width="34" height="32"/>
+  <object id="8" name="jinYeoldae" x="175" y="136" width="153.929" height="32"/>
+ </objectgroup>
+ <objectgroup id="4" name="NPC">
+  <object id="7" name="alba" x="377" y="144" width="24" height="24"/>
+ </objectgroup>
+</map>

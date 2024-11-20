@@ -5,6 +5,7 @@
         "sdl.h": "c",
         "stdio.h": "c",
         "sdl_image.h": "c",
-        "global.h": "c"
+        "global.h": "c",
+        "crtdbg.h": "c"
     }
 }

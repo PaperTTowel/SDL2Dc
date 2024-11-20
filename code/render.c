@@ -18,7 +18,7 @@ SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
 }
 // 타일을 렌더링하는 함수
 void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
-    int tilesPerRow = 120 / map->tileWidth;
+    int tilesPerRow = 240 / map->tileWidth; // Tileset00.png의 크기가 변경될 경우 이 값을 수정할것
 
     for(int y = 0; y < map->mapHeight; y++){
         for(int x = 0; x < map->mapWidth; x++){

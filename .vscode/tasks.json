@@ -1,0 +1,34 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 활성 파일 빌드",
+            "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+            "args": [
+                "-g",                      // 디버그 정보 포함
+                "-O0",                      // 최적화 끄기
+                "${file}",
+                "-o", "${fileDirname}/${fileBasenameNoExtension}",
+                "-DSDL_MAIN_HANDLED",
+                "-D_CRTDBG_MAP_ALLOC",
+                "-I", "C:\\msys64\\mingw64\\include\\SDL2",
+                "-I", "C:\\msys64\\mingw64\\include\\cjson",
+                "-I", "C:\\msys64\\ucrt64\\include\\SDL2",
+                "-L", "C:\\msys64\\mingw64\\lib",
+                "-lSDL2", "-lSDL2_mixer", "-lSDL2_image", "-lwinmm", "-lcjson", "-lSDL2_ttf"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "디버거에서 생성된 작업입니다."
+        }
+    ],
+    "version": "2.0.0"
+}

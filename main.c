@@ -15,7 +15,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 7000.0f;
+float playerX = 500.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -73,11 +73,12 @@ void handleInput(const Uint8* state, float deltaTime, TTF_Font *font){
     else{ // 정지
         isMoving = 0;
     }
-
+    /*
     if(state[SDL_SCANCODE_SPACE] && !isJumping){ // 점프
         velocityY = -15;
         isJumping = 1;
     }
+    */
     if(state[SDL_SCANCODE_E]){
         if(!eKeyPressed){ // E 키가 처음 눌린 경우
             checkInteractions(&playerRect);
@@ -112,10 +113,13 @@ void checkInteractions(SDL_Rect *playerRect){
 
             // 오브젝트를 찾을 때만 처리
             if(strcmp(interactionZone.name, "1F-outDoor") == 0 ||
-                strcmp(interactionZone.name, "1F-4F") == 0 ||
+                strcmp(interactionZone.name, "1F-3F") == 0 ||
+                strcmp(interactionZone.name, "3F-4F") == 0 ||
                 strcmp(interactionZone.name, "4F-roofF") == 0 ||
                 strcmp(interactionZone.name, "roofDoor") == 0 ||
-                strcmp(interactionZone.name, "elevator") == 0){
+                strcmp(interactionZone.name, "elevator") == 0 ||
+                strcmp(interactionZone.name, "frontDoor") == 0 ||
+                strcmp(interactionZone.name, "pyeonUijeom") == 0){
                 int index = -1;
 
                 // 현재 오브젝트와 동일한 이름을 가진 다른 오브젝트 찾기
@@ -355,6 +359,9 @@ int main(int argc, char* argv[]){
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
             debugLastTime = currentTime;  // 마지막 시간 업데이트
+        }
+        if (event.type == SDL_QUIT) {  // X 버튼을 누른 경우
+            running = SDL_FALSE;  // SDL_BOOL에서 SDL_FALSE 사용
         }
     }
     // 메모리 해제

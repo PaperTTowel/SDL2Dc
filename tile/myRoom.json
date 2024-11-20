@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"HwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAUAAKAfAABgHwAAoAMAAKAWAAAANAAAgBYAAAA0AAAANAAAgBYAAAAiAAAAIgAAgBYAAABGAAAAQwAAAAMAAGAfAABgHwAAoAMAAKAWAAAANQAAgBYAAAA1AAAANQAAgDYAAAArAAAAKwAAgBYAAAAWAAAAFgAAAAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABg",
+         "data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWwAAoB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAUAAKAfAABgHwAAoAMAAKAWAAAAFgAAACoAACA3AACgKgAAoDQAAIAWAAAAFgAAAAMAAKAbAAAAGwAAAAMAAGAfAABgHwAAoAMAAKAjAAAAIgAAgCIAAAAZAAAAIgAAgEIAAIAgAACANgAAAAMAAKAlAAAAJwAAAAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgWwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAABbAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -23,7 +23,7 @@
          "objects":[
                 {
                  "height":24,
-                 "id":1,
+                 "id":2,
                  "name":"floor",
                  "rotation":0,
                  "type":"",
@@ -34,7 +34,7 @@
                 }, 
                 {
                  "height":96,
-                 "id":2,
+                 "id":3,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
@@ -45,7 +45,7 @@
                 }, 
                 {
                  "height":96,
-                 "id":3,
+                 "id":4,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
@@ -66,37 +66,48 @@
          "name":"Interaction",
          "objects":[
                 {
-                 "height":31.9375,
-                 "id":4,
-                 "name":"elevator",
+                 "height":24,
+                 "id":6,
+                 "name":"frontDoor",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":33.875,
-                 "x":127,
-                 "y":112.091
+                 "width":13.9688,
+                 "x":269,
+                 "y":120
                 }, 
                 {
-                 "height":32.0909,
+                 "height":24,
                  "id":7,
-                 "name":"1F-3F",
+                 "name":"bathRoom",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":34.2159,
-                 "x":198.909,
-                 "y":112
+                 "width":13.9688,
+                 "x":197.197,
+                 "y":120
                 }, 
                 {
-                 "height":31.9375,
-                 "id":9,
-                 "name":"1F-outDoor",
+                 "height":8.03409090909091,
+                 "id":8,
+                 "name":"bed",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16.9688,
-                 "x":72,
-                 "y":112.063
+                 "width":41,
+                 "x":48,
+                 "y":135.965909090909
+                }, 
+                {
+                 "height":32.0869565217391,
+                 "id":9,
+                 "name":"frige",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":17.0122782608696,
+                 "x":167.924690909091,
+                 "y":112.00395256917
                 }],
          "opacity":1,
          "type":"objectgroup",

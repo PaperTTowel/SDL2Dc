@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"HwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAUAAKAfAABgHwAAoAMAAKAWAAAANAAAgBYAAAA0AAAANAAAgBYAAAAiAAAAIgAAgBYAAABGAAAAQwAAAAMAAGAfAABgHwAAoAMAAKAWAAAANQAAgBYAAAA1AAAANQAAgDYAAAArAAAAKwAAgBYAAAAWAAAAFgAAAAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABg",
+         "data":"HwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgKQAA4AMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMApAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAANAAAADQAAIAWAAAAIgAAACIAAIAWAAAARQAAAEMAAAAfAABgHwAAoCAAAAAWAAAAFgAAACAAAAAWAAAANQAAADUAAIA2AAAAKwAAACsAAIAsAAAALAAAgBYAAAAfAABgKQAAoAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAApAAAgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABgHwAAoBYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAfAABg",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -28,8 +28,8 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":264,
-                 "x":48,
+                 "width":312,
+                 "x":24,
                  "y":144
                 }, 
                 {
@@ -40,7 +40,7 @@
                  "type":"",
                  "visible":true,
                  "width":24,
-                 "x":24,
+                 "x":0,
                  "y":72
                 }, 
                 {
@@ -51,7 +51,7 @@
                  "type":"",
                  "visible":true,
                  "width":24,
-                 "x":312,
+                 "x":336,
                  "y":72
                 }],
          "opacity":1,
@@ -63,40 +63,68 @@
         {
          "draworder":"topdown",
          "id":3,
-         "name":"Interaction",
+         "name":"interactionZone",
          "objects":[
                 {
                  "height":31.9375,
-                 "id":4,
-                 "name":"elevator",
+                 "id":9,
+                 "name":"NotElevator",
+                 "properties":[
+                        {
+                         "name":"Text",
+                         "type":"string",
+                         "value":"\ub2f9\uc2e0\uc740 \uba40\uca61\ud55c \ub450 \ub2e4\ub9ac\ub97c \uacc4\ub2e8\uc5d0 \uc0ac\uc6a9\ud558\uace0 \uc2f6\ub2e4\ub294 \ucda9\ub3cc\uc744 \ub290\ub08d\ub2c8\ub2e4."
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":33.875,
-                 "x":127,
+                 "x":151,
                  "y":112.091
                 }, 
                 {
+                 "height":24,
+                 "id":10,
+                 "name":"blockedDoor",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":13.9688,
+                 "x":101,
+                 "y":120.091
+                }, 
+                {
+                 "height":24,
+                 "id":11,
+                 "name":"blockedDoor",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":13.9688,
+                 "x":29,
+                 "y":120.091
+                }, 
+                {
                  "height":32.0909,
-                 "id":7,
-                 "name":"1F-3F",
+                 "id":12,
+                 "name":"3F-4F",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":34.2159,
-                 "x":198.909,
+                 "x":222.909,
                  "y":112
                 }, 
                 {
-                 "height":31.9375,
-                 "id":9,
-                 "name":"1F-outDoor",
+                 "height":10,
+                 "id":13,
+                 "name":"1F-3F",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16.9688,
-                 "x":72,
-                 "y":112.063
+                 "width":36.0682,
+                 "x":270,
+                 "y":134.091
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -105,7 +133,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":10,
+ "nextobjectid":14,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
