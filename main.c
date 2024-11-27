@@ -92,7 +92,7 @@ void handleInput(const Uint8* state, float deltaTime, TTF_Font *font){
 
 void handleTextInteraction(const Interaction *interaction){
     if (interaction->propertyText != NULL) {
-        activeTextDisplay.text = interaction->propertyText;  // 텍스트 설정
+        activeTextDisplay.text = interaction->propertyText;  // 텍스트 복사
         activeTextDisplay.startTime = SDL_GetTicks();        // 표시 시작 시간 기록
         activeTextDisplay.duration = 3000;                   // 3초 동안 표시
     }
@@ -111,7 +111,7 @@ void checkInteractions(SDL_Rect *playerRect){
             (playerYWithCamera < (interactionZone.y + interactionZone.height)) &&
             ((playerYWithCamera + playerRect->h) > interactionZone.y)){
 
-            // 오브젝트를 찾을 때만 처리
+            // 이동 오브젝트 처리
             if(strcmp(interactionZone.name, "1F-outDoor") == 0 ||
                 strcmp(interactionZone.name, "1F-3F") == 0 ||
                 strcmp(interactionZone.name, "3F-4F") == 0 ||
@@ -147,9 +147,15 @@ void checkInteractions(SDL_Rect *playerRect){
                     return;  // 텔레포트 후 종료
                 }
             }
+            // 속성값 Text의 텍스트 처리
             else if(strcmp(interactionZone.name, "otherWay") == 0 ||
-                strcmp(interactionZone.name, "wrongWay") == 0){
+                    strcmp(interactionZone.name, "wrongWay") == 0 ||
+                    strcmp(interactionZone.name, "jinYeoldae") == 0){
                 handleTextInteraction(&interactionZone);
+            }
+            // 상점
+            else if(strcmp(interactionZone.name, "buy") == 0){
+                // 상점기능
             }
         }
     }

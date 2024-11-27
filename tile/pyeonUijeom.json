@@ -55,15 +55,15 @@
                  "y":72
                 }, 
                 {
-                 "height":7.98023715415019,
+                 "height":7.98024,
                  "id":9,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":16.897233201581,
+                 "width":16.8972,
                  "x":360,
-                 "y":160.01976284585
+                 "y":160.02
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -91,12 +91,45 @@
                  "height":32,
                  "id":8,
                  "name":"jinYeoldae",
+                 "properties":[
+                        {
+                         "name":"Text",
+                         "type":"string",
+                         "value":"dsdsdds"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":153.928853754941,
+                 "width":153.929,
                  "x":175,
                  "y":136
+                }, 
+                {
+                 "height":24,
+                 "id":10,
+                 "name":"buy",
+                 "properties":[
+                        {
+                         "name":"\uc601\uc591\uc824\ub9ac",
+                         "type":"int",
+                         "value":3
+                        }, 
+                        {
+                         "name":"\ucef5\ub77c\uba74",
+                         "type":"int",
+                         "value":10
+                        }, 
+                        {
+                         "name":"\ud3b8\uc758\uc810 \ub3c4\uc2dc\ub77d",
+                         "type":"int",
+                         "value":5
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":24,
+                 "x":336,
+                 "y":144
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -127,7 +160,7 @@
          "y":0
         }],
  "nextlayerid":5,
- "nextobjectid":10,
+ "nextobjectid":12,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

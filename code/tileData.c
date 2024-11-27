@@ -168,10 +168,10 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                     cJSON *propName = cJSON_GetObjectItem(property, "name");
                     cJSON *propValue = cJSON_GetObjectItem(property, "value");
 
-                    if (strcmp(propName->valuestring, "Text") == 0) {
+                    if(strcmp(propName->valuestring, "Text") == 0){
                         // interaction 객체를 찾기 전에 해당 인덱스를 확인합니다.
                         // interactions 배열에서 상호작용에 맞는 객체를 찾아서 텍스트 할당
-                        if (interactions[interactionCount].propertyText != NULL) {
+                        if(interactions[interactionCount].propertyText != NULL){
                             free(interactions[interactionCount].propertyText);  // 기존 메모리 해제
                         }
 
@@ -179,6 +179,15 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         interactions[interactionCount].propertyText = strdup(propValue->valuestring);
                         
                         printf("Loaded text: %s\n", interactions[interactionCount].propertyText);
+                    }
+                    else if(propName && cJSON_IsString(propName) && propValue && cJSON_IsNumber(propValue)){
+                        // Shop items 배열에 구매 제한 속성 저장
+                        strncpy(items[itemCount].name, propName->valuestring, sizeof(items[itemCount].name) - 1);
+                        items[itemCount].name[sizeof(items[itemCount].name) - 1] = '\0';  // Null-terminate
+                        items[itemCount].value = propValue->valueint;
+
+                        printf("Loaded property: %s = %d\n", items[itemCount].name, items[itemCount].value);
+                        itemCount++;
                     }
                 }
             }
@@ -194,7 +203,7 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0 ||
                         strcmp(name->valuestring, "otherWay") == 0 || strcmp(name->valuestring, "NotElevator") == 0 ||
                         strcmp(name->valuestring, "wrongWay") == 0 || strcmp(name->valuestring, "frontDoor") == 0 ||
-                        strcmp(name->valuestring, "pyeonUijeom") == 0){
+                        strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }

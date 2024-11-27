@@ -150,7 +150,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
 
     // 텍스트 렌더링 (activeText가 NULL이 아닐 경우 출력)
     if(activeText != NULL){
-        displayText(renderer, font, 100, 100);
+        displayText(renderer, font, playerX - camera.x - 12, playerY - camera.y - 24);
     }
 
     // 렌더링할 캐릭터 크기

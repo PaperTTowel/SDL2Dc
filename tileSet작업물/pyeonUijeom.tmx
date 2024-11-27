@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="5" nextobjectid="10">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="5" nextobjectid="12">
  <editorsettings>
   <export target="../tile/pyeonUijeom.json" format="json"/>
  </editorsettings>
@@ -17,7 +17,18 @@
  </objectgroup>
  <objectgroup id="3" name="Interaction">
   <object id="1" name="pyeonUijeom" x="103" y="136" width="34" height="32"/>
-  <object id="8" name="jinYeoldae" x="175" y="136" width="153.929" height="32"/>
+  <object id="8" name="jinYeoldae" x="175" y="136" width="153.929" height="32">
+   <properties>
+    <property name="Text" value="dsdsdds"/>
+   </properties>
+  </object>
+  <object id="10" name="buy" x="336" y="144" width="24" height="24">
+   <properties>
+    <property name="영양젤리" type="int" value="3"/>
+    <property name="컵라면" type="int" value="10"/>
+    <property name="편의점 도시락" type="int" value="5"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="4" name="NPC">
   <object id="7" name="alba" x="377" y="144" width="24" height="24"/>

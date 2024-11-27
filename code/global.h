@@ -69,6 +69,19 @@ typedef struct TextDisplay{
 
 TextDisplay activeTextDisplay = {NULL, 0, 0};
 
+typedef struct ShopItem{
+    char name[32];
+    int value;     // 구매 제한
+} Shop;
+
+Shop items[10];  // 최대 10개 적재 가능
+int itemCount = 0; // 현재 상점의 아이템 개수
+
+typedef struct Inventory{
+    char name[32];  // 소지 아이템 이름
+    int quantity;   // 소지 아이템 개수
+} Inventory;
+
 extern float cameraX;
 extern SDL_Rect camera;
 
