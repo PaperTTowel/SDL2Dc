@@ -111,6 +111,54 @@ void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
     SDL_FreeSurface(surface);
 }
 
+void renderShop(SDL_Renderer *renderer, Shop *shop, TTF_Font *font){
+    // 상점 UI 배경
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);  // 어두운 반투명 배경
+    SDL_Rect bgRect = {100, 100, 600, 400};  // 상점 UI 크기
+    SDL_Color BasicColor = {255, 255, 255, 255}; // 흰색 텍스트
+    SDL_Color YelloColor = {255, 255, 0, 255}; // 노란색 텍스트
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // 상점 제목
+    renderText(renderer, "편의점", 150, 120, font, BasicColor);  // 상점 텍스트
+
+    // 현재 골드 표시
+    char goldText[64];  // 골드 값을 문자열로 변환할 버퍼
+    sprintf(goldText, "현재 돈: %d", playerGold);  // playerGold 값을 문자열로 변환
+    renderText(renderer, goldText, 150, 150, font, YelloColor);  // 변환된 골드 값 표시
+
+    // 아이템 목록 렌더링
+    for(int i = 0; i < itemCount; i++){
+        int yPos = 200 + i * 40;  // 각 아이템의 y 위치
+
+        // 선택된 아이템 강조
+        SDL_Color itemColor = (i == shop->selectedItem) ? YelloColor : BasicColor;
+        renderText(renderer, items[i].name, 150, yPos, font, itemColor);
+        char priceText[64];
+        sprintf(priceText, "가격: %d", getItemPrice(items[i].name));
+        renderText(renderer, priceText, 400, yPos, font, itemColor);
+        char stockText[64];
+        sprintf(stockText, "재고: %d", items[i].stock);
+        renderText(renderer, stockText, 600, yPos, font, itemColor);
+    }
+
+    // 구매 버튼
+    renderText(renderer, "구매 (Enter)", 150, 350, font, BasicColor);
+
+    // ESC 버튼
+    renderText(renderer, "상점 닫기 (ESC)", 450, 350, font, BasicColor);
+}
+
+// 텍스트 렌더링 함수
+void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color){
+    SDL_Surface *textSurface = TTF_RenderUTF8_Blended(font, text, color);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
 void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *activeText, TTF_Font *font){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -151,6 +199,10 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
     // 텍스트 렌더링 (activeText가 NULL이 아닐 경우 출력)
     if(activeText != NULL){
         displayText(renderer, font, playerX - camera.x - 12, playerY - camera.y - 24);
+    }
+
+    if(isShopVisible == SDL_TRUE){
+        renderShop(renderer, &shop, font);  // 상점 UI를 렌더링
     }
 
     // 렌더링할 캐릭터 크기

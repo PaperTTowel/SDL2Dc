@@ -72,10 +72,15 @@ TextDisplay activeTextDisplay = {NULL, 0, 0};
 typedef struct ShopItem{
     char name[32];
     int value;     // 구매 제한
+    int stock;
+    int selectedItem;
 } Shop;
 
 Shop items[10];  // 최대 10개 적재 가능
 int itemCount = 0; // 현재 상점의 아이템 개수
+
+SDL_bool isShopVisible = SDL_FALSE;  // 상점 UI 상태
+Shop shop = {0};             // 상점 데이터 구조체
 
 typedef struct Inventory{
     char name[32];  // 소지 아이템 이름
@@ -91,8 +96,12 @@ extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern SDL_Texture *tilesetTexture;
 
+extern int playerGold;
+
 void addPlatform(SDL_Rect platform);
 void addInteraction(SDL_Rect interactionZone, const char* name);
 void checkInteractions(SDL_Rect *playerRect);
+int getItemPrice(const char *itemName);
+void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color);
 
 #endif // GLOBALS_H

@@ -7,6 +7,7 @@
 
 #include "code\tileData.c"
 #include "code\render.c"
+#include "code\handleInfo.c"
 #include "code\update.c"
 
 #define MAX_MAPCOUNT 100
@@ -15,7 +16,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 500.0f;
+float playerX = 15500.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -56,46 +57,17 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *tilesetTexture = NULL;
 
-void handleInput(const Uint8* state, float deltaTime, TTF_Font *font){
-    const float baseSpeed = 300.0f;  // 기본 속도 (픽셀/초)
-    float playerSpeed = baseSpeed * deltaTime;  // 델타 타임을 반영한 속도 계산
+int playerGold = 10000;
 
-    if(state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A]){ // 좌측 이동
-        playerX -= playerSpeed;
-        direction = -1;
-        isMoving = 1;
+int getItemPrice(const char *itemName){
+    if (strcmp(itemName, "영양젤리") == 0) {
+        return 1000;
+    } else if (strcmp(itemName, "컵라면") == 0) {
+        return 1400;
+    } else if (strcmp(itemName, "편의점 도시락") == 0) {
+        return 2100;
     }
-    else if(state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D]){ // 우측 이동
-        playerX += playerSpeed;
-        direction = 1;
-        isMoving = 1;
-    }
-    else{ // 정지
-        isMoving = 0;
-    }
-    /*
-    if(state[SDL_SCANCODE_SPACE] && !isJumping){ // 점프
-        velocityY = -15;
-        isJumping = 1;
-    }
-    */
-    if(state[SDL_SCANCODE_E]){
-        if(!eKeyPressed){ // E 키가 처음 눌린 경우
-            checkInteractions(&playerRect);
-            eKeyPressed = 1; // E 키가 눌린 상태로 설정
-        }
-    }
-    else{
-        eKeyPressed = 0; // E 키가 떼어졌을 경우 상태 초기화
-    }
-}
-
-void handleTextInteraction(const Interaction *interaction){
-    if (interaction->propertyText != NULL) {
-        activeTextDisplay.text = interaction->propertyText;  // 텍스트 복사
-        activeTextDisplay.startTime = SDL_GetTicks();        // 표시 시작 시간 기록
-        activeTextDisplay.duration = 3000;                   // 3초 동안 표시
-    }
+    return 0; // 기본값
 }
 
 void checkInteractions(SDL_Rect *playerRect){
@@ -155,7 +127,9 @@ void checkInteractions(SDL_Rect *playerRect){
             }
             // 상점
             else if(strcmp(interactionZone.name, "buy") == 0){
-                // 상점기능
+                if(!isShopVisible){
+                    isShopVisible = SDL_TRUE;  // UI 활성화
+                }
             }
         }
     }
@@ -346,7 +320,12 @@ int main(int argc, char* argv[]){
         float deltaTime = (currentTime - lastTime) / 1000.0f; // 초 단위로 델타 타임 계산
         lastTime = currentTime;
 
-        handleInput(state, deltaTime, font);
+        if(!isShopVisible){
+            handleInput(state, deltaTime, font);
+        }
+        if(isShopVisible){
+            handleShopInput(&shop, &playerGold);  // 플레이어 골드 포인터를 전달
+        }
         updatePhysics();
         updateFrame();
         updateCamera(deltaTime);

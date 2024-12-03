@@ -185,8 +185,10 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strncpy(items[itemCount].name, propName->valuestring, sizeof(items[itemCount].name) - 1);
                         items[itemCount].name[sizeof(items[itemCount].name) - 1] = '\0';  // Null-terminate
                         items[itemCount].value = propValue->valueint;
+                        items[itemCount].stock = propValue->valueint;
 
                         printf("Loaded property: %s = %d\n", items[itemCount].name, items[itemCount].value);
+                        printf("item stock has been saved: %s = %d\n", items[itemCount].name, items[itemCount].stock);
                         itemCount++;
                     }
                 }
