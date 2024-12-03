@@ -4,12 +4,11 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/msys64/mingw64/include/SDL2",
                 "C:/msys64/ucrt64/include/SDL2",
                 "C:/msys64/usr/include",
-                "C:/msys64/mingw64/include",
-                "C:/msys64/mingw64/include/cjson",
-                "C:/msys64/mingw64/include/"
+                "C:/msys64/ucrt64/include",
+                "C:/msys64/ucrt64/include/cjson",
+                "C:/msys64/ucrt64/include/SDL2/SDL_ttf.h"
             ],
             "defines": [
                 "_DEBUG",
