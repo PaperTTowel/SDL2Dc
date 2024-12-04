@@ -88,26 +88,38 @@
                  "y":120
                 }, 
                 {
-                 "height":8.03409090909091,
+                 "height":8.03409,
                  "id":8,
                  "name":"bed",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":5
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":41,
                  "x":48,
-                 "y":135.965909090909
+                 "y":135.966
                 }, 
                 {
-                 "height":32.0869565217391,
+                 "height":32.087,
                  "id":9,
                  "name":"frige",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":4
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":17.0122782608696,
-                 "x":167.924690909091,
-                 "y":112.00395256917
+                 "width":17.0123,
+                 "x":167.925,
+                 "y":112.004
                 }],
          "opacity":1,
          "type":"objectgroup",

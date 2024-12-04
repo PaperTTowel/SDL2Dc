@@ -47,6 +47,7 @@ typedef struct Interaction{ // tileData.c 와 연결됨
     float x, y, width, height;
     char name[32];
     char *propertyText;
+    int eventID;
 } Interaction;
 
 extern Interaction interactions[100];

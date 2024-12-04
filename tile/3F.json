@@ -63,7 +63,7 @@
         {
          "draworder":"topdown",
          "id":3,
-         "name":"interactionZone",
+         "name":"interaction",
          "objects":[
                 {
                  "height":31.9375,
@@ -86,6 +86,12 @@
                  "height":24,
                  "id":10,
                  "name":"blockedDoor",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":1
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -97,6 +103,12 @@
                  "height":24,
                  "id":11,
                  "name":"blockedDoor",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":2
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

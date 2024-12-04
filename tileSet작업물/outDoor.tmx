@@ -27,7 +27,7 @@
   </object>
   <object id="14" name="wrongWay" x="535" y="160" width="34" height="32">
    <properties>
-    <property name="Text" value="들어가서 뭐하게?"/>
+    <property name="Text" value="들어갈 필요는 없다."/>
    </properties>
   </object>
   <object id="15" name="pyeonUijeom" x="343" y="160" width="34" height="32"/>

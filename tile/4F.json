@@ -86,6 +86,12 @@
                  "height":24,
                  "id":2,
                  "name":"blockedDoor",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":3
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

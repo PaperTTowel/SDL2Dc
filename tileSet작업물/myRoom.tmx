@@ -17,7 +17,15 @@
  <objectgroup id="3" name="Interaction">
   <object id="6" name="frontDoor" x="269" y="120" width="13.9688" height="24"/>
   <object id="7" name="bathRoom" x="197.197" y="120" width="13.9688" height="24"/>
-  <object id="8" name="bed" x="48" y="135.966" width="41" height="8.03409"/>
-  <object id="9" name="frige" x="167.925" y="112.004" width="17.0123" height="32.087"/>
+  <object id="8" name="bed" x="48" y="135.966" width="41" height="8.03409">
+   <properties>
+    <property name="eventID" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="9" name="frige" x="167.925" y="112.004" width="17.0123" height="32.087">
+   <properties>
+    <property name="eventID" type="int" value="4"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

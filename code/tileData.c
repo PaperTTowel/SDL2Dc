@@ -181,15 +181,22 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         printf("Loaded text: %s\n", interactions[interactionCount].propertyText);
                     }
                     else if(propName && cJSON_IsString(propName) && propValue && cJSON_IsNumber(propValue)){
-                        // Shop items 배열에 구매 제한 속성 저장
-                        strncpy(items[itemCount].name, propName->valuestring, sizeof(items[itemCount].name) - 1);
-                        items[itemCount].name[sizeof(items[itemCount].name) - 1] = '\0';  // Null-terminate
-                        items[itemCount].value = propValue->valueint;
-                        items[itemCount].stock = propValue->valueint;
+                        if(strcmp(propName->valuestring, "eventID") != 0){
+                            // Shop items 배열에 구매 제한 속성 저장
+                            strncpy(items[itemCount].name, propName->valuestring, sizeof(items[itemCount].name) - 1);
+                            items[itemCount].name[sizeof(items[itemCount].name) - 1] = '\0';  // Null-terminate
+                            items[itemCount].value = propValue->valueint;
+                            items[itemCount].stock = propValue->valueint;
 
-                        printf("Loaded property: %s = %d\n", items[itemCount].name, items[itemCount].value);
-                        printf("item stock has been saved: %s = %d\n", items[itemCount].name, items[itemCount].stock);
-                        itemCount++;
+                            printf("Loaded property: %s = %d\n", items[itemCount].name, items[itemCount].value);
+                            printf("item stock has been saved: %s = %d\n", items[itemCount].name, items[itemCount].stock);
+                            itemCount++;
+                        }
+                        else if(strcmp(propName->valuestring, "eventID") == 0){
+                            // 특정 interaction 객체에 eventID를 저장
+                            interactions[interactionCount].eventID = propValue->valueint;
+                            printf("Loaded eventID: %d for interaction: %s\n", interactions[interactionCount].eventID, interactions[interactionCount].name);
+                        }
                     }
                 }
             }
@@ -205,7 +212,8 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0 ||
                         strcmp(name->valuestring, "otherWay") == 0 || strcmp(name->valuestring, "NotElevator") == 0 ||
                         strcmp(name->valuestring, "wrongWay") == 0 || strcmp(name->valuestring, "frontDoor") == 0 ||
-                        strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0){
+                        strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0 ||
+                        strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }

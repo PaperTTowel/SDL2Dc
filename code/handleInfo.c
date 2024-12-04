@@ -80,3 +80,23 @@ void handleShopInput(Shop *shop, int *playerGold) {
     // 현재 키 상태를 이전 키 상태로 복사
     memcpy(previousState, state, SDL_NUM_SCANCODES);
 }
+
+void handleEvent(int eventID){
+    switch(eventID){
+        case 1:
+            printf("event 1\n");
+            break;
+        case 2:
+            printf("event 2\n");
+            break;
+        case 3:
+            printf("event 3\n");
+            break;
+        case 4:
+            printf("event 4\n");
+            break;
+        case 5:
+            printf("event 5\n");
+            break;
+    }
+}

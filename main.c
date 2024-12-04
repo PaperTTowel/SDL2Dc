@@ -16,7 +16,7 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 15500.0f;
+float playerX = 500.0f;
 float playerY = 500.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
@@ -130,6 +130,12 @@ void checkInteractions(SDL_Rect *playerRect){
                 if(!isShopVisible){
                     isShopVisible = SDL_TRUE;  // UI 활성화
                 }
+            }
+            // 이벤트 시스템
+            else if(strcmp(interactionZone.name, "blockedDoor") == 0 ||
+                    strcmp(interactionZone.name, "frige") == 0 ||
+                    strcmp(interactionZone.name, "bed") == 0){
+                handleEvent(interactions[i].eventID);
             }
         }
     }
