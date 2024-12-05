@@ -326,11 +326,14 @@ int main(int argc, char* argv[]){
         float deltaTime = (currentTime - lastTime) / 1000.0f; // 초 단위로 델타 타임 계산
         lastTime = currentTime;
 
-        if(!isShopVisible){
+        if(!isShopVisible && !isMiniGameActive){
             handleInput(state, deltaTime, font);
         }
         if(isShopVisible){
-            handleShopInput(&shop, &playerGold);  // 플레이어 골드 포인터를 전달
+            handleShopInput(&shop, &playerGold);
+        }
+        if(isMiniGameActive){
+            updateMiniGame(font);
         }
         updatePhysics();
         updateFrame();

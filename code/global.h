@@ -99,6 +99,18 @@ extern SDL_Texture *tilesetTexture;
 
 extern int playerGold;
 
+// 띵동대쉬 초당 16연타 이벤트 변수 (구조체로 하기 귀찮음;;)
+SDL_Color BasicColor = {255, 255, 255, 255}; // 흰색 텍스트
+SDL_Color YelloColor = {255, 255, 0, 255}; // 노란색 텍스트
+SDL_Color textEventColor;
+int fontSize = 24;
+char buffer[64];
+SDL_bool isMiniGameActive = SDL_FALSE;
+Uint32 miniGameStartTime = 0;
+int spaceBarCount = 0;
+Uint32 effectStartTime = 0; // 텍스트 효과 시작 시간
+SDL_bool isEffectActive = SDL_FALSE;
+
 void addPlatform(SDL_Rect platform);
 void addInteraction(SDL_Rect interactionZone, const char* name);
 void checkInteractions(SDL_Rect *playerRect);

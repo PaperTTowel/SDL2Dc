@@ -115,8 +115,6 @@ void renderShop(SDL_Renderer *renderer, Shop *shop, TTF_Font *font){
     // 상점 UI 배경
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);  // 어두운 반투명 배경
     SDL_Rect bgRect = {100, 100, 600, 400};  // 상점 UI 크기
-    SDL_Color BasicColor = {255, 255, 255, 255}; // 흰색 텍스트
-    SDL_Color YelloColor = {255, 255, 0, 255}; // 노란색 텍스트
     SDL_RenderFillRect(renderer, &bgRect);
 
     // 상점 제목
@@ -157,6 +155,23 @@ void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font
     SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
+}
+// 이벤트 전용 텍스트 렌더링 함수
+void renderEventText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, int y, int fontSize, SDL_Color color) {
+    TTF_Font *scaledFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize); // 동적으로 크기 조정
+    if (!scaledFont) {
+        printf("Failed to load font: %s\n", TTF_GetError());
+        return;
+    }
+
+    SDL_Surface *textSurface = TTF_RenderUTF8_Blended(scaledFont, text, color);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Rect textRect = {x, y, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(scaledFont);
 }
 
 void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *activeText, TTF_Font *font){
@@ -203,6 +218,10 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
 
     if(isShopVisible == SDL_TRUE){
         renderShop(renderer, &shop, font);  // 상점 UI를 렌더링
+    }
+
+    if(isMiniGameActive == SDL_TRUE){
+        renderEventText(renderer, font, buffer, 100, 100, fontSize, textEventColor);
     }
 
     // 렌더링할 캐릭터 크기
