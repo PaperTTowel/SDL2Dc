@@ -104,8 +104,15 @@ void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
         return;
     }
 
-    SDL_Rect destRect = {x, y, surface->w, surface->h};
-    SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    if(activeTextDisplay.text == buffer){
+        SDL_Rect destRect = {100, 100, surface->w, surface->h};
+        SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    }
+    else{
+        SDL_Rect destRect = {x, y, surface->w, surface->h};
+        SDL_RenderCopy(renderer, texture, NULL, &destRect);
+    }
+
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);

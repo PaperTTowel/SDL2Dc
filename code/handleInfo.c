@@ -86,53 +86,6 @@ void startDingDongDashMiniGame(){
     isMiniGameActive = SDL_TRUE;
     miniGameStartTime = SDL_GetTicks();
     spaceBarCount = 0;
-    printf("MiniGame Started! Press Spacebar as fast as you can!\n");
-}
-
-void updateMiniGame(TTF_Font *font){
-    if (!isMiniGameActive) return;
-    static Uint8 previousState[SDL_NUM_SCANCODES] = {0};  // 이전 키 상태 저장
-    const Uint8 *state = SDL_GetKeyboardState(NULL);      // 현재 키 상태 가져오기
-
-    Uint32 currentTime = SDL_GetTicks();
-    Uint32 elapsedTime = (currentTime - miniGameStartTime) / 1000; // 초 단위
-
-    // 스페이스바가 눌린 상태인지 확인
-    if(state[SDL_SCANCODE_SPACE] && !previousState[SDL_SCANCODE_SPACE]){
-        spaceBarCount++;
-        SDL_Delay(50); // 너무 빠른 반복 입력 방지
-    }
-    memcpy(previousState, state, SDL_NUM_SCANCODES);
-
-    // 5초가 지나면 미니게임 종료
-    if(elapsedTime >= 5){
-        SDL_Delay(2000);
-        isMiniGameActive = SDL_FALSE;
-    }
-
-    // 텍스트 효과 활성화 (10단위 카운트마다)
-    if(spaceBarCount % 10 == 0 && spaceBarCount > 0 && !isEffectActive){
-        isEffectActive = SDL_TRUE;
-        effectStartTime = currentTime;
-    }
-
-    // 텍스트 효과: 크기와 색상 변경
-    fontSize = 24;
-    textEventColor = BasicColor;
-
-    if(isEffectActive){
-        Uint32 effectElapsedTime = currentTime - effectStartTime;
-
-        if (effectElapsedTime < 165){ // 0~300ms 동안 효과 적용
-            fontSize = 32; // 텍스트 크기를 키움
-            textEventColor = YelloColor; // 노란색으로 변경
-        }
-        else{
-            isEffectActive = SDL_FALSE; // 효과 종료
-        }
-    }
-
-    sprintf(buffer, "띵동대쉬: %d, 초당 %d연타!", spaceBarCount, spaceBarCount / 5);
 }
 
 // 이벤트 구분

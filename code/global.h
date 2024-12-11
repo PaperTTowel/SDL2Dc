@@ -77,11 +77,11 @@ typedef struct ShopItem{
     int selectedItem;
 } Shop;
 
-Shop items[10];  // 최대 10개 적재 가능
+Shop items[10];    // 최대 10개 적재 가능
 int itemCount = 0; // 현재 상점의 아이템 개수
 
 SDL_bool isShopVisible = SDL_FALSE;  // 상점 UI 상태
-Shop shop = {0};             // 상점 데이터 구조체
+Shop shop = {0};                     // 상점 데이터 구조체
 
 typedef struct Inventory{
     char name[32];  // 소지 아이템 이름
@@ -101,7 +101,7 @@ extern int playerGold;
 
 // 띵동대쉬 초당 16연타 이벤트 변수 (구조체로 하기 귀찮음;;)
 SDL_Color BasicColor = {255, 255, 255, 255}; // 흰색 텍스트
-SDL_Color YelloColor = {255, 255, 0, 255}; // 노란색 텍스트
+SDL_Color YelloColor = {255, 255, 0, 255};   // 노란색 텍스트
 SDL_Color textEventColor;
 int fontSize = 24;
 char buffer[64];
@@ -111,10 +111,25 @@ int spaceBarCount = 0;
 Uint32 effectStartTime = 0; // 텍스트 효과 시작 시간
 SDL_bool isEffectActive = SDL_FALSE;
 
+typedef struct tileAnimation {
+    int eventID;           // 애니메이션 관련 eventID
+    float x, y;            // 렌더링 좌표
+    int frameCount;        // 총 프레임 수
+    int currentFrame;      // 현재 프레임 인덱스
+    Uint32 frameDuration;  // 각 프레임의 지속 시간 (밀리초)
+    Uint32 lastFrameTime;  // 마지막 프레임 변경 시간
+    SDL_Texture **frames;  // 프레임 이미지 배열
+    SDL_bool isActive;     // 애니메이션 활성화 여부
+    SDL_bool isFinished;   // 애니메이션이 끝났는지 여부
+} tileAnimation;
+
+tileAnimation animations[100];  // 애니메이션 배열
+int animationCount = 0;  // 현재 활성화된 애니메이션 수
+
 void addPlatform(SDL_Rect platform);
 void addInteraction(SDL_Rect interactionZone, const char* name);
 void checkInteractions(SDL_Rect *playerRect);
 int getItemPrice(const char *itemName);
 void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color);
 
-#endif // GLOBALS_H
+#endif // GLOBALS.H
