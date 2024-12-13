@@ -10,19 +10,24 @@ void updateFrame(){
     }
 }
 
-void updateAnimation(tileAnimation *animation) {
-    if (!animation->isActive || animation->isFinished) return;
+void updateAnimation(tileAnimation *animation){
+    if(!animation->isActive || animation->isFinished){
+        return; // 활성화되지 않았거나 이미 종료된 애니메이션은 업데이트하지 않음
+    }
+    else if(animation->isActive && !animation->isFinished){
+        Uint32 currentTime = SDL_GetTicks();
 
-    Uint32 currentTime = SDL_GetTicks();
-    if (currentTime - animation->lastFrameTime >= animation->frameDuration) {
-        animation->currentFrame++;
-        animation->lastFrameTime = currentTime;
+        // 프레임 갱신
+        if(currentTime - animation->lastFrameTime >= animation->frameDuration){
+            animation->lastFrameTime = currentTime;
+            animation->currentFrame++;
 
-        // 애니메이션 마지막 프레임에 도달하면 정지
-        if (animation->currentFrame >= animation->frameCount) {
-            animation->currentFrame = animation->frameCount - 1; // 마지막 프레임 고정
-            animation->isActive = SDL_FALSE;
-            animation->isFinished = SDL_TRUE;
+            // 마지막 프레임에 도달하면 멈춤
+            if(animation->currentFrame >= animation->frameCount){
+                animation->currentFrame = animation->frameCount - 1; // 마지막 프레임에서 멈춤
+                animation->isActive = SDL_FALSE;                     // 재생 종료
+                animation->isFinished = SDL_TRUE;                    // 완료 상태로 설정
+            }
         }
     }
 }
@@ -50,6 +55,14 @@ void updateMiniGame(TTF_Font *font){
         activeTextDisplay.text = buffer;
         activeTextDisplay.startTime = currentTime;
         activeTextDisplay.duration = 2000; // 2초 동안 표시
+
+        // 관련 애니메이션 활성화
+        for(int i = 0; i < animationCount; i++){
+            if(animations[i].eventID == 1){  // 특정 eventID 확인 (예: 1번 이벤트)
+                animations[i].isActive = SDL_TRUE;  // 애니메이션 재생 시작
+                printf("Animation with eventID %d activated.\n", animations[i].eventID);
+            }
+        }
     }
 
     // 텍스트 효과 활성화 (10단위 카운트마다)

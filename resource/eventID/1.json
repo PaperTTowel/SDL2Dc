@@ -1,0 +1,39 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "speaker": "testNPC",
+            "text": "세상을 구하는데 뭐하는거야!?",
+            "options": [
+                { "text": "선택지 1", "nextId": 1 },
+                { "text": "선택지 2", "nextId": 2 }
+            ]
+        },
+        {
+            "id": 1,
+            "speaker": "testNPC",
+            "text": [
+                "다중 텍스트 1",
+                "다중 텍스트 2",
+                "다중 텍스트 3"
+            ],
+            "nextId": 3,
+            "options": []
+        },
+        {
+            "id": 2,
+            "speaker": "testNPC",
+            "text": "단일 텍스트",
+            "options": [
+                { "text": "단일 선택지", "nextId": 3 }
+            ]
+        },
+        {
+            "id": 3,
+            "speaker": "testNPC",
+            "text": "텍스트 끝",
+            "nextId": null,
+            "options": []
+        }
+    ]
+}

@@ -80,6 +80,14 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
     }
 }
 
+void renderAnimation(SDL_Renderer *renderer, tileAnimation *animation){
+    if(!animation->isFinished){
+        SDL_Rect destRect = { (int)animation->x - camera.x - 15, (int)animation->y - camera.y, maps->tileWidth * 3, maps->tileHeight * 3 };
+        SDL_RenderCopy(renderer, animation->frames[animation->currentFrame], NULL, &destRect);
+        printf("Rendering frame %d at position (%d, %d)\n", animation->currentFrame, destRect.x, destRect.y);
+    }
+}
+
 void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
     // 텍스트가 없으면 아무것도 표시하지 않음
     if (activeTextDisplay.text == NULL) return;
@@ -229,6 +237,12 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
 
     if(isMiniGameActive == SDL_TRUE){
         renderEventText(renderer, font, buffer, 100, 100, fontSize, textEventColor);
+    }
+
+    for(int i = 0; i < animationCount; i++){
+        if(animations[i].isActive == SDL_TRUE){
+            renderAnimation(renderer, &animations[i]);
+        }
     }
 
     // 렌더링할 캐릭터 크기

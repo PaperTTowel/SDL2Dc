@@ -112,24 +112,38 @@ Uint32 effectStartTime = 0; // 텍스트 효과 시작 시간
 SDL_bool isEffectActive = SDL_FALSE;
 
 typedef struct tileAnimation {
-    int eventID;           // 애니메이션 관련 eventID
+    int eventID;           // 애니메이션과 관련된 eventID
     float x, y;            // 렌더링 좌표
     int frameCount;        // 총 프레임 수
-    int currentFrame;      // 현재 프레임 인덱스
-    Uint32 frameDuration;  // 각 프레임의 지속 시간 (밀리초)
-    Uint32 lastFrameTime;  // 마지막 프레임 변경 시간
+    int currentFrame;      // 현재 프레임
+    Uint32 frameDuration;  // 프레임 지속 시간
+    Uint32 lastFrameTime;  // 마지막 프레임 갱신 시간
     SDL_Texture **frames;  // 프레임 이미지 배열
-    SDL_bool isActive;     // 애니메이션 활성화 여부
-    SDL_bool isFinished;   // 애니메이션이 끝났는지 여부
+    SDL_bool isActive;     // 활성화 여부
+    SDL_bool isFinished;   // 완료 여부
 } tileAnimation;
 
-tileAnimation animations[100];  // 애니메이션 배열
-int animationCount = 0;  // 현재 활성화된 애니메이션 수
+// 애니메이션 배열
+tileAnimation animations[100];
+int animationCount = 0;
+
+typedef struct dialogueText{
+    int id;
+    char name[50];
+    char text[256];
+    int nextId;  // 다음 대화 ID (없으면 -1)
+    struct choice{
+        char text[100];
+        int nextId;
+    } choice[5];
+    int optionCount;
+} dialogueText;
 
 void addPlatform(SDL_Rect platform);
 void addInteraction(SDL_Rect interactionZone, const char* name);
 void checkInteractions(SDL_Rect *playerRect);
 int getItemPrice(const char *itemName);
+int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *renderer);
 void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color);
 
 #endif // GLOBALS.H

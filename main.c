@@ -136,6 +136,22 @@ void checkInteractions(SDL_Rect *playerRect){
                     strcmp(interactionZone.name, "frige") == 0 ||
                     strcmp(interactionZone.name, "bed") == 0){
                 handleEvent(interactions[i].eventID);
+
+                // 이벤트 ID와 좌표를 기반으로 애니메이션 추가
+                tileAnimation newAnimation;
+                newAnimation.eventID = interactions[i].eventID;
+                newAnimation.x = interactions[i].x;
+                newAnimation.y = interactions[i].y;
+                newAnimation.frameCount = loadAnimationFrames(newAnimation.eventID, &newAnimation.frames, renderer);
+                newAnimation.currentFrame = 0;
+                newAnimation.frameDuration = 50;  // 각 프레임 지속 시간 (예: 100ms)
+                newAnimation.lastFrameTime = 0;    // 초기화
+                newAnimation.isActive = SDL_FALSE; // 비활성화 상태로 시작
+                newAnimation.isFinished = SDL_FALSE;
+
+                // 배열에 추가
+                animations[animationCount++] = newAnimation;
+                printf("Interaction %s triggered. Animation initialized.\n", interactionZone.name);
             }
         }
     }
@@ -173,7 +189,7 @@ char* readFile(const char* filename){
     return data;
 }
 
-int loadMapsFromDirectory(const char* directory, Map* maps, int maxMaps) {
+int loadMapsFromDirectory(const char* directory, Map* maps, int maxMaps){
     DIR *dir;
     struct dirent *entry;
     int mapCount = 0;
@@ -210,6 +226,63 @@ int loadMapsFromDirectory(const char* directory, Map* maps, int maxMaps) {
     }
     closedir(dir);
     return mapCount; // 불러온 맵의 개수 반환
+}
+
+// 각 프레임 이미지를 텍스처로 불러오는 함수
+int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *renderer){
+    // 파일 경로 구성 (예: \resource\eventID\1.png)
+    char filePath[256];
+    snprintf(filePath, sizeof(filePath), "resource/eventID/%d.png", eventID);
+
+    // 스프라이트 시트 불러오기
+    SDL_Surface *spriteSheet = IMG_Load(filePath);
+    if (!spriteSheet) {
+        fprintf(stderr, "Failed to load sprite sheet: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    // 프레임 정보 설정
+    const int frameWidth = 24;   // 각 프레임의 가로 크기
+    const int frameHeight = 24;  // 각 프레임의 세로 크기
+    const int totalWidth = spriteSheet->w; // 스프라이트 시트의 전체 가로 길이
+    const int frameCount = totalWidth / frameWidth; // 총 프레임 개수 계산
+
+    // 텍스처 배열 동적 할당
+    *frames = malloc(sizeof(SDL_Texture *) * frameCount);
+    if (!*frames) {
+        fprintf(stderr, "Failed to allocate memory for frames.\n");
+        SDL_FreeSurface(spriteSheet);
+        return 0;
+    }
+
+    // 각 프레임을 텍스처로 변환
+    SDL_Rect srcRect = { 0, 0, frameWidth, frameHeight }; // 잘라낼 영역
+    for (int i = 0; i < frameCount; i++) {
+        srcRect.x = i * frameWidth; // 현재 프레임의 x 좌표 설정
+
+        // 프레임 추출
+        SDL_Surface *frameSurface = SDL_CreateRGBSurface(0, frameWidth, frameHeight, 32, 
+                                                          0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+        SDL_BlitSurface(spriteSheet, &srcRect, frameSurface, NULL); // 스프라이트 시트에서 프레임 추출
+
+        // SDL_Texture로 변환
+        (*frames)[i] = SDL_CreateTextureFromSurface(renderer, frameSurface);
+        SDL_FreeSurface(frameSurface);
+
+        if (!(*frames)[i]) {
+            fprintf(stderr, "Failed to create texture for frame %d: %s\n", i, SDL_GetError());
+            for (int j = 0; j < i; j++) { // 이전에 할당된 텍스처 해제
+                SDL_DestroyTexture((*frames)[j]);
+            }
+            free(*frames);
+            SDL_FreeSurface(spriteSheet);
+            return 0;
+        }
+        printf("Frame %d loaded successfully.\n", i); // 디버깅용 메시지
+    }
+
+    SDL_FreeSurface(spriteSheet); // 원본 스프라이트 시트 해제
+    return frameCount; // 총 프레임 수 반환
 }
 
 int main(int argc, char* argv[]){
@@ -334,6 +407,9 @@ int main(int argc, char* argv[]){
         }
         if(isMiniGameActive){
             updateMiniGame(font);
+        }
+        for(int i = 0; i < animationCount; i++){
+            updateAnimation(&animations[i]);
         }
         updatePhysics();
         updateFrame();
