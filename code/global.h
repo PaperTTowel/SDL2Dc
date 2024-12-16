@@ -127,22 +127,23 @@ typedef struct tileAnimation {
 tileAnimation animations[100];
 int animationCount = 0;
 
-typedef struct dialogueText{
-    int id;
-    char name[50];
-    char text[256];
-    int nextId;  // 다음 대화 ID (없으면 -1)
-    struct choice{
-        char text[100];
-        int nextId;
-    } choice[5];
-    int optionCount;
-} dialogueText;
+typedef struct DialogueText {
+    char name[32];        // 이름
+    char text[4][256];       // 대화 텍스트
+    int optionCount;      // 선택지 개수
+    char options[4][128]; // 최대 4개의 선택지
+    int nextIds[4];       // 선택 후 이동할 다음 대화 ID
+} DialogueText;
+
+DialogueText currentDialogue;          // 현재 대화 데이터를 저장할 구조체
+SDL_bool isDialogueActive = SDL_FALSE; // 텍스트 활성화 여부
+int selectedOption = 0;                // 초기 선택지 인덱스 (첫 번째 선택지)
 
 void addPlatform(SDL_Rect platform);
-void addInteraction(SDL_Rect interactionZone, const char* name);
-void checkInteractions(SDL_Rect *playerRect);
+char* readFile(const char* filename);
 int getItemPrice(const char *itemName);
+void checkInteractions(SDL_Rect *playerRect);
+void addInteraction(SDL_Rect interactionZone, const char* name);
 int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *renderer);
 void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color);
 

@@ -171,6 +171,36 @@ void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
 }
+
+void renderTypingEffect(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, Uint32 startTime){
+    int length = strlen(text);
+    SDL_Color normalColor = {255, 255, 255};
+    Uint32 elapsedTime = SDL_GetTicks() - startTime;
+
+    // 한 글자씩 출력
+    int charsToShow = elapsedTime / 50; // 50ms당 한 글자 출력
+    if (charsToShow > length) {
+        charsToShow = length; // 텍스트 전부 출력 완료
+    }
+
+    char visibleText[256];
+    strncpy(visibleText, text, charsToShow);
+    visibleText[charsToShow] = '\0';
+
+    renderText(renderer, visibleText, x, y, font, normalColor);
+}
+
+void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, TTF_Font *font, int selectedOption){
+    SDL_Color normalColor = {255, 255, 255};
+    SDL_Color selectedColor = {255, 255, 0};
+
+    int x = 100, y = 300; // 선택지 출력 위치
+    for(int i = 0; i < dialogue->optionCount; i++){
+        SDL_Color color = (i == selectedOption) ? selectedColor : normalColor;
+        renderText(renderer, dialogue->options[i], x, y + (i * 30), font, color);
+    }
+}
+
 // 이벤트 전용 텍스트 렌더링 함수
 void renderEventText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, int y, int fontSize, SDL_Color color) {
     TTF_Font *scaledFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize); // 동적으로 크기 조정

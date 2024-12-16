@@ -2,36 +2,36 @@
     "dialogues": [
         {
             "id": 0,
-            "speaker": "testNPC",
+            "name": "testNPC",
             "text": "세상을 구하는데 뭐하는거야!?",
             "options": [
-                { "text": "선택지 1", "nextId": 1 },
-                { "text": "선택지 2", "nextId": 2 }
+                { "text": "세상을 구하신다고요?", "nextId": 1 },
+                { "text": "안녕하세요", "nextId": 2 }
             ]
         },
         {
             "id": 1,
-            "speaker": "testNPC",
+            "name": "testNPC",
             "text": [
-                "다중 텍스트 1",
-                "다중 텍스트 2",
-                "다중 텍스트 3"
+                "맞아 세상을 구하고 있는데",
+                "너가 초인종을 ㅈㄴ 눌러서서",
+                "세상을 못구하게 생겼잖아"
             ],
             "nextId": 3,
             "options": []
         },
         {
             "id": 2,
-            "speaker": "testNPC",
-            "text": "단일 텍스트",
+            "name": "testNPC",
+            "text": "안녕못해",
             "options": [
-                { "text": "단일 선택지", "nextId": 3 }
+                { "text": "ㅠㅠ", "nextId": 3 }
             ]
         },
         {
             "id": 3,
-            "speaker": "testNPC",
-            "text": "텍스트 끝",
+            "name": "testNPC",
+            "text": "그럼 이만",
             "nextId": null,
             "options": []
         }

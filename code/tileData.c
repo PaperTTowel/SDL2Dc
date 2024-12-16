@@ -306,3 +306,198 @@ void addInteraction(SDL_Rect interactionZone, const char* name){
         printf("Maximum interaction limit reached.\n");
     }
 }
+
+int loadMapsFromDirectory(const char* directory, Map* maps, int maxMaps){
+    DIR *dir;
+    struct dirent *entry;
+    int mapCount = 0;
+
+    // 디렉토리 열기
+    if((dir = opendir(directory)) == NULL){
+        perror("opendir() error");
+        return -1;
+    }
+
+    while((entry = readdir(dir)) != NULL && mapCount < maxMaps){
+        // .json 파일만 처리
+        if(strstr(entry->d_name, ".json") != NULL){
+            char filePath[256];
+            snprintf(filePath, sizeof(filePath), "%s/%s", directory, entry->d_name);
+
+            // JSON 파일 읽기
+            char *jsonData = readFile(filePath);
+            if(jsonData == NULL){
+                printf("Error reading JSON file: %s\n", filePath);
+                continue;
+            }
+
+            // JSON 데이터 파싱
+            maps[mapCount].mapJson = cJSON_Parse(jsonData);
+            free(jsonData); // jsonData 메모리 해제
+            if(maps[mapCount].mapJson == NULL){
+                printf("Error parsing JSON file: %s\n", filePath);
+                continue;
+            }
+
+            mapCount++; // 성공적으로 맵이 로드되면 증가
+        }
+    }
+    closedir(dir);
+    return mapCount; // 불러온 맵의 개수 반환
+}
+
+// 각 프레임 이미지를 텍스처로 불러오는 함수
+int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *renderer){
+    // 파일 경로 구성 (예: \resource\eventID\1.png)
+    char filePath[256];
+    snprintf(filePath, sizeof(filePath), "resource/eventID/%d.png", eventID);
+
+    // 스프라이트 시트 불러오기
+    SDL_Surface *spriteSheet = IMG_Load(filePath);
+    if (!spriteSheet) {
+        fprintf(stderr, "Failed to load sprite sheet: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    // 프레임 정보 설정
+    const int frameWidth = 24;   // 각 프레임의 가로 크기
+    const int frameHeight = 24;  // 각 프레임의 세로 크기
+    const int totalWidth = spriteSheet->w; // 스프라이트 시트의 전체 가로 길이
+    const int frameCount = totalWidth / frameWidth; // 총 프레임 개수 계산
+
+    // 텍스처 배열 동적 할당
+    *frames = malloc(sizeof(SDL_Texture *) * frameCount);
+    if (!*frames) {
+        fprintf(stderr, "Failed to allocate memory for frames.\n");
+        SDL_FreeSurface(spriteSheet);
+        return 0;
+    }
+
+    // 각 프레임을 텍스처로 변환
+    SDL_Rect srcRect = { 0, 0, frameWidth, frameHeight }; // 잘라낼 영역
+    for (int i = 0; i < frameCount; i++) {
+        srcRect.x = i * frameWidth; // 현재 프레임의 x 좌표 설정
+
+        // 프레임 추출
+        SDL_Surface *frameSurface = SDL_CreateRGBSurface(0, frameWidth, frameHeight, 32, 
+                                                          0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+        SDL_BlitSurface(spriteSheet, &srcRect, frameSurface, NULL); // 스프라이트 시트에서 프레임 추출
+
+        // SDL_Texture로 변환
+        (*frames)[i] = SDL_CreateTextureFromSurface(renderer, frameSurface);
+        SDL_FreeSurface(frameSurface);
+
+        if (!(*frames)[i]) {
+            fprintf(stderr, "Failed to create texture for frame %d: %s\n", i, SDL_GetError());
+            for (int j = 0; j < i; j++) { // 이전에 할당된 텍스처 해제
+                SDL_DestroyTexture((*frames)[j]);
+            }
+            free(*frames);
+            SDL_FreeSurface(spriteSheet);
+            return 0;
+        }
+        printf("Frame %d loaded successfully.\n", i); // 디버깅용 메시지
+    }
+
+    SDL_FreeSurface(spriteSheet); // 원본 스프라이트 시트 해제
+    return frameCount; // 총 프레임 수 반환
+}
+
+// NPC 대화 데이터를 불러오는 함수
+void loadNPCDialogue(const char *fileName){
+    // 파일 경로 만들기
+    char filePath[256];
+    snprintf(filePath, sizeof(filePath), "resource/eventID/%s.json", fileName);
+
+    // 파일 읽기
+    FILE *file = fopen(filePath, "r");
+    if(file == NULL){
+        printf("Failed to open dialogue file %s\n", filePath);
+        return;
+    }
+
+    // JSON 파싱
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    rewind(file);
+
+    char *jsonData = (char *)malloc(fileSize + 1);
+    fread(jsonData, 1, fileSize, file);
+    jsonData[fileSize] = '\0';
+
+    // cJSON 라이브러리로 JSON 파싱
+    cJSON *root = cJSON_Parse(jsonData);
+    if(root == NULL){
+        printf("Failed to parse JSON\n");
+        free(jsonData);
+        fclose(file);
+        return;
+    }
+
+    // 필요한 데이터 가져오기
+    cJSON *dialogues = cJSON_GetObjectItem(root, "dialogues");
+    if(dialogues == NULL){
+        printf("No dialogues found in JSON\n");
+        cJSON_Delete(root);
+        free(jsonData);
+        fclose(file);
+        return;
+    }
+
+    // 대화 배열 탐색
+    int dialogueCount = cJSON_GetArraySize(dialogues);
+    for(int i = 0; i < dialogueCount; i++){
+        cJSON *dialogue = cJSON_GetArrayItem(dialogues, i);
+        if (dialogue == NULL) continue;
+
+        printf("NPC: %s\n", cJSON_GetObjectItem(dialogue, "name")->valuestring);
+        // 대화 텍스트 출력
+        cJSON *text = cJSON_GetObjectItem(dialogue, "text");
+        if(cJSON_IsArray(text)){
+            // 다중 줄 텍스트 처리
+            int lineCount = cJSON_GetArraySize(text);
+            for(int j = 0; j < lineCount && j < 4; j++){ // 최대 4줄 대사만 처리
+                strncpy(currentDialogue.text[j], cJSON_GetArrayItem(text, j)->valuestring, sizeof(currentDialogue.text[j]) - 1); 
+                currentDialogue.text[j][sizeof(currentDialogue.text[j]) - 1] = '\0'; // null-terminate
+                printf("Dialogue (multi-line)%d: %s\n", j + 1, currentDialogue.text[j]);
+            }
+        }
+        else{
+            // 단일 텍스트 처리
+            strncpy(currentDialogue.text[0], text->valuestring, sizeof(currentDialogue.text[0]) - 1);
+            currentDialogue.text[0][sizeof(currentDialogue.text[0]) - 1] = '\0';
+            printf("Dialogue: %s\n", currentDialogue.text[0]);
+        }
+
+        // 선택지 출력
+        cJSON *options = cJSON_GetObjectItem(dialogue, "options");
+        int optionCount = cJSON_GetArraySize(options);
+        currentDialogue.optionCount = optionCount;
+        for(int j = 0; j < optionCount && j < 4; j++){
+            cJSON *option = cJSON_GetArrayItem(options, j);
+            strncpy(currentDialogue.options[j], cJSON_GetObjectItem(option, "text")->valuestring, sizeof(currentDialogue.options[j]) - 1);
+            currentDialogue.options[j][sizeof(currentDialogue.options[j]) - 1] = '\0'; // null-terminate
+            currentDialogue.nextIds[j] = cJSON_GetObjectItem(option, "nextId")->valueint;
+            printf("Option %d: %s (nextId: %d)\n", j + 1, currentDialogue.options[j], currentDialogue.nextIds[j]);
+        }
+
+        // 대화 ID 출력
+        cJSON *nextId = cJSON_GetObjectItem(dialogue, "nextId");
+        if(nextId && !cJSON_IsNull(nextId)){
+            currentDialogue.nextIds[0] = nextId->valueint; // 첫 번째 선택지에만 적용
+            printf("Next Dialogue ID: %d\n", currentDialogue.nextIds[0]);
+        }
+        else{
+            currentDialogue.nextIds[0] = -1; // 대화 종료
+            printf("No Next Dialogue ID (end of conversation).\n");
+        }
+
+        // 대화의 끝 구분선
+        printf("-------------------------------\n");
+    }
+
+    // 파일과 메모리 해제
+    free(jsonData);
+    fclose(file);
+    cJSON_Delete(root);
+}

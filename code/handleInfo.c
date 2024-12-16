@@ -88,6 +88,39 @@ void startDingDongDashMiniGame(){
     spaceBarCount = 0;
 }
 
+void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
+    static Uint8 previousState[SDL_NUM_SCANCODES] = {0};  // 이전 키 상태 저장
+    const Uint8 *state = SDL_GetKeyboardState(NULL);      // 현재 키 상태 가져오기
+
+    // UP 키 눌림 감지
+    if(state[SDL_SCANCODE_UP] && !previousState[SDL_SCANCODE_UP]){
+        *selectedOption = (*selectedOption - 1 + dialogue->optionCount) % dialogue->optionCount;
+        printf("Selected: %d", dialogue->optionCount);
+    }
+
+    // DOWN 키 눌림 감지
+    if(state[SDL_SCANCODE_DOWN] && !previousState[SDL_SCANCODE_DOWN]){
+        *selectedOption = (*selectedOption + 1) % dialogue->optionCount;
+    }
+
+    // Enter 키 눌림 감지
+    if(state[SDL_SCANCODE_RETURN] && !previousState[SDL_SCANCODE_RETURN]){
+        printf("Selected option: %s\n", dialogue->options[*selectedOption]); // 임시
+        int nextId = dialogue->nextIds[*selectedOption];
+        if (nextId == -1) {
+            // 대화 종료
+            isDialogueActive = SDL_FALSE;
+            printf("Dialogue ended.\n");
+        }
+        else{
+            // 다음 대화를 구조체에 로드
+            
+        }
+    }
+    // 현재 키 상태를 이전 키 상태로 복사
+    memcpy(previousState, state, SDL_NUM_SCANCODES);
+}
+
 // 이벤트 구분
 void handleEvent(int eventID){
     switch(eventID){

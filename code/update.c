@@ -63,6 +63,7 @@ void updateMiniGame(TTF_Font *font){
                 printf("Animation with eventID %d activated.\n", animations[i].eventID);
             }
         }
+        isDialogueActive = SDL_TRUE;
     }
 
     // 텍스트 효과 활성화 (10단위 카운트마다)
