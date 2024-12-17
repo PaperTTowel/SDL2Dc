@@ -128,14 +128,16 @@ tileAnimation animations[100];
 int animationCount = 0;
 
 typedef struct DialogueText {
-    char name[32];        // 이름
-    char text[4][256];       // 대화 텍스트
-    int optionCount;      // 선택지 개수
-    char options[4][128]; // 최대 4개의 선택지
-    int nextIds[4];       // 선택 후 이동할 다음 대화 ID
+    char name[32];          // 이름
+    char text[4][256];      // 대화 텍스트 (최대 4줄)
+    int optionCount;        // 선택지 개수 (각 대화마다 다를 수 있음)
+    char options[4][128];   // 선택지 텍스트 (최대 4개의 선택지)
+    int nextIds[4];         // 선택 후 이동할 다음 대화 ID (최대 4개)
 } DialogueText;
 
-DialogueText currentDialogue;          // 현재 대화 데이터를 저장할 구조체
+Uint32 textTime = 0;
+DialogueText dialogues[4];  // 대화 목록
+SDL_bool isTextComplete = SDL_FALSE;  // 텍스트 출력 완료 여부
 SDL_bool isDialogueActive = SDL_FALSE; // 텍스트 활성화 여부
 int selectedOption = 0;                // 초기 선택지 인덱스 (첫 번째 선택지)
 

@@ -172,32 +172,67 @@ void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font
     SDL_DestroyTexture(textTexture);
 }
 
-void renderTypingEffect(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, Uint32 startTime){
-    int length = strlen(text);
-    SDL_Color normalColor = {255, 255, 255};
-    Uint32 elapsedTime = SDL_GetTicks() - startTime;
-
-    // 한 글자씩 출력
-    int charsToShow = elapsedTime / 50; // 50ms당 한 글자 출력
-    if (charsToShow > length) {
-        charsToShow = length; // 텍스트 전부 출력 완료
-    }
-
-    char visibleText[256];
-    strncpy(visibleText, text, charsToShow);
-    visibleText[charsToShow] = '\0';
-
-    renderText(renderer, visibleText, x, y, font, normalColor);
-}
-
-void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, TTF_Font *font, int selectedOption){
+void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption){
+    TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
     SDL_Color normalColor = {255, 255, 255};
     SDL_Color selectedColor = {255, 255, 0};
 
-    int x = 100, y = 300; // 선택지 출력 위치
     for(int i = 0; i < dialogue->optionCount; i++){
-        SDL_Color color = (i == selectedOption) ? selectedColor : normalColor;
-        renderText(renderer, dialogue->options[i], x, y + (i * 30), font, color);
+        SDL_Color color = (i == *selectedOption) ? selectedColor : normalColor;
+        renderText(renderer, dialogue->options[i], x, y + (i * 30), choiceFont, color);
+    }
+}
+
+void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption,  Uint32 startTime){
+    SDL_Color normalColor = {255, 255, 255};
+    SDL_Color selectedColor = {255, 255, 0};
+    TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
+
+    int currentLine = 0;  // 현재 출력할 줄 인덱스
+    // text가 배열인지 단일 문자열인지 확인
+    int lineLength = 0;
+    if (dialogue->text[currentLine] != NULL) {
+        lineLength = strlen(dialogue->text[currentLine]);
+    }
+    else{
+        // text가 단일 문자열일 경우 길이를 계산
+        lineLength = strlen(dialogue->text[0]);
+    }
+
+    // 한 글자씩 출력
+    // elapsedTime 계산
+    Uint32 elapsedTime = SDL_GetTicks() - startTime;
+    if (elapsedTime < 25) {
+        elapsedTime = 25;  // 첫 번째 프레임에서는 약간의 지연을 추가
+    }
+
+    int charsToShow = elapsedTime / 25;  // 50ms마다 한 글자 출력
+    if (charsToShow > lineLength) {
+        charsToShow = lineLength;  // 텍스트 전부 출력 완료
+        isTextComplete = SDL_TRUE;
+    }
+
+    char visibleText[256];
+    // 텍스트가 배열이면 해당 줄을 출력, 단일 문자열일 경우 첫 번째 줄을 출력
+    if(dialogue->text[currentLine] != NULL){
+        strncpy(visibleText, dialogue->text[currentLine], charsToShow);  // 텍스트 출력
+    }
+    else{
+        strncpy(visibleText, dialogue->text[0], charsToShow);
+    }
+    visibleText[charsToShow] = '\0';
+
+    renderText(renderer, visibleText, x, y, choiceFont, normalColor);
+
+    // 대화 텍스트가 모두 출력되었으면 선택지를 출력
+    if(charsToShow == lineLength){  // 최대 4줄 대화 (0~3)
+        currentLine++;
+    }
+    if(isTextComplete && currentLine >= 0 && currentLine < 4){
+        for(int i = 0; i < dialogue->optionCount; i++){
+            SDL_Color color = (i == *selectedOption) ? selectedColor : normalColor;
+            renderText(renderer, dialogue->options[i], x, (y + 100) + (i * 30), choiceFont, color);
+        }
     }
 }
 
@@ -267,6 +302,14 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
 
     if(isMiniGameActive == SDL_TRUE){
         renderEventText(renderer, font, buffer, 100, 100, fontSize, textEventColor);
+    }
+
+    if(isDialogueActive){
+        if(textTime == 0){ // 첫 번째 대화일 때만 startTime 초기화
+            textTime = SDL_GetTicks();  // 타이핑 시작 시간
+            printf("startTime initialized: %u\n", textTime);  // 디버깅: startTime 값 확인
+        }
+        renderTypingEffect(renderer, dialogues, 100, 200, &selectedOption ,textTime);
     }
 
     for(int i = 0; i < animationCount; i++){

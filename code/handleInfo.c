@@ -91,16 +91,18 @@ void startDingDongDashMiniGame(){
 void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
     static Uint8 previousState[SDL_NUM_SCANCODES] = {0};  // 이전 키 상태 저장
     const Uint8 *state = SDL_GetKeyboardState(NULL);      // 현재 키 상태 가져오기
+    int optionCount = dialogue->optionCount; // 현재 대화의 선택지 개수
 
     // UP 키 눌림 감지
     if(state[SDL_SCANCODE_UP] && !previousState[SDL_SCANCODE_UP]){
-        *selectedOption = (*selectedOption - 1 + dialogue->optionCount) % dialogue->optionCount;
-        printf("Selected: %d", dialogue->optionCount);
+        *selectedOption = (*selectedOption - 1 + optionCount) % optionCount;
+        printf("Selected Option: %d\n", *selectedOption);
     }
 
     // DOWN 키 눌림 감지
     if(state[SDL_SCANCODE_DOWN] && !previousState[SDL_SCANCODE_DOWN]){
-        *selectedOption = (*selectedOption + 1) % dialogue->optionCount;
+        *selectedOption = (*selectedOption + 1) % optionCount;
+        printf("Selected Option: %d\n", *selectedOption);
     }
 
     // Enter 키 눌림 감지

@@ -435,66 +435,62 @@ void loadNPCDialogue(const char *fileName){
     }
 
     // 필요한 데이터 가져오기
-    cJSON *dialogues = cJSON_GetObjectItem(root, "dialogues");
-    if(dialogues == NULL){
-        printf("No dialogues found in JSON\n");
-        cJSON_Delete(root);
-        free(jsonData);
-        fclose(file);
-        return;
-    }
+    cJSON *dialoguesArray = cJSON_GetObjectItem(root, "dialogues");
 
-    // 대화 배열 탐색
-    int dialogueCount = cJSON_GetArraySize(dialogues);
-    for(int i = 0; i < dialogueCount; i++){
-        cJSON *dialogue = cJSON_GetArrayItem(dialogues, i);
-        if (dialogue == NULL) continue;
+    for (int i = 0; i < cJSON_GetArraySize(dialoguesArray); i++) {
+        cJSON *dialogue = cJSON_GetArrayItem(dialoguesArray, i);
+        DialogueText *currentDialogue = &dialogues[i];  // 각 대화에 대해 독립적인 포인터 사용
 
-        printf("NPC: %s\n", cJSON_GetObjectItem(dialogue, "name")->valuestring);
-        // 대화 텍스트 출력
+        // 대화 텍스트와 이름 저장
+        strncpy(currentDialogue->name, cJSON_GetObjectItem(dialogue, "name")->valuestring, sizeof(currentDialogue->name) - 1);
+        currentDialogue->name[sizeof(currentDialogue->name) - 1] = '\0';
         cJSON *text = cJSON_GetObjectItem(dialogue, "text");
-        if(cJSON_IsArray(text)){
-            // 다중 줄 텍스트 처리
-            int lineCount = cJSON_GetArraySize(text);
-            for(int j = 0; j < lineCount && j < 4; j++){ // 최대 4줄 대사만 처리
-                strncpy(currentDialogue.text[j], cJSON_GetArrayItem(text, j)->valuestring, sizeof(currentDialogue.text[j]) - 1); 
-                currentDialogue.text[j][sizeof(currentDialogue.text[j]) - 1] = '\0'; // null-terminate
-                printf("Dialogue (multi-line)%d: %s\n", j + 1, currentDialogue.text[j]);
+        
+        printf("NPC: %s\n", cJSON_GetObjectItem(dialogue, "name")->valuestring);
+        
+        if (cJSON_IsArray(text)) {
+            for (int j = 0; j < cJSON_GetArraySize(text) && j < 4; j++) {
+                strncpy(currentDialogue->text[j], cJSON_GetArrayItem(text, j)->valuestring, sizeof(currentDialogue->text[j]) - 1);
+                currentDialogue->text[j][sizeof(currentDialogue->text[j]) - 1] = '\0';
+                printf("Dialogue (multi-line)%d: %s\n", j + 1, currentDialogue->text[j]);
             }
-        }
-        else{
-            // 단일 텍스트 처리
-            strncpy(currentDialogue.text[0], text->valuestring, sizeof(currentDialogue.text[0]) - 1);
-            currentDialogue.text[0][sizeof(currentDialogue.text[0]) - 1] = '\0';
-            printf("Dialogue: %s\n", currentDialogue.text[0]);
+        } else {
+            strncpy(currentDialogue->text[0], text->valuestring, sizeof(currentDialogue->text[0]) - 1);
+            currentDialogue->text[0][sizeof(currentDialogue->text[0]) - 1] = '\0';
+            printf("Dialogue: %s\n", currentDialogue->text[0]);
         }
 
-        // 선택지 출력
+        // 선택지 처리
         cJSON *options = cJSON_GetObjectItem(dialogue, "options");
-        int optionCount = cJSON_GetArraySize(options);
-        currentDialogue.optionCount = optionCount;
-        for(int j = 0; j < optionCount && j < 4; j++){
+        currentDialogue->optionCount = cJSON_GetArraySize(options);
+        
+        for (int j = 0; j < currentDialogue->optionCount && j < 4; j++) {
             cJSON *option = cJSON_GetArrayItem(options, j);
-            strncpy(currentDialogue.options[j], cJSON_GetObjectItem(option, "text")->valuestring, sizeof(currentDialogue.options[j]) - 1);
-            currentDialogue.options[j][sizeof(currentDialogue.options[j]) - 1] = '\0'; // null-terminate
-            currentDialogue.nextIds[j] = cJSON_GetObjectItem(option, "nextId")->valueint;
-            printf("Option %d: %s (nextId: %d)\n", j + 1, currentDialogue.options[j], currentDialogue.nextIds[j]);
+            
+            strncpy(currentDialogue->options[j], cJSON_GetObjectItem(option, "text")->valuestring, sizeof(currentDialogue->options[j]) - 1);
+            currentDialogue->options[j][sizeof(currentDialogue->options[j]) - 1] = '\0';
+            
+            currentDialogue->nextIds[j] = cJSON_GetObjectItem(option, "nextId")->valueint;
+
+            printf("Option %d: %s (nextId: %d)\n", j + 1, currentDialogue->options[j], currentDialogue->nextIds[j]);
         }
 
         // 대화 ID 출력
         cJSON *nextId = cJSON_GetObjectItem(dialogue, "nextId");
         if(nextId && !cJSON_IsNull(nextId)){
-            currentDialogue.nextIds[0] = nextId->valueint; // 첫 번째 선택지에만 적용
-            printf("Next Dialogue ID: %d\n", currentDialogue.nextIds[0]);
+            currentDialogue->nextIds[0] = nextId->valueint; // 첫 번째 선택지에만 적용
+            printf("Next Dialogue ID: %d\n", currentDialogue->nextIds[0]);
         }
         else{
-            currentDialogue.nextIds[0] = -1; // 대화 종료
+            currentDialogue->nextIds[0] = -1; // 대화 종료
             printf("No Next Dialogue ID (end of conversation).\n");
         }
 
         // 대화의 끝 구분선
         printf("-------------------------------\n");
     }
+
+
 
     // 파일과 메모리 해제
     free(jsonData);
