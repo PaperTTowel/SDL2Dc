@@ -129,17 +129,22 @@ int animationCount = 0;
 
 typedef struct DialogueText {
     char name[32];          // 이름
+    int ID;                 // 텍스트 ID
+    int currentID;          // 현재 ID
+    int previousId;         // 이전 ID
     char text[4][256];      // 대화 텍스트 (최대 4줄)
+    int textLineCount;           // 지정 텍스트 배열
     int optionCount;        // 선택지 개수 (각 대화마다 다를 수 있음)
     char options[4][128];   // 선택지 텍스트 (최대 4개의 선택지)
     int nextIds[4];         // 선택 후 이동할 다음 대화 ID (최대 4개)
 } DialogueText;
 
 Uint32 textTime = 0;
-DialogueText dialogues[4];  // 대화 목록
-SDL_bool isTextComplete = SDL_FALSE;  // 텍스트 출력 완료 여부
+DialogueText dialogues[4];             // 대화 목록
+SDL_bool isTextComplete = SDL_FALSE;   // 텍스트 출력 완료 여부
 SDL_bool isDialogueActive = SDL_FALSE; // 텍스트 활성화 여부
-int selectedOption = 0;                // 초기 선택지 인덱스 (첫 번째 선택지)
+int selectedOption = 0;                // 초기 선택지 인덱스
+int currentLine = 0;                   // 현재 출력할 줄 인덱스
 
 void addPlatform(SDL_Rect platform);
 char* readFile(const char* filename);

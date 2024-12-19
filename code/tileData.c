@@ -440,19 +440,23 @@ void loadNPCDialogue(const char *fileName){
     for (int i = 0; i < cJSON_GetArraySize(dialoguesArray); i++) {
         cJSON *dialogue = cJSON_GetArrayItem(dialoguesArray, i);
         DialogueText *currentDialogue = &dialogues[i];  // 각 대화에 대해 독립적인 포인터 사용
+        printf("now saving &dialogues[%d]\n", i);
 
         // 대화 텍스트와 이름 저장
         strncpy(currentDialogue->name, cJSON_GetObjectItem(dialogue, "name")->valuestring, sizeof(currentDialogue->name) - 1);
+        currentDialogue->ID = cJSON_GetObjectItem(dialogue, "id")->valueint;
         currentDialogue->name[sizeof(currentDialogue->name) - 1] = '\0';
         cJSON *text = cJSON_GetObjectItem(dialogue, "text");
         
         printf("NPC: %s\n", cJSON_GetObjectItem(dialogue, "name")->valuestring);
+        printf("TextID: %d\n", currentDialogue->ID);
         
         if (cJSON_IsArray(text)) {
             for (int j = 0; j < cJSON_GetArraySize(text) && j < 4; j++) {
                 strncpy(currentDialogue->text[j], cJSON_GetArrayItem(text, j)->valuestring, sizeof(currentDialogue->text[j]) - 1);
                 currentDialogue->text[j][sizeof(currentDialogue->text[j]) - 1] = '\0';
-                printf("Dialogue (multi-line)%d: %s\n", j + 1, currentDialogue->text[j]);
+                currentDialogue->textLineCount++;
+                printf("Dialogue (multi-line) %d: %s\n", j + 1, currentDialogue->text[j]);
             }
         } else {
             strncpy(currentDialogue->text[0], text->valuestring, sizeof(currentDialogue->text[0]) - 1);
@@ -475,22 +479,26 @@ void loadNPCDialogue(const char *fileName){
             printf("Option %d: %s (nextId: %d)\n", j + 1, currentDialogue->options[j], currentDialogue->nextIds[j]);
         }
 
-        // 대화 ID 출력
+        // 선택지가 없을 경우 외부 nextId 따르기
         cJSON *nextId = cJSON_GetObjectItem(dialogue, "nextId");
-        if(nextId && !cJSON_IsNull(nextId)){
-            currentDialogue->nextIds[0] = nextId->valueint; // 첫 번째 선택지에만 적용
-            printf("Next Dialogue ID: %d\n", currentDialogue->nextIds[0]);
+        if (nextId && !cJSON_IsNull(nextId)) {
+            // 선택지가 없으면 대화에서 지정된 nextId 값을 사용
+            if (currentDialogue->nextIds[0] == 0) { // 값이 설정되지 않았으면 덮어쓰기
+                currentDialogue->nextIds[0] = nextId->valueint;
+                printf("Next Dialogue ID: %d\n", currentDialogue->nextIds[0]);
+            }
         }
-        else{
-            currentDialogue->nextIds[0] = -1; // 대화 종료
-            printf("No Next Dialogue ID (end of conversation).\n");
+        else {
+            // 선택지가 없고 nextId도 없으면 대화 종료
+            if (currentDialogue->nextIds[0] == 0) { // 값이 설정되지 않았으면 덮어쓰기
+                currentDialogue->nextIds[0] = -1;
+                printf("No Next Dialogue ID (end of conversation).\n");
+            }
         }
 
         // 대화의 끝 구분선
         printf("-------------------------------\n");
     }
-
-
 
     // 파일과 메모리 해제
     free(jsonData);

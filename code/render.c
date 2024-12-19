@@ -183,15 +183,15 @@ void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, 
     }
 }
 
-void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption,  Uint32 startTime){
+void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption, Uint32 startTime){
     SDL_Color normalColor = {255, 255, 255};
     SDL_Color selectedColor = {255, 255, 0};
     TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
 
-    int currentLine = 0;  // 현재 출력할 줄 인덱스
     // text가 배열인지 단일 문자열인지 확인
     int lineLength = 0;
-    if (dialogue->text[currentLine] != NULL) {
+
+    if(dialogue->text[currentLine] != NULL){
         lineLength = strlen(dialogue->text[currentLine]);
     }
     else{
@@ -214,7 +214,7 @@ void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, i
 
     char visibleText[256];
     // 텍스트가 배열이면 해당 줄을 출력, 단일 문자열일 경우 첫 번째 줄을 출력
-    if(dialogue->text[currentLine] != NULL){
+    if(currentLine > 0){
         strncpy(visibleText, dialogue->text[currentLine], charsToShow);  // 텍스트 출력
     }
     else{
@@ -224,12 +224,22 @@ void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, i
 
     renderText(renderer, visibleText, x, y, choiceFont, normalColor);
 
-    // 대화 텍스트가 모두 출력되었으면 선택지를 출력
-    if(charsToShow == lineLength){  // 최대 4줄 대화 (0~3)
+    // 텍스트 제한 & 줄 넘기기
+    if(isTextComplete && charsToShow == lineLength){
         currentLine++;
+        if(currentLine >= dialogue->textLineCount){
+            printf("resizing currentLine: %d to textLine: %d\n", currentLine, dialogue->textLineCount);
+            currentLine--;
+        }
+        else{
+            textTime = SDL_GetTicks();
+            printf("Line changed. Resetting textTime to: %u\n", textTime);
+        }
     }
+    // 대화 텍스트가 모두 출력되었으면 선택지를 출력
     if(isTextComplete && currentLine >= 0 && currentLine < 4){
         for(int i = 0; i < dialogue->optionCount; i++){
+            isTextComplete = SDL_FALSE;
             SDL_Color color = (i == *selectedOption) ? selectedColor : normalColor;
             renderText(renderer, dialogue->options[i], x, (y + 100) + (i * 30), choiceFont, color);
         }
@@ -309,7 +319,14 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
             textTime = SDL_GetTicks();  // 타이핑 시작 시간
             printf("startTime initialized: %u\n", textTime);  // 디버깅: startTime 값 확인
         }
-        renderTypingEffect(renderer, dialogues, 100, 200, &selectedOption ,textTime);
+        // 대화가 넘어갔을 때 textTime을 초기화
+        else if(dialogues[dialogues->currentID].nextIds[0] != dialogues->previousId) {
+            currentLine = 0;
+            textTime = SDL_GetTicks();  // 대화가 시작되거나 nextID가 바뀌면 타이핑 시작 시간 초기화
+            dialogues->previousId = dialogues[dialogues->currentID].nextIds[0];  // previousNextId 갱신
+            printf("startTime reinitialized: %u\n", textTime);  // 디버깅: 새로 초기화된 time 값 확인
+    }
+        renderTypingEffect(renderer, &dialogues[dialogues->currentID], 100, 200, &selectedOption , textTime);
     }
 
     for(int i = 0; i < animationCount; i++){

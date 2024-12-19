@@ -318,7 +318,7 @@ int main(int argc, char* argv[]){
             updateMiniGame(font);
         }
         if(isDialogueActive){
-            handleChoiceInput(dialogues, &selectedOption);
+            handleChoiceInput(&dialogues[dialogues->currentID], &selectedOption);
         }
         for(int i = 0; i < animationCount; i++){
             updateAnimation(&animations[i]);

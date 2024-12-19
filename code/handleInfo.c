@@ -107,16 +107,25 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
 
     // Enter 키 눌림 감지
     if(state[SDL_SCANCODE_RETURN] && !previousState[SDL_SCANCODE_RETURN]){
-        printf("Selected option: %s\n", dialogue->options[*selectedOption]); // 임시
         int nextId = dialogue->nextIds[*selectedOption];
-        if (nextId == -1) {
+
+        // 디버깅 존
+        printf("Selected option: %d\n", dialogue->options[*selectedOption]);
+        printf("All nextIds for current dialogue:\n");
+        for(int i = 0; i < dialogue->optionCount; i++){
+            printf("Option %d: %s -> nextId: %d\n", i, dialogue->options[i], dialogue->nextIds[i]);
+        }
+        // 디버깅 존 끝
+
+        if(nextId == -1){
             // 대화 종료
             isDialogueActive = SDL_FALSE;
             printf("Dialogue ended.\n");
         }
         else{
             // 다음 대화를 구조체에 로드
-            
+            dialogue->currentID = nextId;
+            printf("Dialogue id changed to %d\n", nextId);
         }
     }
     // 현재 키 상태를 이전 키 상태로 복사
