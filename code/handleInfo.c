@@ -120,6 +120,9 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
         if(nextId == -1){
             // 대화 종료
             isDialogueActive = SDL_FALSE;
+            animations->isActive = SDL_FALSE;
+            animations->isFreezed = SDL_FALSE;
+            animations->isFinished = SDL_TRUE;
             printf("Dialogue ended.\n");
         }
         else{

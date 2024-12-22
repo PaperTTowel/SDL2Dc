@@ -2,7 +2,7 @@
     "dialogues": [
         {
             "id": 0,
-            "name": "testNPC",
+            "name": "MAD dldudwns",
             "text": "세상을 구하는데 뭐하는거야!?",
             "options": [
                 { "text": "세상을 구하신다고요?", "nextId": 1 },
@@ -11,7 +11,7 @@
         },
         {
             "id": 1,
-            "name": "testNPC",
+            "name": "MAD dldudwn",
             "text": [
                 "맞아 세상을 구하고 있는데",
                 "너가 초인종을 ㅈㄴ 눌러서서",
@@ -22,7 +22,7 @@
         },
         {
             "id": 2,
-            "name": "testNPC",
+            "name": "MAD dldudwn",
             "text": "안녕못해",
             "options": [
                 { "text": "ㅠㅠ", "nextId": 3 }
@@ -30,7 +30,7 @@
         },
         {
             "id": 3,
-            "name": "testNPC",
+            "name": "MAD dldudwn",
             "text": "그럼 이만",
             "nextId": -1,
             "options": []

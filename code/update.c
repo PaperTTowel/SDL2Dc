@@ -25,8 +25,7 @@ void updateAnimation(tileAnimation *animation){
             // 마지막 프레임에 도달하면 멈춤
             if(animation->currentFrame >= animation->frameCount){
                 animation->currentFrame = animation->frameCount - 1; // 마지막 프레임에서 멈춤
-                animation->isActive = SDL_FALSE;                     // 재생 종료
-                animation->isFinished = SDL_TRUE;                    // 완료 상태로 설정
+                animation->isFreezed = SDL_TRUE;                     // 일시정지
             }
         }
     }
@@ -51,7 +50,7 @@ void updateMiniGame(TTF_Font *font){
     if(elapsedTime >= 5){
         isMiniGameActive = SDL_FALSE;
 
-        // 종료 메시지 설정
+        // 종료 메시지 설
         activeTextDisplay.text = buffer;
         activeTextDisplay.startTime = currentTime;
         activeTextDisplay.duration = 2000; // 2초 동안 표시
@@ -60,7 +59,7 @@ void updateMiniGame(TTF_Font *font){
         for(int i = 0; i < animationCount; i++){
             if(animations[i].eventID == 1){  // 특정 eventID 확인 (예: 1번 이벤트)
                 animations[i].isActive = SDL_TRUE;  // 애니메이션 재생 시작
-                printf("Animation with eventID %d activated.\n", animations[i].eventID);
+                // printf("Animation with eventID %d activated.\n", animations[i].eventID);
             }
         }
         isDialogueActive = SDL_TRUE;

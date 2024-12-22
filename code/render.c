@@ -81,7 +81,7 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
 }
 
 void renderAnimation(SDL_Renderer *renderer, tileAnimation *animation){
-    if(!animation->isFinished){ 
+    if(!animation->isFinished || animation->isFreezed){ 
         SDL_Rect destRect = { (int)animation->x - camera.x - 15, (int)animation->y - camera.y, maps->tileWidth * 3, maps->tileHeight * 3 };
         SDL_RenderCopy(renderer, animation->frames[animation->currentFrame], NULL, &destRect);
         printf("Rendering frame %d at position (%d, %d)\n", animation->currentFrame, destRect.x, destRect.y);
@@ -113,7 +113,8 @@ void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
     }
 
     if(activeTextDisplay.text == buffer){
-        SDL_Rect destRect = {100, 100, surface->w, surface->h};
+        // 띵동대쉬 이벤트 텍스트 출력 위치
+        SDL_Rect destRect = {270, 10, surface->w, surface->h};
         SDL_RenderCopy(renderer, texture, NULL, &destRect);
     }
     else{
@@ -187,6 +188,7 @@ void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, i
     SDL_Color normalColor = {255, 255, 255};
     SDL_Color selectedColor = {255, 255, 0};
     TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
+    renderText(renderer, dialogue->name, 110, 70, choiceFont, normalColor);
 
     // text가 배열인지 단일 문자열인지 확인
     int lineLength = 0;
@@ -313,10 +315,10 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
     }
 
     if(isMiniGameActive == SDL_TRUE){
-        renderEventText(renderer, font, buffer, 100, 100, fontSize, textEventColor);
+        renderEventText(renderer, font, buffer, 270, 10, fontSize, textEventColor);
     }
 
-    if(isDialogueActive){
+    if(isDialogueActive == SDL_TRUE){
         if(textTime == 0){ // 첫 번째 대화일 때만 startTime 초기화
             textTime = SDL_GetTicks();  // 타이핑 시작 시간
             printf("startTime initialized: %u\n", textTime);  // 디버깅: startTime 값 확인
@@ -328,7 +330,12 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
             dialogues->previousId = dialogues[dialogues->currentID].nextIds[0];  // previousNextId 갱신
             printf("startTime reinitialized: %u\n", textTime);  // 디버깅: 새로 초기화된 time 값 확인
         }
-        renderTypingEffect(renderer, &dialogues[dialogues->currentID], 100, 200, &selectedOption , textTime);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+        SDL_Rect bgRect = {100, 100, 600, 95};
+        SDL_Rect nameRect = {100, 70, 200, 30};
+        SDL_RenderFillRect(renderer, &bgRect);
+        SDL_RenderFillRect(renderer, &nameRect);
+        renderTypingEffect(renderer, &dialogues[dialogues->currentID], 110, 100, &selectedOption , textTime);
     }
 
     for(int i = 0; i < animationCount; i++){

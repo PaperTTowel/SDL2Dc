@@ -120,6 +120,7 @@ typedef struct tileAnimation {
     Uint32 lastFrameTime;  // 마지막 프레임 갱신 시간
     SDL_Texture **frames;  // 프레임 이미지 배열
     SDL_bool isActive;     // 활성화 여부
+    SDL_bool isFreezed;    // 일시정지 여부
     SDL_bool isFinished;   // 완료 여부
 } tileAnimation;
 
