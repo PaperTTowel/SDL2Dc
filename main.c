@@ -144,7 +144,7 @@ void checkInteractions(SDL_Rect *playerRect){
                 newAnimation.y = interactions[i].y;
                 newAnimation.frameCount = loadAnimationFrames(newAnimation.eventID, &newAnimation.frames, renderer);
                 newAnimation.currentFrame = 0;
-                newAnimation.frameDuration = 50;  // 각 프레임 지속 시간 (예: 100ms)
+                newAnimation.frameDuration = 50;   // 각 프레임 지속 시간 (예: 100ms)
                 newAnimation.lastFrameTime = 0;    // 초기화
                 newAnimation.isActive = SDL_FALSE; // 비활성화 상태로 시작
                 newAnimation.isFinished = SDL_FALSE;
@@ -337,7 +337,7 @@ int main(int argc, char* argv[]){
 
         // 디버깅용
         currentTime = SDL_GetTicks();  // 현재 시간 업데이트
-        if (currentTime - debugLastTime > 1000) {  // 1000ms (1초) 이상 차이 나면
+        if (currentTime - debugLastTime > 2000) {  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
             debugLastTime = currentTime;  // 마지막 시간 업데이트

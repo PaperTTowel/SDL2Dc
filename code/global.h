@@ -133,7 +133,7 @@ typedef struct DialogueText {
     int currentID;          // 현재 ID
     int previousId;         // 이전 ID
     char text[4][256];      // 대화 텍스트 (최대 4줄)
-    int textLineCount;           // 지정 텍스트 배열
+    int textLineCount;      // 지정 텍스트 배열
     int optionCount;        // 선택지 개수 (각 대화마다 다를 수 있음)
     char options[4][128];   // 선택지 텍스트 (최대 4개의 선택지)
     int nextIds[4];         // 선택 후 이동할 다음 대화 ID (최대 4개)

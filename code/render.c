@@ -81,7 +81,7 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
 }
 
 void renderAnimation(SDL_Renderer *renderer, tileAnimation *animation){
-    if(!animation->isFinished){
+    if(!animation->isFinished){ 
         SDL_Rect destRect = { (int)animation->x - camera.x - 15, (int)animation->y - camera.y, maps->tileWidth * 3, maps->tileHeight * 3 };
         SDL_RenderCopy(renderer, animation->frames[animation->currentFrame], NULL, &destRect);
         printf("Rendering frame %d at position (%d, %d)\n", animation->currentFrame, destRect.x, destRect.y);
@@ -194,46 +194,48 @@ void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, i
     if(dialogue->text[currentLine] != NULL){
         lineLength = strlen(dialogue->text[currentLine]);
     }
-    else{
-        // text가 단일 문자열일 경우 길이를 계산
+    else{ // text가 단일 문자열일 경우 길이를 계산
         lineLength = strlen(dialogue->text[0]);
     }
 
     // 한 글자씩 출력
-    // elapsedTime 계산
     Uint32 elapsedTime = SDL_GetTicks() - startTime;
-    if (elapsedTime < 25) {
+    if(elapsedTime < 25){
         elapsedTime = 25;  // 첫 번째 프레임에서는 약간의 지연을 추가
     }
 
     int charsToShow = elapsedTime / 25;  // 50ms마다 한 글자 출력
-    if (charsToShow > lineLength) {
+    if(charsToShow > lineLength){
         charsToShow = lineLength;  // 텍스트 전부 출력 완료
         isTextComplete = SDL_TRUE;
     }
 
-    char visibleText[256];
-    // 텍스트가 배열이면 해당 줄을 출력, 단일 문자열일 경우 첫 번째 줄을 출력
-    if(currentLine > 0){
-        strncpy(visibleText, dialogue->text[currentLine], charsToShow);  // 텍스트 출력
-    }
-    else{
-        strncpy(visibleText, dialogue->text[0], charsToShow);
-    }
-    visibleText[charsToShow] = '\0';
+    // 현재까지 출력된 모든 줄 렌더링
+    for(int t = 0; t <= currentLine; t++){
+        char visibleText[256];
 
-    renderText(renderer, visibleText, x, y, choiceFont, normalColor);
+        if(t < currentLine){ // 이미 출력 완료된 줄은 전체 텍스트 렌더링
+            strncpy(visibleText, dialogue->text[t], sizeof(visibleText) - 1);
+            visibleText[sizeof(visibleText) - 1] = '\0';
+        }
+        else{ // 현재 줄은 타이핑 효과 적용
+            strncpy(visibleText, dialogue->text[currentLine], charsToShow);
+            visibleText[charsToShow] = '\0';
+        }
+
+        renderText(renderer, visibleText, x, y + (t * 30), choiceFont, normalColor);  // i * 30: 줄 간격
+    }
 
     // 텍스트 제한 & 줄 넘기기
     if(isTextComplete && charsToShow == lineLength){
         currentLine++;
         if(currentLine >= dialogue->textLineCount){
-            printf("resizing currentLine: %d to textLine: %d\n", currentLine, dialogue->textLineCount);
             currentLine--;
+            isTextComplete = SDL_TRUE;
         }
         else{
             textTime = SDL_GetTicks();
-            printf("Line changed. Resetting textTime to: %u\n", textTime);
+            isTextComplete = SDL_FALSE;
         }
     }
     // 대화 텍스트가 모두 출력되었으면 선택지를 출력
@@ -320,12 +322,12 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
             printf("startTime initialized: %u\n", textTime);  // 디버깅: startTime 값 확인
         }
         // 대화가 넘어갔을 때 textTime을 초기화
-        else if(dialogues[dialogues->currentID].nextIds[0] != dialogues->previousId) {
+        else if(dialogues[dialogues->currentID].nextIds[0] != dialogues->previousId){
             currentLine = 0;
             textTime = SDL_GetTicks();  // 대화가 시작되거나 nextID가 바뀌면 타이핑 시작 시간 초기화
             dialogues->previousId = dialogues[dialogues->currentID].nextIds[0];  // previousNextId 갱신
             printf("startTime reinitialized: %u\n", textTime);  // 디버깅: 새로 초기화된 time 값 확인
-    }
+        }
         renderTypingEffect(renderer, &dialogues[dialogues->currentID], 100, 200, &selectedOption , textTime);
     }
 

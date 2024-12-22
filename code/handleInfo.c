@@ -91,18 +91,18 @@ void startDingDongDashMiniGame(){
 void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
     static Uint8 previousState[SDL_NUM_SCANCODES] = {0};  // 이전 키 상태 저장
     const Uint8 *state = SDL_GetKeyboardState(NULL);      // 현재 키 상태 가져오기
-    int optionCount = dialogue->optionCount; // 현재 대화의 선택지 개수
+    int optionCount = dialogue->optionCount;              // 현재 대화의 선택지 개수
 
     // UP 키 눌림 감지
-    if(state[SDL_SCANCODE_UP] && !previousState[SDL_SCANCODE_UP]){
+    if(state[SDL_SCANCODE_UP] && !previousState[SDL_SCANCODE_UP] && optionCount != 0){
         *selectedOption = (*selectedOption - 1 + optionCount) % optionCount;
-        printf("Selected Option: %d\n", *selectedOption);
+        printf("Choosing Option: %d\n", *selectedOption);
     }
 
     // DOWN 키 눌림 감지
-    if(state[SDL_SCANCODE_DOWN] && !previousState[SDL_SCANCODE_DOWN]){
+    if(state[SDL_SCANCODE_DOWN] && !previousState[SDL_SCANCODE_DOWN] && optionCount != 0){
         *selectedOption = (*selectedOption + 1) % optionCount;
-        printf("Selected Option: %d\n", *selectedOption);
+        printf("Choosing Option: %d\n", *selectedOption);
     }
 
     // Enter 키 눌림 감지
@@ -110,7 +110,7 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
         int nextId = dialogue->nextIds[*selectedOption];
 
         // 디버깅 존
-        printf("Selected option: %d\n", dialogue->options[*selectedOption]);
+        printf("Selected option: %s\n", dialogue->options[*selectedOption]);
         printf("All nextIds for current dialogue:\n");
         for(int i = 0; i < dialogue->optionCount; i++){
             printf("Option %d: %s -> nextId: %d\n", i, dialogue->options[i], dialogue->nextIds[i]);
@@ -124,8 +124,13 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
         }
         else{
             // 다음 대화를 구조체에 로드
-            dialogue->currentID = nextId;
-            printf("Dialogue id changed to %d\n", nextId);
+            dialogues->currentID = nextId;
+            DialogueText *debugDialogue = &dialogues[nextId];
+
+            printf("Dialogue id changed to %d\n", dialogues->currentID);
+            for(short t = 0; t <= debugDialogue->textLineCount; t++){
+                printf("Dialogue Text in [%d]\n: %s\n", t, debugDialogue->text[t]);
+            }
         }
     }
     // 현재 키 상태를 이전 키 상태로 복사
