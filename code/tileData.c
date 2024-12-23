@@ -212,6 +212,7 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strcmp(name->valuestring, "4F-roofF") == 0 || strcmp(name->valuestring, "1F-outDoor") == 0 ||
                         strcmp(name->valuestring, "otherWay") == 0 || strcmp(name->valuestring, "NotElevator") == 0 ||
                         strcmp(name->valuestring, "wrongWay") == 0 || strcmp(name->valuestring, "frontDoor") == 0 ||
+                        strcmp(name->valuestring, "bathRoom") == 0 ||
                         strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0 ||
                         strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0){
                     addInteraction(newInteraction, name->valuestring);

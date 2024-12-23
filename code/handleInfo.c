@@ -123,6 +123,9 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
             animations->isActive = SDL_FALSE;
             animations->isFreezed = SDL_FALSE;
             animations->isFinished = SDL_TRUE;
+            initializeAllDialogues(dialogues, 5);
+            freeAnimations(animations, 10);
+            freeAnimationFrames(animations->frames, animations->frameCount);
             printf("Dialogue ended.\n");
         }
         else{
@@ -153,10 +156,15 @@ void handleEvent(int eventID){
             startDingDongDashMiniGame();
             break;
         case 4:
-            printf("event 4\n");
+            for(int a = 0; a < animationCount; a++){
+                animations[a].isActive = SDL_TRUE;
+            }
+            isDialogueActive = SDL_TRUE;
             break;
         case 5:
             printf("event 5\n");
+            break;
+        case 6:
             break;
     }
 }

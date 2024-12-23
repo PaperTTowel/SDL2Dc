@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbAACgHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYB8AAKADAACgTgAAAE4AAMAWAAAAFgAAABYAAABeAAAgAwAAYB8AAGAfAACgAwAAoBYAAAAWAAAAFgAAABYAAABcAAAAVAAAwAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADAHwAAYFsAAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+         "data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbAACgHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYB8AAKADAACgTgAAAE4AAMAWAAAAFgAAABYAAABeAAAgAwAAYB8AAGAfAACgAwAAoGIAAABhAAAAYAAAABYAAABcAAAAVAAAwAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADAHwAAYFsAAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -33,7 +33,7 @@
                  "y":144
                 }, 
                 {
-                 "height":120,
+                 "height":96,
                  "id":9,
                  "name":"wall",
                  "rotation":0,
@@ -41,10 +41,10 @@
                  "visible":true,
                  "width":24,
                  "x":24,
-                 "y":48
+                 "y":72
                 }, 
                 {
-                 "height":120,
+                 "height":96,
                  "id":10,
                  "name":"wall",
                  "rotation":0,
@@ -52,11 +52,11 @@
                  "visible":true,
                  "width":24,
                  "x":192,
-                 "y":48
+                 "y":72
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -75,15 +75,71 @@
                  "width":13.9688,
                  "x":149,
                  "y":120
+                }, 
+                {
+                 "height":20,
+                 "id":12,
+                 "name":"Toilet",
+                 "properties":[
+                        {
+                         "name":"Text",
+                         "type":"string",
+                         "value":"\ubcc0\uae30\ub2e4"
+                        }, 
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":6
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":14.1818181818182,
+                 "x":99.9090909090909,
+                 "y":124
+                }, 
+                {
+                 "height":15.0909090909091,
+                 "id":13,
+                 "name":"Washstand",
+                 "properties":[
+                        {
+                         "name":"Text",
+                         "type":"string",
+                         "value":"\uc138\uba74\ub300\uc774\ub2e4"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":12.0908909090909,
+                 "x":77.9090909090909,
+                 "y":128.909090909091
+                }, 
+                {
+                 "height":12,
+                 "id":14,
+                 "name":"Washtub",
+                 "properties":[
+                        {
+                         "name":"Text",
+                         "type":"string",
+                         "value":"\uc695\uc870\uc774\ub2e4"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":18,
+                 "x":51,
+                 "y":132
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":12,
+ "nextobjectid":15,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

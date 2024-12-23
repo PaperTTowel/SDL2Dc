@@ -27,10 +27,31 @@ void initializeDialogueText(DialogueText *dialogue) {
 }
 
 // 모든 대화 목록 초기화
-void initializeAllDialogues(DialogueText *dialogues, int count) {
+void initializeAllDialogues(DialogueText *dialogues, int count){
     if(dialogues == NULL || count <= 0) return;
 
     for(int i = 0; i < count; i++){
         initializeDialogueText(&dialogues[i]);
+    }
+}
+
+// 애니메이션 프레임 메모리 해제 예제
+void freeAnimations(tileAnimation *animations, int count){
+    for(int i = 0; i < count; i++){
+        if(animations[i].frames != NULL){
+            free(animations[i].frames); // 동적 메모리 해제
+            animations[i].frames = NULL;
+        }
+    }
+}
+
+void freeAnimationFrames(SDL_Texture **frames, int frameCount){
+    if (frames) {
+        for (int i = 0; i < frameCount; i++) {
+            if (frames[i]) {
+                SDL_DestroyTexture(frames[i]); // 텍스처 해제
+            }
+        }
+        free(frames); // 프레임 배열 메모리 해제
     }
 }

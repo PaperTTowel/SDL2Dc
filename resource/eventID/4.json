@@ -1,0 +1,11 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "name": "You",
+            "text": "냉장고에 먹을것이 없다.",
+            "nextId": -1,
+            "options": []
+        }
+    ]
+}

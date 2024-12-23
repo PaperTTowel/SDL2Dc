@@ -184,10 +184,9 @@ void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, 
     }
 }
 
-void renderTypingEffect(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption, Uint32 startTime){
+void renderTypingEffect(SDL_Renderer *renderer, TTF_Font *choiceFont ,DialogueText *dialogue, int x, int y, int *selectedOption, Uint32 startTime){
     SDL_Color normalColor = {255, 255, 255};
     SDL_Color selectedColor = {255, 255, 0};
-    TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
     renderText(renderer, dialogue->name, 110, 70, choiceFont, normalColor);
 
     // text가 배열인지 단일 문자열인지 확인
@@ -335,7 +334,7 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
         SDL_Rect nameRect = {100, 70, 200, 30};
         SDL_RenderFillRect(renderer, &bgRect);
         SDL_RenderFillRect(renderer, &nameRect);
-        renderTypingEffect(renderer, &dialogues[dialogues->currentID], 110, 100, &selectedOption , textTime);
+        renderTypingEffect(renderer, font ,&dialogues[dialogues->currentID], 110, 100, &selectedOption , textTime);
     }
 
     for(int i = 0; i < animationCount; i++){

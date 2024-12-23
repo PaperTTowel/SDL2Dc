@@ -56,10 +56,10 @@ void updateMiniGame(TTF_Font *font){
         activeTextDisplay.duration = 2000; // 2초 동안 표시
 
         // 관련 애니메이션 활성화
-        for(int i = 0; i < animationCount; i++){
-            if(animations[i].eventID == 1 || animations[i].eventID == 2){  // 특정 eventID 확인 (예: 1번 이벤트)
-                animations[i].isActive = SDL_TRUE;  // 애니메이션 재생 시작
-                printf("Animation with eventID %d activated.\n", animations[i].eventID);
+        for(int a = 0; a < animationCount; a++){
+            if(animations[a].eventID == 1 || animations[a].eventID == 2){  // 특정 eventID 확인 (예: 1번 이벤트)
+                animations[a].isActive = SDL_TRUE;  // 애니메이션 재생 시작
+                printf("Animation with eventID %d activated.\n", animations[a].eventID);
             }
         }
         isDialogueActive = SDL_TRUE;

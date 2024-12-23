@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="4" nextobjectid="12">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="4" nextobjectid="15">
  <editorsettings>
   <export target="../tile/bathRoom.json" format="json"/>
  </editorsettings>
  <tileset firstgid="1" source="tileSet00.tsx"/>
  <layer id="1" name="Background" width="10" height="10">
   <data encoding="base64">
-   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbAACgHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYB8AAKADAACgTgAAAE4AAMAWAAAAFgAAABYAAABeAAAgAwAAYB8AAGAfAACgAwAAoBYAAAAWAAAAFgAAABYAAABcAAAAVAAAwAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADAHwAAYFsAAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbAACgHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYB8AAKADAACgTgAAAE4AAMAWAAAAFgAAABYAAABeAAAgAwAAYB8AAGAfAACgAwAAoGIAAABhAAAAYAAAABYAAABcAAAAVAAAwAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADAHwAAYFsAAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
   </data>
  </layer>
- <objectgroup id="2" name="NoPassing" visible="0">
+ <objectgroup id="2" name="NoPassing">
   <object id="8" name="floor" x="48" y="144" width="144" height="24"/>
-  <object id="9" name="wall" x="24" y="48" width="24" height="120"/>
-  <object id="10" name="wall" x="192" y="48" width="24" height="120"/>
+  <object id="9" name="wall" x="24" y="72" width="24" height="96"/>
+  <object id="10" name="wall" x="192" y="72" width="24" height="96"/>
  </objectgroup>
- <objectgroup id="3" name="Interaction" visible="0">
+ <objectgroup id="3" name="Interaction">
   <object id="11" name="bathRoom" x="149" y="120" width="13.9688" height="24"/>
+  <object id="12" name="Toilet" x="99.9091" y="124" width="14.1818" height="20">
+   <properties>
+    <property name="Text" value="변기다"/>
+    <property name="eventID" type="int" value="6"/>
+   </properties>
+  </object>
+  <object id="13" name="Washstand" x="77.9091" y="128.909" width="12.0909" height="15.0909">
+   <properties>
+    <property name="Text" value="세면대이다"/>
+   </properties>
+  </object>
+  <object id="14" name="Washtub" x="51" y="132" width="18" height="12">
+   <properties>
+    <property name="Text" value="욕조이다"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

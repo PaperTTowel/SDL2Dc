@@ -92,6 +92,7 @@ void checkInteractions(SDL_Rect *playerRect){
                 strcmp(interactionZone.name, "roofDoor") == 0 ||
                 strcmp(interactionZone.name, "elevator") == 0 ||
                 strcmp(interactionZone.name, "frontDoor") == 0 ||
+                strcmp(interactionZone.name, "bathRoom") == 0 ||
                 strcmp(interactionZone.name, "pyeonUijeom") == 0){
                 int index = -1;
 
@@ -152,13 +153,12 @@ void checkInteractions(SDL_Rect *playerRect){
                 newAnimation.isFreezed = SDL_FALSE;
                 newAnimation.isFinished = SDL_FALSE;
 
-                initializeAllDialogues(dialogues, 5);
-
                 // 배열에 추가
                 animations[animationCount++] = newAnimation;
                 printf("Interaction %s triggered. Animation initialized in animations[%d]\n", interactionZone.name, animationCount++);
 
-                if(strcmp(interactionZone.name, "blockedDoor") == 0){
+                if(strcmp(interactionZone.name, "blockedDoor") == 0 ||
+                    strcmp(interactionZone.name, "frige") == 0){
                     // 대화 데이터 로딩 (eventID를 통해 파일 로드)
                     char eventFileName[16];
                     snprintf(eventFileName, sizeof(eventFileName), "%d", interactions[i].eventID);
@@ -347,10 +347,6 @@ int main(int argc, char* argv[]){
         if(currentTime - debugLastTime > 2000){  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
-            for(short i = 0; i <= 10; i++){
-                printf("isActive[%d]: %d  |  isFreezed[%d]: %d,  |  isFinished[%d]: %d\n", i, animations[i].isActive, i, animations[i].isFreezed, i, animations[i].isFinished);
-            }
-            printf("------------------------------------------------------------\n");
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
         if(event.type == SDL_QUIT){  // X 버튼을 누른 경우
