@@ -1,0 +1,11 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "name": "You",
+            "text": "이 집은 아무래도 부재중인것 같다.",
+            "nextId": -1,
+            "options": []
+        }
+    ]
+}

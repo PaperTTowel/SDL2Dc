@@ -125,7 +125,7 @@ typedef struct tileAnimation {
 } tileAnimation;
 
 // 애니메이션 배열
-tileAnimation animations[100];
+tileAnimation animations[10];
 int animationCount = 0;
 
 typedef struct DialogueText {
@@ -141,7 +141,7 @@ typedef struct DialogueText {
 } DialogueText;
 
 Uint32 textTime = 0;
-DialogueText dialogues[4];             // 대화 목록
+DialogueText dialogues[10];             // 대화 목록
 SDL_bool isTextComplete = SDL_FALSE;   // 텍스트 출력 완료 여부
 SDL_bool isDialogueActive = SDL_FALSE; // 텍스트 활성화 여부
 int selectedOption = 0;                // 초기 선택지 인덱스

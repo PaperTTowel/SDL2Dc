@@ -147,10 +147,10 @@ void handleEvent(int eventID){
             startDingDongDashMiniGame();
             break;
         case 2:
-            printf("event 2\n");
+            startDingDongDashMiniGame();
             break;
         case 3:
-            printf("event 3\n");
+            startDingDongDashMiniGame();
             break;
         case 4:
             printf("event 4\n");

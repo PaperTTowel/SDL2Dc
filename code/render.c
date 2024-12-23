@@ -81,10 +81,10 @@ void renderTileMap(SDL_Renderer* renderer, Map *map, int xOffset, int yOffset){
 }
 
 void renderAnimation(SDL_Renderer *renderer, tileAnimation *animation){
-    if(!animation->isFinished || animation->isFreezed){ 
+    if(!animation->isFinished){ 
         SDL_Rect destRect = { (int)animation->x - camera.x - 15, (int)animation->y - camera.y, maps->tileWidth * 3, maps->tileHeight * 3 };
         SDL_RenderCopy(renderer, animation->frames[animation->currentFrame], NULL, &destRect);
-        printf("Rendering frame %d at position (%d, %d)\n", animation->currentFrame, destRect.x, destRect.y);
+        // printf("Rendering frame %d at position (%d, %d)\n", animation->currentFrame, destRect.x, destRect.y);
     }
 }
 

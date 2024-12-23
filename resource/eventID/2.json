@@ -1,0 +1,64 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "name": "scared shdk",
+            "text": "누구세요?",
+            "options": [
+                { "text": "옆집분께서 택배를 훔쳐갈려고 하시길래 알려드리려 왔습니다.", "nextId": 1 },
+                { "text": "님 택배옴.", "nextId": 3 }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "scared shdk",
+            "text": [
+                "아, 늘 있는 일입니다.",
+                "나중에 찾아오면 됩니다."
+            ],
+            "options": [
+                {"text": "옆집에서 택배를 자주 훔쳐가나 보군요?", "nextId": 2 }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "scared shdk",
+            "text": [
+                "네 자주 훔쳐갑니다.",
+                "돌려달라고 하면 순순히 돌려주긴 합니다.",
+                "많이 노망난 친구라 이해가 필요합니다."
+            ],
+            "options": [
+                {"text": "아... 그렇군요?", "nextId": 5 }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "scared shdk",
+            "text": [
+                "아... 그렇군요...",
+                "그렇다고 초인종을 너무 누르시는거 아닌가요...?"
+            ],
+            "options": [
+                { "text": "초인종은 누르라고 있는겁니다!", "nextId": 4 }
+            ]
+        },
+        {
+            "id": 4,
+            "name": "scared shdk",
+            "text": [
+                "그렇군요?!",
+                "나중에 옆집에 시도해봐야겠네요."
+            ],
+            "nextId": -1,
+            "options": []
+        },
+        {
+            "id": 5,
+            "name": "scared shdk",
+            "text": "그럼 실례",
+            "nextId": -1,
+            "options": []
+        }
+    ]
+}

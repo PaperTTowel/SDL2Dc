@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="24" tileheight="24" infinite="0" nextlayerid="4" nextobjectid="12">
+ <editorsettings>
+  <export target="../tile/bathRoom.json" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" source="tileSet00.tsx"/>
+ <layer id="1" name="Background" width="10" height="10">
+  <data encoding="base64">
+   AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABbAACgHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMAFAACgHwAAYB8AAKADAACgTgAAAE4AAMAWAAAAFgAAABYAAABeAAAgAwAAYB8AAGAfAACgAwAAoBYAAAAWAAAAFgAAABYAAABcAAAAVAAAwAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAAFAADAHwAAYFsAAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAFsAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==
+  </data>
+ </layer>
+ <objectgroup id="2" name="NoPassing" visible="0">
+  <object id="8" name="floor" x="48" y="144" width="144" height="24"/>
+  <object id="9" name="wall" x="24" y="48" width="24" height="120"/>
+  <object id="10" name="wall" x="192" y="48" width="24" height="120"/>
+ </objectgroup>
+ <objectgroup id="3" name="Interaction" visible="0">
+  <object id="11" name="bathRoom" x="149" y="120" width="13.9688" height="24"/>
+ </objectgroup>
+</map>

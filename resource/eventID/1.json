@@ -6,32 +6,32 @@
             "text": "세상을 구하는데 뭐하는거야!?",
             "options": [
                 { "text": "세상을 구하신다고요?", "nextId": 1 },
-                { "text": "안녕하세요", "nextId": 2 }
+                { "text": "택배입니다.", "nextId": 2 }
             ]
         },
         {
             "id": 1,
-            "name": "MAD dldudwn",
+            "name": "MAD dldudwns",
             "text": [
                 "맞아 세상을 구하고 있는데",
                 "너가 초인종을 ㅈㄴ 눌러서서",
-                "세상을 못구하게 생겼잖아"
+                "세상을 못구하게 생겼잖아!"
             ],
             "nextId": 3,
             "options": []
         },
         {
             "id": 2,
-            "name": "MAD dldudwn",
-            "text": "안녕못해",
+            "name": "MAD dldudwns",
+            "text": "택배 시킨 적 없어요!",
             "options": [
-                { "text": "ㅠㅠ", "nextId": 3 }
+                { "text": "그렇군요.", "nextId": 3 }
             ]
         },
         {
             "id": 3,
-            "name": "MAD dldudwn",
-            "text": "그럼 이만",
+            "name": "MAD dldudwns",
+            "text": "난 바쁘니 이만",
             "nextId": -1,
             "options": []
         }

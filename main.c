@@ -9,6 +9,7 @@
 #include "code\render.c"
 #include "code\handleInfo.c"
 #include "code\update.c"
+#include "code\initialize.c"
 
 #define MAX_MAPCOUNT 100
 
@@ -139,6 +140,7 @@ void checkInteractions(SDL_Rect *playerRect){
 
                 // 이벤트 ID와 좌표를 기반으로 애니메이션 추가
                 tileAnimation newAnimation;
+                animationCount = 0; // 이러면 Animation 배열로 하는 의미가 없지만 일단 귀찮으니 패스
                 newAnimation.eventID = interactions[i].eventID;
                 newAnimation.x = interactions[i].x;
                 newAnimation.y = interactions[i].y;
@@ -147,16 +149,21 @@ void checkInteractions(SDL_Rect *playerRect){
                 newAnimation.frameDuration = 50;   // 각 프레임 지속 시간 (예: 100ms)
                 newAnimation.lastFrameTime = 0;    // 초기화
                 newAnimation.isActive = SDL_FALSE; // 비활성화 상태로 시작
+                newAnimation.isFreezed = SDL_FALSE;
                 newAnimation.isFinished = SDL_FALSE;
+
+                initializeAllDialogues(dialogues, 5);
 
                 // 배열에 추가
                 animations[animationCount++] = newAnimation;
-                printf("Interaction %s triggered. Animation initialized.\n", interactionZone.name);
+                printf("Interaction %s triggered. Animation initialized in animations[%d]\n", interactionZone.name, animationCount++);
 
-                // 대화 데이터 로딩 (eventID를 통해 파일 로드)
-                char eventFileName[16];
-                snprintf(eventFileName, sizeof(eventFileName), "%d", interactions[i].eventID);
-                loadNPCDialogue(eventFileName);  // 대화 로드
+                if(strcmp(interactionZone.name, "blockedDoor") == 0){
+                    // 대화 데이터 로딩 (eventID를 통해 파일 로드)
+                    char eventFileName[16];
+                    snprintf(eventFileName, sizeof(eventFileName), "%d", interactions[i].eventID);
+                    loadNPCDialogue(eventFileName);  // 대화 로드
+                }
             }
         }
     }
@@ -337,12 +344,16 @@ int main(int argc, char* argv[]){
 
         // 디버깅용
         currentTime = SDL_GetTicks();  // 현재 시간 업데이트
-        if (currentTime - debugLastTime > 2000) {  // 1000ms (1초) 이상 차이 나면
+        if(currentTime - debugLastTime > 2000){  // 1000ms (1초) 이상 차이 나면
             printf("playerX / Y: %.3f / %.3f  |   camera.x: %.3f   |   FPS: %.2f\n", playerX, playerY, cameraX, fps);
             printf("playerRect.x / y / w: %d / %d / %d  |  platformCount: %d\n", playerRect.x, playerRect.y, playerRect.w, platformCount);
+            for(short i = 0; i <= 10; i++){
+                printf("isActive[%d]: %d  |  isFreezed[%d]: %d,  |  isFinished[%d]: %d\n", i, animations[i].isActive, i, animations[i].isFreezed, i, animations[i].isFinished);
+            }
+            printf("------------------------------------------------------------\n");
             debugLastTime = currentTime;  // 마지막 시간 업데이트
         }
-        if (event.type == SDL_QUIT) {  // X 버튼을 누른 경우
+        if(event.type == SDL_QUIT){  // X 버튼을 누른 경우
             running = SDL_FALSE;  // SDL_BOOL에서 SDL_FALSE 사용
         }
     }
