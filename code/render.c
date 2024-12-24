@@ -191,7 +191,6 @@ void renderTypingEffect(SDL_Renderer *renderer, TTF_Font *choiceFont ,DialogueTe
 
     // text가 배열인지 단일 문자열인지 확인
     int lineLength = 0;
-
     if(dialogue->text[currentLine] != NULL){
         lineLength = strlen(dialogue->text[currentLine]);
     }

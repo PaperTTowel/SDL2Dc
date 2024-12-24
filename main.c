@@ -240,19 +240,19 @@ int main(int argc, char* argv[]){
     }
     
     tilesetTexture = loadTexture("resource\\Tileset00.png", renderer);
-    if (tilesetTexture == NULL) {
+    if(tilesetTexture == NULL){
         printf("Failed to load tileset texture!\n");
         return -1;
     }
 
     // JSON 파일 불러오기
     int mapCount = loadMapsFromDirectory("tile", maps, MAX_MAPCOUNT);
-    if (mapCount <= 0) {
+    if(mapCount <= 0){
         printf("Error loading maps from directory\n");
         return -1;
     }
-    for (int i = 0; i < mapCount; i++) {
-        if (maps[i].mapJson == NULL) {
+    for(int i = 0; i < mapCount; i++){
+        if(maps[i].mapJson == NULL){
             printf("Error parsing JSON for map %d\n", i);
             continue;
         }
@@ -263,8 +263,8 @@ int main(int argc, char* argv[]){
         cJSON *tileWidthItem = cJSON_GetObjectItem(maps[i].mapJson, "tilewidth");
         cJSON *tileHeightItem = cJSON_GetObjectItem(maps[i].mapJson, "tileheight");
 
-        if (!cJSON_IsNumber(width) || !cJSON_IsNumber(height) ||
-            !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)) {
+        if(!cJSON_IsNumber(width) || !cJSON_IsNumber(height) ||
+            !cJSON_IsNumber(tileWidthItem) || !cJSON_IsNumber(tileHeightItem)){
             printf("Error in map dimensions for map %d\n", i);
             continue;
         }

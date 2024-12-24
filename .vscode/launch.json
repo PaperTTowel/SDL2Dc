@@ -1,0 +1,31 @@
+{
+    // IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.
+    // 기존 특성에 대한 설명을 보려면 가리킵니다.
+    // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "GCC 디버깅",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/${fileBasenameNoExtension}.exe", // 실행 파일 경로
+        "args": [], // 프로그램에 전달할 인자 (필요시 추가)
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "environment": [],
+        "externalConsole": true, // 외부 콘솔 사용
+        "MIMode": "gdb", // GDB를 디버거로 사용
+        "setupCommands": [
+          {
+            "description": "디버깅 심볼 로드",
+            "text": "-enable-pretty-printing",
+            "ignoreFailures": true
+          }
+        ],
+        "miDebuggerPath": "C:/msys64/ucrt64/bin/gdb.exe", // GDB 경로 설정
+        "preLaunchTask": "C/C++: gcc.exe 활성 파일 빌드", // 디버깅 전 실행할 빌드 작업 (tasks.json에 정의 필요)
+        "internalConsoleOptions": "openOnSessionStart"
+      }
+    ]
+  }
+  

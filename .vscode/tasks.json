@@ -11,10 +11,10 @@
                 "-o", "${fileDirname}/${fileBasenameNoExtension}",
                 "-DSDL_MAIN_HANDLED",
                 "-D_CRTDBG_MAP_ALLOC",
-                "-I", "C:\\msys64\\mingw64\\include\\SDL2",
-                "-I", "C:\\msys64\\mingw64\\include\\cjson",
                 "-I", "C:\\msys64\\ucrt64\\include\\SDL2",
-                "-L", "C:\\msys64\\mingw64\\lib",
+                "-I", "C:\\msys64\\ucrt64\\include\\cjson",
+                "-I", "C:\\msys64\\ucrt64\\include\\SDL2",
+                "-L", "C:\\msys64\\ucrt64\\lib",
                 "-lSDL2", "-lSDL2_mixer", "-lSDL2_image", "-lwinmm", "-lcjson", "-lSDL2_ttf"
             ],
             "options": {
