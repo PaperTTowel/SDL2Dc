@@ -6,8 +6,8 @@
 
 SDL_Texture* loadTexture(const char* path, SDL_Renderer* renderer) {
     SDL_Surface* tempSurface = IMG_Load(path);
-    if (tempSurface == NULL) {
-        printf("Failed to load image %s! SDL Error: %s\n", path, SDL_GetError());
+    if(tempSurface == NULL){
+        showErrorAndExit("WHO TOUCH THE IMAGE FILE!?", SDL_GetError());
         return NULL;
     }
     
@@ -100,7 +100,7 @@ void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
 
     SDL_Color color = {255, 255, 255, 255}; // 흰색 텍스트
     SDL_Surface *surface = TTF_RenderUTF8_Blended(font, activeTextDisplay.text, color);
-    if (surface == NULL) {
+    if(surface == NULL){
         printf("Failed to render text surface: %s\n", TTF_GetError());
         return;
     }
@@ -118,7 +118,7 @@ void displayText(SDL_Renderer *renderer, TTF_Font *font, int x, int y){
         SDL_RenderCopy(renderer, texture, NULL, &destRect);
     }
     else{
-        SDL_Rect destRect = {x, y, surface->w, surface->h};
+        SDL_Rect destRect = {100, 100, surface->w, surface->h};
         SDL_RenderCopy(renderer, texture, NULL, &destRect);
     }
 
@@ -157,7 +157,7 @@ void renderShop(SDL_Renderer *renderer, Shop *shop, TTF_Font *font){
     }
 
     // 구매 버튼
-    renderText(renderer, "구매 (Enter)", 150, 350, font, BasicColor);
+    renderText(renderer, "구매 (Z)", 150, 350, font, BasicColor);
 
     // ESC 버튼
     renderText(renderer, "상점 닫기 (ESC)", 450, 350, font, BasicColor);
@@ -174,7 +174,7 @@ void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font
 }
 
 void renderChoice(SDL_Renderer *renderer, DialogueText *dialogue, int x, int y, int *selectedOption){
-    TTF_Font *choiceFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize);
+    TTF_Font *choiceFont = TTF_OpenFont("resource\\The Jamsil.ttf", fontSize);
     SDL_Color normalColor = {255, 255, 255};
     SDL_Color selectedColor = {255, 255, 0};
 
@@ -250,7 +250,7 @@ void renderTypingEffect(SDL_Renderer *renderer, TTF_Font *choiceFont ,DialogueTe
 
 // 이벤트 전용 텍스트 렌더링 함수
 void renderEventText(SDL_Renderer *renderer, TTF_Font *font, const char *text, int x, int y, int fontSize, SDL_Color color) {
-    TTF_Font *scaledFont = TTF_OpenFont("resource\\NanumGothic.ttf", fontSize); // 동적으로 크기 조정
+    TTF_Font *scaledFont = TTF_OpenFont("resource\\The Jamsil.ttf", fontSize); // 동적으로 크기 조정
     if (!scaledFont) {
         printf("Failed to load font: %s\n", TTF_GetError());
         return;

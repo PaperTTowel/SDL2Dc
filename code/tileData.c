@@ -214,7 +214,7 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strcmp(name->valuestring, "wrongWay") == 0 || strcmp(name->valuestring, "frontDoor") == 0 ||
                         strcmp(name->valuestring, "bathRoom") == 0 ||
                         strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0 ||
-                        strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0){
+                        strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0 || strcmp(name->valuestring, "toDo") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
@@ -355,7 +355,7 @@ int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *render
 
     // 스프라이트 시트 불러오기
     SDL_Surface *spriteSheet = IMG_Load(filePath);
-    if (!spriteSheet) {
+    if(!spriteSheet){
         fprintf(stderr, "Failed to load sprite sheet: %s\n", IMG_GetError());
         return 0;
     }
@@ -368,7 +368,7 @@ int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *render
 
     // 텍스처 배열 동적 할당
     *frames = malloc(sizeof(SDL_Texture *) * frameCount);
-    if (!*frames) {
+    if(!*frames){
         fprintf(stderr, "Failed to allocate memory for frames.\n");
         SDL_FreeSurface(spriteSheet);
         return 0;
@@ -376,7 +376,7 @@ int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *render
 
     // 각 프레임을 텍스처로 변환
     SDL_Rect srcRect = { 0, 0, frameWidth, frameHeight }; // 잘라낼 영역
-    for (int i = 0; i < frameCount; i++) {
+    for(int i = 0; i < frameCount; i++){
         srcRect.x = i * frameWidth; // 현재 프레임의 x 좌표 설정
 
         // 프레임 추출
@@ -388,9 +388,9 @@ int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *render
         (*frames)[i] = SDL_CreateTextureFromSurface(renderer, frameSurface);
         SDL_FreeSurface(frameSurface);
 
-        if (!(*frames)[i]) {
+        if(!(*frames)[i]){
             fprintf(stderr, "Failed to create texture for frame %d: %s\n", i, SDL_GetError());
-            for (int j = 0; j < i; j++) { // 이전에 할당된 텍스처 해제
+            for(int j = 0; j < i; j++){ // 이전에 할당된 텍스처 해제
                 SDL_DestroyTexture((*frames)[j]);
             }
             free(*frames);

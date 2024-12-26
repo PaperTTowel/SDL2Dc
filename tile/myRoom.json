@@ -4,7 +4,7 @@
  "layers":[
         {
          "compression":"",
-         "data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWwAAoB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAUAAKAfAABgHwAAoAMAAKAWAAAAFgAAACoAACA3AACgKgAAoDQAAIAWAAAAFgAAAAMAAKAbAAAAGwAAAAMAAGAfAABgHwAAoAMAAKAjAAAAIgAAgCIAAAAZAAAAIgAAgEIAAIAgAACANgAAAAMAAKAlAAAAJwAAAAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgWwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAABbAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+         "data":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWwAAoB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMAfAADAHwAAwB8AAMBbAADAHwAAoAUAAAADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAMAAMADAADAAwAAwAUAAKAfAABgHwAAoAMAAKAWAAAAFgAAACoAACA3AACgKgAAoDQAAIAWAAAAFgAAAAMAAKAbAAAAGwAAAAMAAGAfAABgHwAAoAMAAKBqAAAAawAAAGMAAABkAAAAIgAAgEIAAIAgAACANgAAAAMAAKAlAAAAJwAAAAMAAGAfAABgHwAAoAUAAGADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAMAAAADAAAAAwAAAAUAAMAfAABgWwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAAAfAAAAHwAAAB8AAABbAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
          "encoding":"base64",
          "height":10,
          "id":1,
@@ -100,7 +100,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":41,
+                 "width":24,
                  "x":48,
                  "y":135.966
                 }, 
@@ -120,6 +120,23 @@
                  "width":17.0123,
                  "x":167.925,
                  "y":112.004
+                }, 
+                {
+                 "height":8.97171717171716,
+                 "id":10,
+                 "name":"toDo",
+                 "properties":[
+                        {
+                         "name":"eventID",
+                         "type":"int",
+                         "value":6
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":6.98888888888888,
+                 "x":112,
+                 "y":120
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -128,7 +145,7 @@
          "y":0
         }],
  "nextlayerid":4,
- "nextobjectid":10,
+ "nextobjectid":11,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -136,7 +153,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/Tileset00.tsj"
+         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/tileSet00.tsx"
         }],
  "tilewidth":24,
  "type":"map",

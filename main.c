@@ -17,8 +17,8 @@
 Uint32 lastTime = 0;
 
 // 플레이어 좌표 (물리엔진과 렌더링(SDL_Rect) 분리용)
-float playerX = 500.0f;
-float playerY = 500.0f;
+float playerX = 12000.0f;
+float playerY = 360.0f;
 
 SDL_Rect playerRect = { 0, 0, 72, 72 }; // 렌더링할 플레이어 rect
 
@@ -44,7 +44,7 @@ int platformCount = 0; // 현재 플랫폼 수
 Interaction interactions[100]; // 상호작용 배열
 int interactionCount = 0;      // 현재 상호작용 수
 
-float cameraX = 0.0f; // 카메라 좌표 (분리용)
+float cameraX = 11500.0f; // 카메라 좌표 (분리용)
 SDL_Rect camera = { 0, 0, 800, 600 }; // 카메라 정보
 
 SDL_Texture* spriteSheet = NULL; // 스프라이트 시트 텍스처
@@ -136,7 +136,8 @@ void checkInteractions(SDL_Rect *playerRect){
             // 이벤트 시스템
             else if(strcmp(interactionZone.name, "blockedDoor") == 0 ||
                     strcmp(interactionZone.name, "frige") == 0 ||
-                    strcmp(interactionZone.name, "bed") == 0){
+                    strcmp(interactionZone.name, "bed") == 0 || 
+                    strcmp(interactionZone.name, "toDo") == 0){
                 handleEvent(interactions[i].eventID);
 
                 // 이벤트 ID와 좌표를 기반으로 애니메이션 추가
@@ -146,27 +147,45 @@ void checkInteractions(SDL_Rect *playerRect){
                 newAnimation.x = interactions[i].x;
                 newAnimation.y = interactions[i].y;
                 newAnimation.frameCount = loadAnimationFrames(newAnimation.eventID, &newAnimation.frames, renderer);
-                newAnimation.currentFrame = 0;
-                newAnimation.frameDuration = 50;   // 각 프레임 지속 시간 (예: 100ms)
-                newAnimation.lastFrameTime = 0;    // 초기화
-                newAnimation.isActive = SDL_FALSE; // 비활성화 상태로 시작
-                newAnimation.isFreezed = SDL_FALSE;
-                newAnimation.isFinished = SDL_FALSE;
 
-                // 배열에 추가
-                animations[animationCount++] = newAnimation;
-                printf("Interaction %s triggered. Animation initialized in animations[%d]\n", interactionZone.name, animationCount++);
+                if(newAnimation.frameCount > 0){
+                    newAnimation.currentFrame = 0;
+                    newAnimation.frameDuration = 50;   // 각 프레임 지속 시간 (예: 100ms)
+                    newAnimation.lastFrameTime = 0;    // 초기화
+                    newAnimation.isActive = SDL_FALSE; // 비활성화 상태로 시작
+                    newAnimation.isFreezed = SDL_FALSE;
+                    newAnimation.isFinished = SDL_FALSE;
 
-                if(strcmp(interactionZone.name, "blockedDoor") == 0 ||
-                    strcmp(interactionZone.name, "frige") == 0){
-                    // 대화 데이터 로딩 (eventID를 통해 파일 로드)
-                    char eventFileName[16];
-                    snprintf(eventFileName, sizeof(eventFileName), "%d", interactions[i].eventID);
-                    loadNPCDialogue(eventFileName);  // 대화 로드
+                    // 배열에 추가
+                    animations[animationCount++] = newAnimation;
+                    printf("Interaction %s triggered. Animation initialized in animations[%d]\n", interactionZone.name, animationCount++);
                 }
+                char eventFileName[16];
+                snprintf(eventFileName, sizeof(eventFileName), "%d", interactions[i].eventID);
+                loadNPCDialogue(eventFileName);  // 대화 로드
             }
         }
     }
+}
+
+#include <windows.h>
+// 에러 메시지 박스를 띄우고 프로그램을 종료하는 함수
+void showErrorAndExit(const char* title, const char* errorMessage){
+    // 콘솔 출력
+    printf("%s: %s\n", title, errorMessage);
+    
+    // SDL 내장 메시지 박스
+    // SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, errorMessage, NULL);
+
+    // 윈도우API 메시지 박스
+    MessageBoxA(NULL, errorMessage, title, MB_ICONERROR | MB_OK);
+
+    // SDL 종료 (필요한 경우)
+    SDL_Quit();
+    IMG_Quit();
+
+    // 프로그램 종료
+    exit(1);
 }
 
 Uint32 fpsStartTime = 0;
@@ -205,51 +224,40 @@ int main(int argc, char* argv[]){
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     if(SDL_Init(SDL_INIT_VIDEO) != 0){
-        printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-        return 1;
+        showErrorAndExit("Are you running in mom's computer?", SDL_GetError());
     }
 
     if(IMG_Init(IMG_INIT_PNG) == 0){
-        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-        return 1;
+        showErrorAndExit("Did you get windows Update?", IMG_GetError());
     }
 
     if(TTF_Init() == -1){
-        printf("TTF_Init: %s\n", TTF_GetError());
-        SDL_Quit();
-        return 1;
+        showErrorAndExit("Jensen Huang is sad that you didn't buy rtx 40 series", TTF_GetError());
     }
 
-    SDL_Window* window = SDL_CreateWindow("SDL을 이용한 2D Platform C언어 공부연습용 게임", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("DingDongDash", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Surface* tempSurface = IMG_Load("resource\\walk and idle.png");
     printf("sprite loaded!\n");
     if(!tempSurface){
-        printf("load failed: %s\n", IMG_GetError());
-        return 1;
+        showErrorAndExit("WHO TOUCH THE SPRITE FILE!?", IMG_GetError());
     }
     
     spriteSheet = SDL_CreateTextureFromSurface(renderer, tempSurface);
     SDL_FreeSurface(tempSurface);
 
-    TTF_Font *font = TTF_OpenFont("resource\\NanumGothic.ttf", 24);
+    TTF_Font *font = TTF_OpenFont("resource\\The Jamsil.ttf", 24);
     if(!font){
-        printf("Failed to load font: %s\n", TTF_GetError());
-        return 1;
+        showErrorAndExit("WHO TOUCH THE FONT FILE!?", TTF_GetError());
     }
     
     tilesetTexture = loadTexture("resource\\Tileset00.png", renderer);
-    if(tilesetTexture == NULL){
-        printf("Failed to load tileset texture!\n");
-        return -1;
-    }
 
     // JSON 파일 불러오기
     int mapCount = loadMapsFromDirectory("tile", maps, MAX_MAPCOUNT);
     if(mapCount <= 0){
-        printf("Error loading maps from directory\n");
-        return -1;
+        showErrorAndExit("WHO TOUCH THE TILE FILE!?", "Error loading maps from directory");
     }
     for(int i = 0; i < mapCount; i++){
         if(maps[i].mapJson == NULL){
@@ -305,6 +313,11 @@ int main(int argc, char* argv[]){
     Uint32 debugLastTime = 0;  // 처음에는 0으로 초기화
     Uint32 currentTime = SDL_GetTicks();  // 현재 시간 가져오기
 
+    // 임시 키 안내
+    activeTextDisplay.text = "이동: WASD,   상호작용: E,   확인: Z,   띵동대쉬: Spacebar";
+    activeTextDisplay.startTime = currentTime;
+    activeTextDisplay.duration = 10000; // 10초 동안 표시
+
     while(running){
         while(SDL_PollEvent(&event)){
             if (event.type == SDL_QUIT) running = SDL_FALSE;
@@ -315,7 +328,7 @@ int main(int argc, char* argv[]){
         float deltaTime = (currentTime - lastTime) / 1000.0f; // 초 단위로 델타 타임 계산
         lastTime = currentTime;
 
-        if(!isShopVisible && !isMiniGameActive){
+        if(!isShopVisible && !isMiniGameActive && !isDialogueActive){
             handleInput(state, deltaTime, font);
         }
         if(isShopVisible){

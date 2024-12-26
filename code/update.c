@@ -42,7 +42,6 @@ void updateMiniGame(TTF_Font *font){
     // 스페이스바가 눌린 상태인지 확인
     if(state[SDL_SCANCODE_SPACE] && !previousState[SDL_SCANCODE_SPACE]){
         spaceBarCount++;
-        SDL_Delay(50); // 너무 빠른 반복 입력 방지
     }
     memcpy(previousState, state, SDL_NUM_SCANCODES);
 
@@ -50,7 +49,7 @@ void updateMiniGame(TTF_Font *font){
     if(elapsedTime >= 5){
         isMiniGameActive = SDL_FALSE;
 
-        // 종료 메시지 설
+        // 종료 메시지 설정
         activeTextDisplay.text = buffer;
         activeTextDisplay.startTime = currentTime;
         activeTextDisplay.duration = 2000; // 2초 동안 표시
@@ -78,7 +77,7 @@ void updateMiniGame(TTF_Font *font){
     if(isEffectActive){
         Uint32 effectElapsedTime = currentTime - effectStartTime;
 
-        if (effectElapsedTime < 165){ // 0~300ms 동안 효과 적용
+        if(effectElapsedTime < 165){ // 0~300ms 동안 효과 적용
             fontSize = 32; // 텍스트 크기를 키움
             textEventColor = YelloColor; // 노란색으로 변경
         }

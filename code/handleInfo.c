@@ -58,8 +58,8 @@ void handleShopInput(Shop *shop, int *playerGold){
         printf("Selected item: %s\n", items[shop->selectedItem].name);
     }
 
-    // Enter 키 눌림 감지
-    if(state[SDL_SCANCODE_RETURN] && !previousState[SDL_SCANCODE_RETURN]){
+    // Z 키 눌림 감지
+    if(state[SDL_SCANCODE_Z] && !previousState[SDL_SCANCODE_Z]){
         int price = getItemPrice(items[shop->selectedItem].name);
         if(*playerGold >= price && items[shop->selectedItem].stock > 0){
             *playerGold -= price;
@@ -105,8 +105,8 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
         printf("Choosing Option: %d\n", *selectedOption);
     }
 
-    // Enter 키 눌림 감지
-    if(state[SDL_SCANCODE_RETURN] && !previousState[SDL_SCANCODE_RETURN]){
+    // Z 키 눌림 감지
+    if(state[SDL_SCANCODE_Z] && !previousState[SDL_SCANCODE_Z]){
         int nextId = dialogue->nextIds[*selectedOption];
 
         // 디버깅 존
@@ -165,6 +165,7 @@ void handleEvent(int eventID){
             printf("event 5\n");
             break;
         case 6:
+            isDialogueActive = SDL_TRUE;
             break;
     }
 }

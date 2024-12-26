@@ -155,6 +155,7 @@ void freeAnimations(tileAnimation *animations, int count);
 void freeAnimationFrames(SDL_Texture **frames, int frameCount);
 void initializeAllDialogues(DialogueText *dialogues, int count);
 void addInteraction(SDL_Rect interactionZone, const char* name);
+void showErrorAndExit(const char* title, const char* errorMessage);
 int loadAnimationFrames(int eventID, SDL_Texture ***frames, SDL_Renderer *renderer);
 void renderText(SDL_Renderer *renderer, const char *text, int x, int y, TTF_Font *font, SDL_Color color);
 
