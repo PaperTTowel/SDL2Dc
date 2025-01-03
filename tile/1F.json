@@ -103,6 +103,12 @@
                  "height":31.9375,
                  "id":9,
                  "name":"1F-outDoor",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"slideDoorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

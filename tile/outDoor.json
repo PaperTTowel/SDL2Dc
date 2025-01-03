@@ -120,6 +120,12 @@
                  "height":32,
                  "id":15,
                  "name":"pyeonUijeom",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"slideDoorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -131,6 +137,12 @@
                  "height":31.9375,
                  "id":16,
                  "name":"1F-outDoor",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"slideDoorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -153,7 +165,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/Tileset00.tsj"
+         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/tileSet00.tsx"
         }],
  "tilewidth":24,
  "type":"map",

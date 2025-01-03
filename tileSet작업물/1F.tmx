@@ -25,6 +25,10 @@
     <property name="SE" value="stair"/>
    </properties>
   </object>
-  <object id="9" name="1F-outDoor" x="72" y="112.063" width="16.9688" height="31.9375"/>
+  <object id="9" name="1F-outDoor" x="72" y="112.063" width="16.9688" height="31.9375">
+   <properties>
+    <property name="SE" value="slideDoorOpen"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

@@ -16,7 +16,11 @@
   <object id="9" name="wall" x="360" y="160.02" width="16.8972" height="7.98024"/>
  </objectgroup>
  <objectgroup id="3" name="Interaction">
-  <object id="1" name="pyeonUijeom" x="103" y="136" width="34" height="32"/>
+  <object id="1" name="pyeonUijeom" x="103" y="136" width="34" height="32">
+   <properties>
+    <property name="SE" value="slideDoorOpen"/>
+   </properties>
+  </object>
   <object id="8" name="jinYeoldae" x="175" y="136" width="153.929" height="32">
    <properties>
     <property name="Text" value="나의 한끼를 책임져주는 진열대이다."/>

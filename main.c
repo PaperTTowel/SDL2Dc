@@ -131,6 +131,7 @@ void checkInteractions(SDL_Rect *playerRect){
             // 속성값 Text의 텍스트 처리
             else if(strcmp(interactionZone.name, "otherWay") == 0 ||
                     strcmp(interactionZone.name, "wrongWay") == 0 ||
+                    strcmp(interactionZone.name, "NotElevator") == 0 ||
                     strcmp(interactionZone.name, "jinYeoldae") == 0 ||
                     strcmp(interactionZone.name, "Washstand") == 0 ||
                     strcmp(interactionZone.name, "Washtub") == 0){
@@ -330,6 +331,7 @@ int main(int argc, char* argv[]){
     loadSoundEffect("resource\\audio\\[SE]doorBell.wav", "doorBell", 64);
     loadSoundEffect("resource\\audio\\[SE]doorOpen.wav", "doorOpen", 64);
     loadSoundEffect("resource\\audio\\[SE]doorClose.wav", "doorClose", 64);
+    loadSoundEffect("resource\\audio\\[SE]slideDoorOpen.wav", "slideDoorOpen", 64);
     loadSoundEffect("resource\\audio\\[SE]elevator.wav", "elevator", 64);
     loadSoundEffect("resource\\audio\\[SE]stair.wav", "stair", 64);
 
