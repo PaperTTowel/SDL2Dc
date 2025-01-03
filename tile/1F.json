@@ -69,6 +69,12 @@
                  "height":31.9375,
                  "id":4,
                  "name":"elevator",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"elevator"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -80,6 +86,12 @@
                  "height":32.0909,
                  "id":7,
                  "name":"1F-3F",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"stair"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -113,7 +125,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/Tileset00.tsj"
+         "source":"..\/tileSet\uc791\uc5c5\ubb3c\/tileSet00.tsx"
         }],
  "tilewidth":24,
  "type":"map",

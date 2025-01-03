@@ -69,6 +69,12 @@
                  "height":24,
                  "id":6,
                  "name":"frontDoor",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"doorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -80,6 +86,12 @@
                  "height":24,
                  "id":7,
                  "name":"bathRoom",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"doorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -122,7 +134,7 @@
                  "y":112.004
                 }, 
                 {
-                 "height":8.97171717171716,
+                 "height":8.97172,
                  "id":10,
                  "name":"toDo",
                  "properties":[
@@ -134,7 +146,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6.98888888888888,
+                 "width":6.98889,
                  "x":112,
                  "y":120
                 }],

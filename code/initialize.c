@@ -55,3 +55,12 @@ void freeAnimationFrames(SDL_Texture **frames, int frameCount){
         free(frames); // 프레임 배열 메모리 해제
     }
 }
+
+// SoundManager의 모든 사운드 해제
+void freeSoundEffects(){
+    for (int i = 0; i < soundManager.effectCount; ++i) {
+        Mix_FreeChunk(soundManager.effects[i].chunk);
+        soundManager.effects[i].chunk = NULL;
+    }
+    soundManager.effectCount = 0;
+}

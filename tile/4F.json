@@ -71,9 +71,9 @@
                  "name":"elevator",
                  "properties":[
                         {
-                         "name":"Text",
+                         "name":"SE",
                          "type":"string",
-                         "value":"\ub2f9\uc2e0\uc740 \uba40\uca61\ud55c \ub450 \ub2e4\ub9ac\ub97c \uacc4\ub2e8\uc5d0 \uc0ac\uc6a9\ud558\uace0 \uc2f6\ub2e4\ub294 \ucda9\ub3cc\uc744 \ub290\ub08d\ub2c8\ub2e4."
+                         "value":"elevator"
                         }],
                  "rotation":0,
                  "type":"",
@@ -103,6 +103,12 @@
                  "height":24,
                  "id":3,
                  "name":"frontDoor",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"doorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -114,6 +120,12 @@
                  "height":32.0909,
                  "id":4,
                  "name":"4F-roofF",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"stair"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -125,6 +137,12 @@
                  "height":10,
                  "id":5,
                  "name":"3F-4F",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"stair"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

@@ -17,7 +17,7 @@
  <objectgroup id="3" name="Interaction">
   <object id="1" name="elevator" x="151" y="112" width="33.875" height="31.9375">
    <properties>
-    <property name="Text" value="당신은 멀쩡한 두 다리를 계단에 사용하고 싶다는 충돌을 느낍니다."/>
+    <property name="SE" value="elevator"/>
    </properties>
   </object>
   <object id="2" name="blockedDoor" x="101" y="120" width="13.9688" height="24">
@@ -25,8 +25,20 @@
     <property name="eventID" type="int" value="3"/>
    </properties>
   </object>
-  <object id="3" name="frontDoor" x="29" y="120" width="13.9688" height="24"/>
-  <object id="4" name="4F-roofF" x="222.909" y="111.909" width="34.2159" height="32.0909"/>
-  <object id="5" name="3F-4F" x="270" y="134" width="36.0682" height="10"/>
+  <object id="3" name="frontDoor" x="29" y="120" width="13.9688" height="24">
+   <properties>
+    <property name="SE" value="doorOpen"/>
+   </properties>
+  </object>
+  <object id="4" name="4F-roofF" x="222.909" y="111.909" width="34.2159" height="32.0909">
+   <properties>
+    <property name="SE" value="stair"/>
+   </properties>
+  </object>
+  <object id="5" name="3F-4F" x="270" y="134" width="36.0682" height="10">
+   <properties>
+    <property name="SE" value="stair"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

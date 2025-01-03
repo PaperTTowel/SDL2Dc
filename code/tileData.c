@@ -180,6 +180,15 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         
                         printf("Loaded text: %s\n", interactions[interactionCount].propertyText);
                     }
+                    else if(strcmp(propName->valuestring, "SE") == 0){
+                        if(interactions[interactionCount].SE != NULL){
+                            free(interactions[interactionCount].SE);
+                        }
+
+                        interactions[interactionCount].SE = strdup(propValue->valuestring);
+
+                        printf("Loaded SE: %s\n", interactions[interactionCount].SE);
+                    }
                     else if(propName && cJSON_IsString(propName) && propValue && cJSON_IsNumber(propValue)){
                         if(strcmp(propName->valuestring, "eventID") != 0){
                             // Shop items 배열에 구매 제한 속성 저장
@@ -214,7 +223,8 @@ void parseObjectGroup(Map *map, cJSON *objectGroup, int xOffset, int yOffset){
                         strcmp(name->valuestring, "wrongWay") == 0 || strcmp(name->valuestring, "frontDoor") == 0 ||
                         strcmp(name->valuestring, "bathRoom") == 0 ||
                         strcmp(name->valuestring, "pyeonUijeom") == 0 || strcmp(name->valuestring, "buy") == 0 || strcmp(name->valuestring, "jinYeoldae") == 0 ||
-                        strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0 || strcmp(name->valuestring, "toDo") == 0){
+                        strcmp(name->valuestring, "frige") == 0 || strcmp(name->valuestring, "bed") == 0 || strcmp(name->valuestring, "toDo") == 0 ||
+                        strcmp(name->valuestring, "Toilet") == 0 ||strcmp(name->valuestring, "Washstand") == 0 || strcmp(name->valuestring, "Washtub") == 0){
                     addInteraction(newInteraction, name->valuestring);
                 }
             }
@@ -303,7 +313,8 @@ void addInteraction(SDL_Rect interactionZone, const char* name){
         printf("Added interaction: x=%.2f, y=%.2f, width=%.2f, height=%.2f\n", 
            interactions[interactionCount - 1].x, interactions[interactionCount - 1].y, 
            interactions[interactionCount - 1].width, interactions[interactionCount - 1].height);
-    } else {
+    }
+    else {
         printf("Maximum interaction limit reached.\n");
     }
 }
@@ -445,12 +456,14 @@ void loadNPCDialogue(const char *fileName){
 
         // 대화 텍스트와 이름 저장
         strncpy(currentDialogue->name, cJSON_GetObjectItem(dialogue, "name")->valuestring, sizeof(currentDialogue->name) - 1);
+        strcpy(currentDialogue->SE, cJSON_GetObjectItem(dialogue, "SE") ? cJSON_GetObjectItem(dialogue, "SE")->valuestring : "");
         currentDialogue->ID = cJSON_GetObjectItem(dialogue, "id")->valueint;
         currentDialogue->name[sizeof(currentDialogue->name) - 1] = '\0';
         cJSON *text = cJSON_GetObjectItem(dialogue, "text");
         
         printf("NPC: %s\n", cJSON_GetObjectItem(dialogue, "name")->valuestring);
         printf("TextID: %d\n", currentDialogue->ID);
+        printf("SE: %s\n", currentDialogue->SE);
         
         if(cJSON_IsArray(text)){
             for(int j = 0; j < cJSON_GetArraySize(text) && j < 4; j++){
@@ -506,4 +519,35 @@ void loadNPCDialogue(const char *fileName){
     free(jsonData);
     fclose(file);
     cJSON_Delete(root);
+}
+
+// 사운드 효과 로드
+void loadSoundEffect(const char *filePath, const char *name, int volume){
+    if (soundManager.effectCount >= 32) {
+        printf("Sound Manager is full!\n");
+        return;
+    }
+
+    Mix_Chunk *chunk = Mix_LoadWAV(filePath);
+    if (!chunk) {
+        printf("Failed to load sound: %s\n", Mix_GetError());
+        return;
+    }
+
+    SoundEffect *effect = &soundManager.effects[soundManager.effectCount++];
+    effect->chunk = chunk;
+    strncpy(effect->name, name, sizeof(effect->name) - 1);
+    effect->volume = volume;
+}
+
+// 사운드 효과 재생
+void playSoundEffect(const char *name){
+    for (int i = 0; i < soundManager.effectCount; ++i) {
+        if (strcmp(soundManager.effects[i].name, name) == 0) {
+            Mix_VolumeChunk(soundManager.effects[i].chunk, soundManager.effects[i].volume);
+            Mix_PlayChannel(-1, soundManager.effects[i].chunk, 0);  // 채널 -1, 반복 없음
+            return;
+        }
+    }
+    printf("Sound effect not found: %s\n", name);
 }

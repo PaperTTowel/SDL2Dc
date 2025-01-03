@@ -1,0 +1,13 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "name": "안내!",
+            "text": "잠을 잘까요?",
+            "options": [
+                { "text": "예", "nextId": -2 },
+                { "text": "아니요", "nextId": -1 }
+            ]
+        }
+    ]
+}

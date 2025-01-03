@@ -46,6 +46,7 @@ extern int platformCount;
 typedef struct Interaction{ // tileData.c 와 연결됨
     float x, y, width, height;
     char name[32];
+    char *SE;
     char *propertyText;
     int eventID;
 } Interaction;
@@ -138,6 +139,7 @@ typedef struct DialogueText {
     int optionCount;        // 선택지 개수 (각 대화마다 다를 수 있음)
     char options[4][128];   // 선택지 텍스트 (최대 4개의 선택지)
     int nextIds[4];         // 선택 후 이동할 다음 대화 ID (최대 4개)
+    char SE[16];
 } DialogueText;
 
 Uint32 textTime = 0;
@@ -146,6 +148,22 @@ SDL_bool isTextComplete = SDL_FALSE;   // 텍스트 출력 완료 여부
 SDL_bool isDialogueActive = SDL_FALSE; // 텍스트 활성화 여부
 int selectedOption = 0;                // 초기 선택지 인덱스
 int currentLine = 0;                   // 현재 출력할 줄 인덱스
+
+typedef struct soundEffect {
+    Mix_Chunk *chunk;   // SDL_Mixer에서 사용할 사운드 데이터
+    char name[32];      // 사운드 이름 (재생 시 키로 사용)
+    int volume;         // 사운드 볼륨 (0~128)
+} SoundEffect;
+
+typedef struct {
+    SoundEffect effects[16];  // 최대 32개의 SoundEffect 관리
+    int effectCount;          // 현재 로드된 사운드 효과 개수
+} SoundManager;
+
+// SoundManager 초기화
+SoundManager soundManager = { .effectCount = 0 };
+
+SDL_bool running = SDL_TRUE;
 
 void addPlatform(SDL_Rect platform);
 char* readFile(const char* filename);

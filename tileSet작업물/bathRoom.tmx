@@ -15,11 +15,14 @@
   <object id="10" name="wall" x="192" y="72" width="24" height="96"/>
  </objectgroup>
  <objectgroup id="3" name="Interaction">
-  <object id="11" name="bathRoom" x="149" y="120" width="13.9688" height="24"/>
+  <object id="11" name="bathRoom" x="149" y="120" width="13.9688" height="24">
+   <properties>
+    <property name="SE" value="doorOpen"/>
+   </properties>
+  </object>
   <object id="12" name="Toilet" x="99.9091" y="124" width="14.1818" height="20">
    <properties>
-    <property name="Text" value="변기다"/>
-    <property name="eventID" type="int" value="6"/>
+    <property name="eventID" type="int" value="7"/>
    </properties>
   </object>
   <object id="13" name="Washstand" x="77.9091" y="128.909" width="12.0909" height="15.0909">

@@ -65,8 +65,10 @@ void handleShopInput(Shop *shop, int *playerGold){
             *playerGold -= price;
             items[shop->selectedItem].stock--;
             printf("Purchased %s\n", items[shop->selectedItem].name);
+            playSoundEffect("cash");
         }
         else{
+            playSoundEffect("cansel");
             printf("Not enough gold or item out of stock!\n");
         }
     }
@@ -74,6 +76,7 @@ void handleShopInput(Shop *shop, int *playerGold){
     // ESC 키 눌림 감지
     if(state[SDL_SCANCODE_ESCAPE] && !previousState[SDL_SCANCODE_ESCAPE]){
         isShopVisible = SDL_FALSE;
+        playSoundEffect("cansel");
         printf("Shop closed!\n");
     }
 
@@ -118,6 +121,11 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
         // 디버깅 존 끝
 
         if(nextId == -1){
+            // 대화가 종료될때 SE 재생
+            if(strlen(dialogues[dialogues->currentID].SE) > 0){
+                playSoundEffect(dialogues[dialogues->currentID].SE);
+            }
+            
             // 대화 종료
             isDialogueActive = SDL_FALSE;
             animations->isActive = SDL_FALSE;
@@ -126,8 +134,11 @@ void handleChoiceInput(DialogueText *dialogue, int *selectedOption){
             initializeAllDialogues(dialogues, 5);
             freeAnimations(animations, 10);
             freeAnimationFrames(animations->frames, animations->frameCount);
+
+
             printf("Dialogue ended.\n");
         }
+        else if(nextId == -2) running = SDL_FALSE;
         else{
             // 다음 대화를 구조체에 로드
             dialogues->currentID = nextId;
@@ -162,9 +173,12 @@ void handleEvent(int eventID){
             isDialogueActive = SDL_TRUE;
             break;
         case 5:
-            printf("event 5\n");
+            isDialogueActive = SDL_TRUE;
             break;
         case 6:
+            isDialogueActive = SDL_TRUE;
+            break;
+        case 7:
             isDialogueActive = SDL_TRUE;
             break;
     }

@@ -120,6 +120,12 @@
                  "height":32.0909,
                  "id":12,
                  "name":"3F-4F",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"stair"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -131,6 +137,12 @@
                  "height":10,
                  "id":13,
                  "name":"1F-3F",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"stair"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,

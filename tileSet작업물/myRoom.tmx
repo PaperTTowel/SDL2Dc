@@ -15,8 +15,16 @@
   <object id="4" name="wall" x="312" y="72" width="24" height="96"/>
  </objectgroup>
  <objectgroup id="3" name="Interaction">
-  <object id="6" name="frontDoor" x="269" y="120" width="13.9688" height="24"/>
-  <object id="7" name="bathRoom" x="197.197" y="120" width="13.9688" height="24"/>
+  <object id="6" name="frontDoor" x="269" y="120" width="13.9688" height="24">
+   <properties>
+    <property name="SE" value="doorOpen"/>
+   </properties>
+  </object>
+  <object id="7" name="bathRoom" x="197.197" y="120" width="13.9688" height="24">
+   <properties>
+    <property name="SE" value="doorOpen"/>
+   </properties>
+  </object>
   <object id="8" name="bed" x="48" y="135.966" width="24" height="8.03409">
    <properties>
     <property name="eventID" type="int" value="5"/>

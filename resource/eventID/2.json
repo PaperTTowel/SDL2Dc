@@ -7,7 +7,8 @@
             "options": [
                 { "text": "옆집분께서 택배를 훔쳐갈려고 하시길래 알려드리려 왔습니다.", "nextId": 1 },
                 { "text": "님 택배옴.", "nextId": 3 }
-            ]
+            ],
+            "SE": "doorOpen"
         },
         {
             "id": 1,
@@ -58,7 +59,8 @@
             "name": "scared shdk",
             "text": "그럼 실례",
             "nextId": -1,
-            "options": []
+            "options": [],
+            "SE": "doorClose"
         }
     ]
 }

@@ -1,0 +1,21 @@
+{
+    "dialogues": [
+        {
+            "id": 0,
+            "name": "변기",
+            "text": "물을 내리시겠습니까?",
+            "options": [
+                { "text": "예", "nextId": 1 },
+                { "text": "아니요", "nextId": -1 }
+            ]
+        },
+        {
+            "id": 1,
+            "name": "변기",
+            "text": "성공적으로 물을 내렸다!",
+            "nextId": -1,
+            "options": [],
+            "SE": "flushed!"
+        }
+    ]
+}

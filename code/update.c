@@ -42,6 +42,7 @@ void updateMiniGame(TTF_Font *font){
     // 스페이스바가 눌린 상태인지 확인
     if(state[SDL_SCANCODE_SPACE] && !previousState[SDL_SCANCODE_SPACE]){
         spaceBarCount++;
+        playSoundEffect("doorBell");
     }
     memcpy(previousState, state, SDL_NUM_SCANCODES);
 

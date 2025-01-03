@@ -1,10 +1,13 @@
+// 추가설치
 #include <cJSON.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
+// 기본내장
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
-
+// 로컬파일
 #include "code\tileData.c"
 #include "code\render.c"
 #include "code\handleInfo.c"
@@ -108,6 +111,10 @@ void checkInteractions(SDL_Rect *playerRect){
                     // 다른 오브젝트로 텔레포트
                     Interaction targetInteractionZone = interactions[index];
 
+                    if(interactionZone.SE != NULL && strlen(interactionZone.SE) > 0){
+                        playSoundEffect(interactionZone.SE);
+                    }
+
                     // 텔레포트
                     playerX = targetInteractionZone.x;
                     playerY = targetInteractionZone.y;
@@ -124,7 +131,9 @@ void checkInteractions(SDL_Rect *playerRect){
             // 속성값 Text의 텍스트 처리
             else if(strcmp(interactionZone.name, "otherWay") == 0 ||
                     strcmp(interactionZone.name, "wrongWay") == 0 ||
-                    strcmp(interactionZone.name, "jinYeoldae") == 0){
+                    strcmp(interactionZone.name, "jinYeoldae") == 0 ||
+                    strcmp(interactionZone.name, "Washstand") == 0 ||
+                    strcmp(interactionZone.name, "Washtub") == 0){
                 handleTextInteraction(&interactionZone);
             }
             // 상점
@@ -137,7 +146,8 @@ void checkInteractions(SDL_Rect *playerRect){
             else if(strcmp(interactionZone.name, "blockedDoor") == 0 ||
                     strcmp(interactionZone.name, "frige") == 0 ||
                     strcmp(interactionZone.name, "bed") == 0 || 
-                    strcmp(interactionZone.name, "toDo") == 0){
+                    strcmp(interactionZone.name, "toDo") == 0 ||
+                    strcmp(interactionZone.name, "Toilet") == 0){
                 handleEvent(interactions[i].eventID);
 
                 // 이벤트 ID와 좌표를 기반으로 애니메이션 추가
@@ -228,11 +238,19 @@ int main(int argc, char* argv[]){
     }
 
     if(IMG_Init(IMG_INIT_PNG) == 0){
-        showErrorAndExit("Did you get windows Update?", IMG_GetError());
+        showErrorAndExit("Oh no... you updated Windows", IMG_GetError());
     }
 
     if(TTF_Init() == -1){
         showErrorAndExit("Jensen Huang is sad that you didn't buy rtx 40 series", TTF_GetError());
+    }
+
+    if(SDL_Init(SDL_INIT_AUDIO) < 0){
+        showErrorAndExit("I think your speakers need some break", SDL_GetError());
+    }
+
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0){
+        showErrorAndExit("No Minecraft on library computer", Mix_GetError());
     }
 
     SDL_Window* window = SDL_CreateWindow("DingDongDash", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
@@ -302,9 +320,25 @@ int main(int argc, char* argv[]){
         }
         */
     }
+    
+    Mix_AllocateChannels(16);
+    // UI
+    loadSoundEffect("resource\\audio\\[SE]cansel.wav", "cansel", 64);
+    loadSoundEffect("resource\\audio\\[SE]clickShort.wav", "clickShort", 64);
+
+    // Movement
+    loadSoundEffect("resource\\audio\\[SE]doorBell.wav", "doorBell", 64);
+    loadSoundEffect("resource\\audio\\[SE]doorOpen.wav", "doorOpen", 64);
+    loadSoundEffect("resource\\audio\\[SE]doorClose.wav", "doorClose", 64);
+    loadSoundEffect("resource\\audio\\[SE]elevator.wav", "elevator", 64);
+    loadSoundEffect("resource\\audio\\[SE]stair.wav", "stair", 64);
+
+    // Object
+    loadSoundEffect("resource\\audio\\[SE]cash.wav", "cash", 64);
+    loadSoundEffect("resource\\audio\\[SE]paper.wav", "paper", 64);
+    loadSoundEffect("resource\\audio\\[SE]flushed.wav", "flushed!", 64);
 
     SDL_Event event;
-    SDL_bool running = SDL_TRUE;
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
     fpsStartTime = SDL_GetTicks(); // FPS 확인용
@@ -376,6 +410,8 @@ int main(int argc, char* argv[]){
     if(tileData != NULL){
         free(tileData);
     }
+    freeSoundEffects();
+    Mix_CloseAudio();
     IMG_Quit();
     SDL_Quit();
     return 0;

@@ -69,6 +69,12 @@
                  "height":24,
                  "id":11,
                  "name":"bathRoom",
+                 "properties":[
+                        {
+                         "name":"SE",
+                         "type":"string",
+                         "value":"doorOpen"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -82,24 +88,19 @@
                  "name":"Toilet",
                  "properties":[
                         {
-                         "name":"Text",
-                         "type":"string",
-                         "value":"\ubcc0\uae30\ub2e4"
-                        }, 
-                        {
                          "name":"eventID",
                          "type":"int",
-                         "value":6
+                         "value":7
                         }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":14.1818181818182,
-                 "x":99.9090909090909,
+                 "width":14.1818,
+                 "x":99.9091,
                  "y":124
                 }, 
                 {
-                 "height":15.0909090909091,
+                 "height":15.0909,
                  "id":13,
                  "name":"Washstand",
                  "properties":[
@@ -111,9 +112,9 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":12.0908909090909,
-                 "x":77.9090909090909,
-                 "y":128.909090909091
+                 "width":12.0909,
+                 "x":77.9091,
+                 "y":128.909
                 }, 
                 {
                  "height":12,

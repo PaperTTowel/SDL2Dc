@@ -203,7 +203,7 @@ void renderTypingEffect(SDL_Renderer *renderer, TTF_Font *choiceFont ,DialogueTe
     if(elapsedTime < 25){
         elapsedTime = 25;  // 첫 번째 프레임에서는 약간의 지연을 추가
     }
-
+    
     int charsToShow = elapsedTime / 25;  // 50ms마다 한 글자 출력
     if(charsToShow > lineLength){
         charsToShow = lineLength;  // 텍스트 전부 출력 완료
@@ -222,7 +222,6 @@ void renderTypingEffect(SDL_Renderer *renderer, TTF_Font *choiceFont ,DialogueTe
             strncpy(visibleText, dialogue->text[currentLine], charsToShow);
             visibleText[charsToShow] = '\0';
         }
-
         renderText(renderer, visibleText, x, y + (t * 30), choiceFont, normalColor);  // i * 30: 줄 간격
     }
 
@@ -320,6 +319,9 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
         if(textTime == 0){ // 첫 번째 대화일 때만 startTime 초기화
             textTime = SDL_GetTicks();  // 타이핑 시작 시간
             printf("startTime initialized: %u\n", textTime);  // 디버깅: startTime 값 확인
+            if(strlen(dialogues[dialogues->currentID].SE) > 0){
+                playSoundEffect(dialogues[dialogues->currentID].SE);
+            }
         }
         // 대화가 넘어갔을 때 textTime을 초기화
         else if(dialogues[dialogues->currentID].nextIds[0] != dialogues->previousId){
@@ -327,6 +329,9 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
             textTime = SDL_GetTicks();  // 대화가 시작되거나 nextID가 바뀌면 타이핑 시작 시간 초기화
             dialogues->previousId = dialogues[dialogues->currentID].nextIds[0];  // previousNextId 갱신
             printf("startTime reinitialized: %u\n", textTime);  // 디버깅: 새로 초기화된 time 값 확인
+            if(strlen(dialogues[dialogues->currentID].SE) > 0 && dialogues[dialogues->currentID].nextIds[0] != -1){
+                playSoundEffect(dialogues[dialogues->currentID].SE);
+            }
         }
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
         SDL_Rect bgRect = {100, 100, 600, 95};
@@ -336,9 +341,9 @@ void render(SDL_Renderer* renderer, Map maps[], int mapCount, const char *active
         renderTypingEffect(renderer, font ,&dialogues[dialogues->currentID], 110, 100, &selectedOption , textTime);
     }
 
-    for(int i = 0; i < animationCount; i++){
-        if(animations[i].isActive == SDL_TRUE){
-            renderAnimation(renderer, &animations[i]);
+    for(int a = 0; a < animationCount; a++){
+        if(animations[a].isActive == SDL_TRUE){
+            renderAnimation(renderer, &animations[a]);
         }
     }
 

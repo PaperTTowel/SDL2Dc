@@ -30,7 +30,15 @@
     <property name="eventID" type="int" value="2"/>
    </properties>
   </object>
-  <object id="12" name="3F-4F" x="222.909" y="112" width="34.2159" height="32.0909"/>
-  <object id="13" name="1F-3F" x="270" y="134.091" width="36.0682" height="10"/>
+  <object id="12" name="3F-4F" x="222.909" y="112" width="34.2159" height="32.0909">
+   <properties>
+    <property name="SE" value="stair"/>
+   </properties>
+  </object>
+  <object id="13" name="1F-3F" x="270" y="134.091" width="36.0682" height="10">
+   <properties>
+    <property name="SE" value="stair"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
