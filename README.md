@@ -1,1 +1,2 @@
-SDL을 이용하여 2D게임 개발 연습용 리포지토리
+### 게임 다운로드 링크 ⬇️
+👉 https://paperttowel.itch.io/dingdongdash
